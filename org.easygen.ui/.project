@@ -1,0 +1,22 @@
+<projectDescription>
+  <name>org.easygen.ui</name>
+  <comment/>
+  <projects/>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+    <buildCommand>
+      <name>org.eclipse.pde.ManifestBuilder</name>
+    </buildCommand>
+    <buildCommand>
+      <name>org.eclipse.pde.SchemaBuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
+    <nature>org.eclipse.pde.PluginNature</nature>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+    <nature>org.eclipse.jem.beaninfo.BeanInfoNature</nature>
+  </natures>
+</projectDescription>
