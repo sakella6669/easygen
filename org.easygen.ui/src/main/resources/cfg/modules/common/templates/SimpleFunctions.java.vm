@@ -1,0 +1,216 @@
+package ${project.commonConfig.packageName};
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * Classe contennant diverses fonctions simples : conversions, tests, ...
+ * @author
+ * @version 1.0
+ * @since 24 mai 2005
+ */
+public class SimpleFunctions
+{
+	/**
+	 * Compléte la chaine en paramètre avec des '0' devant sur 15 caractères. Utiliser par exemple
+	 * pour effectuer le tri sur des numérique dans le tableau de résultat de recherche.
+	 * 
+	 * @return la chaine complété
+	 * @param value
+	 *            La chaine à compléter
+	 */
+	public static String formatStringZero(String value)
+	{
+		String zero = "000000000000000000000000000000000000000000000000000000000000";
+		return zero.substring(value.length()).concat(value);
+	}
+
+	/**
+	 * Convertie en Integer la chaîne en paramètre.
+	 * 
+	 * @return La chaine convertit en Integer, ou null
+	 * @param value
+	 *            La valeur à convertir
+	 */
+	public static Integer toInteger(String value)
+	{
+		Integer toInteger = null;
+
+		try
+		{
+			toInteger = new Integer(value);
+		}
+		catch (Exception e)
+		{
+		}
+
+		return toInteger;
+	}
+
+	/**
+	 * Convertit en String la Date en paramètre.<br />
+	 * Prend en compte le parametre <code>FORMATDATE</code> de la table <code>PARAM</code>
+	 * 
+	 * @return La Date convertit en String, ou null
+	 * @param value
+	 *            La valeur à convertir
+	 * @param format
+	 *            correspond aux paramètres DATEFORMAT (uniquement la date) ou TIMEFORMAT (date et
+	 *            heure) de la table PARAM
+	 */
+	public static String toString(Date value, String format)
+	{
+		String toString = null;
+
+		try
+		{
+			toString = formatDate(value, format);
+		}
+		catch (Exception e)
+		{
+		}
+
+		if (toString.compareTo("") == 0)
+			return null;
+		return toString;
+	}
+
+	/**
+	 * Ameliore la fonction <code>SimpleDateFormat.format</code> en gérant les erreurs. Prend en
+	 * compte le parametre <code>FORMATDATE</code> de la table <code>PARAM</code>
+	 * 
+	 * @param value
+	 *            La date a formatter
+	 * @param format
+	 *            correspond aux paramètres DATEFORMAT (uniquement la date) ou TIMEFORMAT (date et
+	 *            heure) de la table PARAM
+	 * @return la date, ou "" si la date en parametre est nulle
+	 */
+	public static String formatDate(Date value, String format)
+	{
+		try
+		{
+			SimpleDateFormat sdf = new SimpleDateFormat(format);
+			if (value != null)
+				return sdf.format(value);
+			else
+				return "";
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	/**
+	 * Convertir la chaine en paramètre en Date.<br />
+	 * Prend en compte le parametre <code>FORMATDATE</code> de la table <code>PARAM</code>
+	 * 
+	 * @return La chaine convertit en date, ou null
+	 * @param value
+	 *            La valeur à convertir
+	 * @param format
+	 *            correspond aux paramètres DATEFORMAT (uniquement la date) ou TIMEFORMAT (date et
+	 *            heure) de la table PARAM
+	 */
+	public static Date toDate(String value, String format)
+	{
+		if (isDate(value, format))
+			return parseDate(value, format);
+
+		return null;
+	}
+
+	/**
+	 * Verifie si la date fournie est au bon format.<br />
+	 * Prend en compte le parametre <code>FORMATDATE</code> de la table <code>PARAM</code>
+	 * 
+	 * @return true si bon format. false sinon.
+	 * @param d
+	 *            la chaine contenant la date.
+	 * @param format
+	 *            correspond aux paramètres DATEFORMAT (uniquement la date) ou TIMEFORMAT (date et
+	 *            heure) de la table PARAM
+	 */
+	public static boolean isDate(String d, String format)
+	{
+		try
+		{
+			if (parseDate(d, format) == null)
+				return false;
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Utilise la fonction <code>SimpleDateFormat.format</code>. Prend en compte le parametre
+	 * <code>DATEFORMAT</code> de la table <code>PARAM</code>
+	 * 
+	 * @param value
+	 *            La date a formatter
+	 * @param format
+	 *            correspond aux paramètres DATEFORMAT (uniquement la date) ou TIMEFORMAT (date et
+	 *            heure) de la table PARAM
+	 * @return la date, ou "" si la date en parametre est nulle
+	 */
+	public static Date parseDate(String value, String format)
+	{
+		if (value == null || value.length() == 0)
+		{
+			return null;
+		}
+
+		try
+		{
+			String regexpFormat = format;
+			regexpFormat = regexpFormat.replaceAll("dd", "[0-3][0-9]");
+			regexpFormat = regexpFormat.replaceAll("MM", "[0-1][0-9]");
+			regexpFormat = regexpFormat.replaceAll("yyyy", "[0-2][0-9][0-9][0-9]");
+			regexpFormat = regexpFormat.replaceAll("HH", "[0-2][0-9]");
+			regexpFormat = regexpFormat.replaceAll("mm", "[0-5][0-9]");
+			regexpFormat = regexpFormat.replaceAll("ss", "[0-5][0-9]");
+
+			if (value.matches(regexpFormat))
+			{
+				SimpleDateFormat sdf = new SimpleDateFormat(format);
+
+				return sdf.parse(value);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		return null;
+	}
+	
+	public static boolean isMissing(String s)
+	{
+		return !isDefined(s);
+	}
+	
+	public static boolean isMissing(Object o)
+	{
+		return !isDefined(o);
+	}
+
+	public static boolean isDefined(String s)
+	{
+		if (s == null || s.length() == 0)
+			return false;
+		return true;
+	}
+	
+	public static boolean isDefined(Object o)
+	{
+		if (o == null)
+			return false;
+		return true;
+	}
+}

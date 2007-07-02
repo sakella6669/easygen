@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    default-autowire="autodetect"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
+		<property name="url"><value>jdbc:mysql://localhost:3306/teachertools</value></property>
+		<property name="username"><value>root</value></property>
+		<property name="password"><value></value></property>
+	</bean>
+
+#if ($project.dataModuleConfig.useAnnotations == true)
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+#else
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+#end
+		<property name="dataSource"><ref local="dataSource"/></property>
+#if ($project.dataModuleConfig.useAnnotations == true)
+		<property name="annotatedClasses">
+			<list>
+#foreach ($className in $classList)
+				<value>${project.dataModuleConfig.packageName}.${className}</value>
+#end
+#else
+		<property name="mappingResources">
+			<list>
+#set ($packagePath = $project.dataModuleConfig.packageName.replace('.', '/'))
+#foreach ($className in $classList)
+				<value>${packagePath}/${className}.hbm.xml</value>
+#end
+#end
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.format_sql">false</prop>
+				<prop key="hibernate.use_sql_comments">false</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+	</bean>
+	
+	<bean id="serviceLocator" class="${project.serviceModuleConfig.packageName}.ServiceLocator">
+#foreach ($className in $classList)
+#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+		<property name="${lowerClassName}Service"><ref local="${lowerClassName}Service"/></property>
+#end
+	</bean>
+
+#foreach ($className in $classList)
+#set ($serviceClass = "${project.serviceModuleConfig.packageName}.${className}Service")
+#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+	<bean id="${lowerClassName}ServiceTarget" class="${serviceClass}">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+	</bean>
+
+	<bean id="${lowerClassName}Service" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="${lowerClassName}ServiceTarget"/></property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="add*">PROPAGATION_REQUIRED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+#end
+
+</beans>

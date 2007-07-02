@@ -1,0 +1,55 @@
+package ${project.serviceModuleConfig.packageName};
+
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+#foreach ($serviceClassName in $classList)
+import ${project.dataModuleConfig.packageName}.$serviceClassName;
+#end
+
+/**
+ *
+ */
+public class ServiceLocator
+{
+    private static ServiceLocator instance;
+
+    /**
+     * Initialisation du singleton (c-a-d de l'instance de ServiceLocator)
+     */
+    public static ServiceLocator getInstance()
+    {
+        return instance;
+    }
+
+#foreach ($serviceClassName in $classList)
+#set ($serviceVarName = "${serviceClassName.toLowerCase().charAt(0)}${serviceClassName.substring(1)}" )
+	private Service<${serviceClassName}> ${serviceVarName}Service;
+#end
+
+    /**
+     * Constructeur privé pour empêcher la création d'instance
+     * Implémentation du Singleton Pattern
+     * @throws ServiceLocatorException
+     */
+    public ServiceLocator() throws ServiceException
+    {
+	    instance = this;
+    }
+
+#foreach ($serviceClassName in $classList)
+#set ($serviceVarName = "${serviceClassName.toLowerCase().charAt(0)}${serviceClassName.substring(1)}" )
+    public void set${serviceClassName}Service(Service<${serviceClassName}> service) throws ServiceException
+    {
+    	${serviceVarName}Service = service;
+    }
+
+    public Service<${serviceClassName}> get${serviceClassName}Service() throws ServiceException
+    {
+    	return ${serviceVarName}Service;
+    }
+
+#end
+}

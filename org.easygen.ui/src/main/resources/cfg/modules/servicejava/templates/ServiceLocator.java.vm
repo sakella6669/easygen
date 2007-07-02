@@ -1,0 +1,83 @@
+package ${project.serviceModuleConfig.packageName};
+
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+#foreach ($serviceClassName in $classList)
+import ${project.dataModuleConfig.packageName}.$serviceClassName;
+#end
+
+/**
+ *
+ */
+public class ServiceLocator
+{
+    private static ServiceLocator instance;
+
+    /**
+     * Initialisation du singleton (c-a-d de l'instance de ServiceLocator)
+     */
+    public static ServiceLocator getInstance()
+    {
+    	if (instance == null)
+    	{
+            try
+            {
+                instance = new ServiceLocator();
+                GenericService.init();
+            }
+            catch (ServiceException se)
+            {
+                Logger.getLogger(ServiceLocator.class).error("Can't create ServiceLocator", se);
+            }
+    	}
+        return instance;
+    }
+    /**
+     * Initialisation du singleton (c-a-d de l'instance de ServiceLocator)
+     */
+    public static void releaseInstance()
+    {
+	    instance = null;
+	    GenericService.destroy();
+	}
+
+    /**
+     * La hashtable qui contient les différents services déjà instanciés
+     */
+    private Map<String, Service> cache;
+
+    /**
+     * Constructeur privé pour empêcher la création d'instance
+     * Implémentation du Singleton Pattern
+     * @throws ServiceLocatorException
+     */
+    private ServiceLocator() throws ServiceException
+    {
+        cache = new Hashtable<String, Service>();
+    }
+
+    protected Service getService(String serviceName, Class serviceClass) throws ServiceException
+    {
+        Service service = null;
+        if (cache.containsKey(serviceName))
+            return cache.get(serviceName);
+        try {
+			service = (Service) serviceClass.newInstance();
+			cache.put(serviceName, service);
+	        return service;
+		} catch (Exception e) {
+			throw new ServiceException("Service Lookup Error", e);
+		}
+    }
+
+#foreach ($serviceClassName in $classList)
+    public ${serviceClassName}Service get${serviceClassName}Service() throws ServiceException
+    {
+    	return (${serviceClassName}Service) getService("${serviceClassName}Service", ${serviceClassName}Service.class);
+    }
+
+#end
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="${project.dataModuleConfig.packageName}.${object.className}" table="${object.tableName}">
+
+#if ($object.useCache)
+    <cache usage="read-write" />
+    
+#end
+#foreach ($field in $object.fields)
+	#if ($field.primaryKey)
+		<id name="${field.propertyName}" type="${field.propertyType}" column="${field.columnName}">
+			<generator class="${object.primaryKeyGeneratorName}"
+		#if ($object.primaryKeyGeneratorParams && $object.primaryKeyGeneratorParams.size() != 0 )
+			>
+			#foreach ($paramKey in $object.primaryKeyGeneratorParams.keySet())
+				<param name="$paramKey">$object.primaryKeyGeneratorParams.get($paramKey)</param>
+			#end
+			</generator>
+		#else
+			/>
+		#end
+		</id>
+
+	#elseif ($field.foreignKey)
+		#if ($field.foreignList)
+
+		<set name="$field.propertyName" inverse="true" cascade="delete" lazy="true">
+			<key>
+				<column name="${field.columnName}"/>
+			</key>
+			<one-to-many class="${project.dataModuleConfig.packageName}.$field.propertyType"/>
+		</set>
+
+		#else		
+
+		<many-to-one name="$field.propertyName" class="${project.dataModuleConfig.packageName}.$field.propertyType" lazy="false">
+			<column name="${field.columnName}"/>
+		</many-to-one>
+
+		#end
+	#else
+		<property name="$field.propertyName" type="$field.propertyType" column="${field.columnName}"/>
+	#end
+#end
+
+	</class>
+</hibernate-mapping>
