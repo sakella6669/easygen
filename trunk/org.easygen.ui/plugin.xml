@@ -10,7 +10,7 @@
       <wizard
             id="org.easygen.ui.wizards.NewProjectWizard"
             class="org.easygen.ui.wizards.NewProjectWizard"
-            icon="icons/sample.gif"
+            icon="icons/easygen.gif"
             category="org.easygen.ui.category"
             hasPages="true"
             project="true"
