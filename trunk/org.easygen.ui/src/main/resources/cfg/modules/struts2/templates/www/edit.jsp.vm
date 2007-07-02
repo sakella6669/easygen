@@ -1,0 +1,61 @@
+
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+#set ($textFieldSize = "30")
+
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
+
+<tiles:insertDefinition name="mainLayout">
+  <tiles:putAttribute name="title"  value="Edition d'un objet ${object.className}" />
+  <tiles:putAttribute name="body">
+
+<fieldset title="Edit">
+<legend><b>Edition d'un objet ${objectVarName}</b></legend>
+<s:form action="update" method="post" validate="true">
+#foreach ($aField in $object.fields)
+#if ($aField.primaryKey == false)
+	#if ($aField.foreignKey == false)
+		#if ($aField.propertyShortType == "Date")
+		<s:datetimepicker label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}"
+		#else
+  		<s:textfield label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}"
+  		#end
+  		#if ($aField.nullable == false)
+  			required="true"
+  		#end
+  		/>
+  	#end
+#end
+#end
+#foreach ($aField in $object.fields)
+#if ($aField.primaryKey == false)
+  	#if ($aField.foreignKey == true && $aField.foreignList == false)
+  		#foreach ($foreignField in $aField.foreignObject.fields)
+  			#if ($foreignField.primaryKey == true)
+			 	<s:select label="${aField.propertyName}"
+					name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
+					list="%{#request.${aField.propertyName}s}"
+					listKey="${foreignField.propertyName}"
+					multiple="false"
+		  		#if ($aField.nullable == false)
+		  			required="true"
+		  		#end
+				/>
+	  		#end
+		#end
+	#end
+#else
+  <s:hidden name="${objectVarName}.${aField.propertyName}" />
+  <s:label label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}" />
+#end
+#end	
+  <s:submit value="Enregistrer"/>
+</s:form>
+</fieldset>
+
+<p class="spacer">&nbsp;</p>
+<s:url id="listUrl" action="index" />
+<s:a href="%{listUrl}" cssClass="commandLink">Retour &agrave; la liste</s:a>
+
+  </tiles:putAttribute>
+</tiles:insertDefinition>

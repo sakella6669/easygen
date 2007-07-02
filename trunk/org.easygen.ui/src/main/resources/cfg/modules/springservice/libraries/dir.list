@@ -1,0 +1,7 @@
+spring-aop.jar
+spring-beans.jar
+spring-context.jar
+spring-core.jar
+spring-dao.jar
+spring-jdbc.jar
+spring-hibernate3.jar

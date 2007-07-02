@@ -1,0 +1,507 @@
+package ${project.serviceModuleConfig.packageName};
+
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.JDBCException;
+import org.hibernate.ObjectNotFoundException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+#if ($project.dataModuleConfig.useAnnotations == true)
+import org.hibernate.cfg.AnnotationConfiguration;
+#else
+import org.hibernate.cfg.Configuration;
+#end
+import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Example.PropertySelector;
+import org.hibernate.type.Type;
+
+/**
+ *
+ */
+public abstract class GenericService<T> implements Service<T> {
+	public static final int DEFAULT_MAX_RESULTS = 200;
+	public static final PropertySelector NOT_NULL_OR_EMPTY = new NotNullOrEmptyPropertySelector();
+	
+	private static final class NotNullOrEmptyPropertySelector implements PropertySelector {
+		private static final long serialVersionUID = 1L;
+
+		public boolean include(Object object, String propertyName, Type type) {
+			if (object == null) {
+				return false;
+			}
+			try {
+				Object property = PropertyUtils.getProperty(object, propertyName);
+				Logger.getLogger(getClass()).debug(object);
+				if (property == null) {
+					return false;
+				}
+				if ( (property instanceof String) && ((String) property).trim().length() == 0) {
+					return false;
+				}
+				if ( (property instanceof Number) && ((Number) property).longValue() == 0) {
+					return false;
+				}
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		
+		private Object readResolve() {
+			return NOT_NULL_OR_EMPTY;
+		}
+	}
+
+	private static SessionFactory sessionFactory;
+
+	public static void init() {
+		try {
+			// Crée la SessionFactory
+			long startTime = System.currentTimeMillis();
+			#if ($project.dataModuleConfig.useAnnotations == true)
+			sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
+			#else
+			sessionFactory = new Configuration().configure().buildSessionFactory();
+			#end
+			long endTime = System.currentTimeMillis();
+			Logger.getLogger(GenericService.class).info("Initialisation d'Hibernate en " + ((endTime - startTime) / 1000.0) + " s");
+		} catch (HibernateException ex) {
+			Logger.getLogger(GenericService.class).fatal("Problème de configuration : " + ex.getMessage(), ex);
+			throw new RuntimeException("Problème de configuration : " + ex.getMessage(), ex);
+		}
+	}
+
+	public static void destroy() {
+		if (sessionFactory != null) {
+			Logger.getLogger(GenericService.class).info("Destruction de la sessionFactory Hibernate");
+			sessionFactory.close();
+		}
+	}
+
+	private static final ThreadLocal<Session> sessionCache = new ThreadLocal<Session>();
+
+	protected static Session currentSession() throws HibernateException {
+		Session s = (Session) sessionCache.get();
+		// Ouvre une nouvelle Session, si ce Thread n'en a aucune
+		if (s == null) {
+			s = sessionFactory.openSession();
+			sessionCache.set(s);
+		}
+		return s;
+	}
+
+	protected static void closeSession() throws HibernateException {
+		Session s = (Session) sessionCache.get();
+		sessionCache.set(null);
+		if (s != null)
+			s.close();
+	}
+
+	protected Logger logger = Logger.getLogger(getClass());
+
+	/**
+	 * Renvoie true si les données de la requête peuvent être mises en cache
+	 * @return true/false
+	 */
+	protected boolean getCacheable() {
+		return false;
+	}
+
+	/**
+	 * Renvoie l'objet Class relatif à l'objet édité par ce service.
+	 * @return La classe de l'objet traitée par ce service
+	 */
+	protected abstract Class getObjectClass();
+
+	/**
+	 * Renvoi le nombre d'enregistrement maximum ramené par une recherche
+	 * @return
+	 */
+	public int getMaxResults() {
+		return DEFAULT_MAX_RESULTS;
+	}
+
+	/**
+	 * Enregistre en base la liste d'objets passés en paramètre.
+	 *
+	 * @param listeObject la liste d'objets à enregistrer
+	 * @throws ServiceException
+	 * @return L'objet enregistré
+	 */
+	public List<Serializable> save(List<T> listeObject) throws ServiceException {
+		List<Serializable> listeReturn = new LinkedList<Serializable>();
+
+		Transaction tx = null;
+		try {
+			Session session = currentSession();
+			tx = session.beginTransaction();
+
+			for (int i = 0; i < listeObject.size(); i++)
+				listeReturn.add(session.save(listeObject.get(i)));
+
+			commitTransaction(tx);
+			return listeReturn;
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction(tx);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+	}
+
+	/**
+	 * Crée en base l'objet passé en paramètre
+	 *
+	 * @param object L'objet à créer
+	 * @return l'objet créé (avec son id)
+	 * @throws ServiceException
+	 */
+	public Serializable save(T object) throws ServiceException {
+		Transaction tx = null;
+		try {
+			Session session = currentSession();
+			tx = session.beginTransaction();
+
+			Serializable id = session.save(object);
+
+			commitTransaction(tx);
+			return id;
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction(tx);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+	}
+
+	/**
+	 * Met à jour en base l'objet passé en paramètre
+	 *
+	 * @param object L'objet à mettre à jour
+	 * @throws ServiceException
+	 * @return l'objet mis à jour
+	 */
+	public void update(T object) throws ServiceException {
+		Session session;
+		Transaction tx = null;
+		try {
+			session = currentSession();
+			tx = session.beginTransaction();
+			session.update(object);
+			commitTransaction(tx);
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction(tx);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+	}
+
+	/**
+	 * Met à jour en base l'objet passé en paramètre
+	 *
+	 * @param object L'objet à mettre à jour
+	 * @throws ServiceException
+	 * @return l'objet mis à jour
+	 */
+	public void update(List<T> objects) throws ServiceException {
+		Session session;
+		Transaction tx = null;
+		try {
+			session = currentSession();
+			tx = session.beginTransaction();
+			for (T object : objects) {
+				session.update(object);
+			}
+			commitTransaction(tx);
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction(tx);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+	}
+
+	/**
+	 * Supprime en base la liste d'objets passés en paramètre.
+	 *
+	 * @param listeObject la liste d'objets à supprimer
+	 * @throws ServiceException
+	 */
+	@SuppressWarnings("unchecked")
+	public void deleteById(List<? extends Serializable> listeObject)
+			throws ServiceException {
+		Session session;
+		Transaction tx = null;
+		try {
+			session = currentSession();
+			tx = session.beginTransaction();
+
+			for (Serializable serializable : listeObject) {
+				Object object = session.load(getObjectClass(), serializable);
+				session.delete(object);
+			}
+
+			commitTransaction(tx);
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction(tx);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+
+	}
+
+	/**
+	 * Supprime l'objet correspondant à l'id passé en paramètre
+	 *
+	 * @param id L'id de l'objet à supprimer
+	 * @throws ServiceException
+	 */
+	public void deleteById(Serializable id) throws ServiceException {
+		Transaction tx = null;
+		try {
+			Session session = currentSession();
+			tx = session.beginTransaction();
+			Object object = session.load(getObjectClass(), id);
+			session.delete(object);
+			commitTransaction(tx);
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction(tx);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+	}
+
+	/**
+	 * Supprime en base la liste d'objet passée en paramètre.
+	 * Si le paramètre session est null, alors crée la session et la transaction.
+	 *
+	 * @param object les objets à supprimer
+	 * @throws ServiceException
+	 */
+	public void delete(List<T> objects) throws ServiceException {
+		Transaction tx = null;
+		try {
+			Session session = currentSession();
+			tx = session.beginTransaction();
+
+			for (T object : objects) {
+				session.delete(object);
+			}
+
+			commitTransaction(tx);
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction(tx);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+	}
+
+	/**
+	 * Supprime en base l'objet passé en paramètre.
+	 * Si le paramètre session est null, alors crée la session et la transaction.
+	 *
+	 * @param object l'objet à supprimer
+	 * @throws ServiceException
+	 */
+	public void delete(T object) throws ServiceException {
+		Transaction tx = null;
+		try {
+			Session session = currentSession();
+			tx = session.beginTransaction();
+
+			session.delete(object);
+
+			commitTransaction(tx);
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction(tx);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+	}
+
+	/**
+	 * Récupère l'objet correspondant à l'id passé en paramètre
+	 *
+	 * @param id L'id de l'objet à récupérer
+	 * @throws ServiceException
+	 * @return L'objet récupéré
+	 */
+	public T get(Serializable id) throws ServiceException {
+		return get(id, false);
+	}
+
+	/**
+	 * Récupère l'objet correspondant à l'id passé en paramètre. Les descendants
+	 * de l'objet sont initialisés si isChildrenInitialized vaut true.
+	 *
+	 * @param id L'id de l'objet à récupérer
+	 * @param initializeChildren indique si les descendants de l'objet doivent être initialiser.
+	 * @throws ServiceException
+	 * @return L'objet récupéré
+	 */
+	@SuppressWarnings("unchecked")
+	public T get(Serializable id, boolean initializeChildren) throws ServiceException {
+		try {
+			Session session = currentSession();
+			T object = (T) session.get(getObjectClass(), id);
+			if (object == null) {
+				throw new ServiceException("Object Not Found (id="+id+')');
+			}
+			Hibernate.initialize(object);
+			if (initializeChildren) {
+				initializeChildren(object);
+			}
+			return object;
+		} catch (ObjectNotFoundException e) {
+			logger.error(e.getCause(), e);
+			throw new ServiceException("Object Not Found (id="+id+')', e);
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+
+	}
+
+	/**
+	 * Récupère la liste complète des objets
+	 *
+	 * @throws ServiceException
+	 * @return la liste des objets
+	 */
+	@SuppressWarnings("unchecked")
+	public List<T> list() throws ServiceException {
+		return list(false);
+	}
+
+	/**
+	 * Récupère la liste complète des objets
+	 *
+	 * @param application_id l'id de l'application pour laquelle il faut récupérer les objets
+	 * @throws ServiceException
+	 * @return la liste des objets
+	 */
+	@SuppressWarnings("unchecked")
+	public List<T> list(boolean isChildrenInitialized) throws ServiceException {
+		try {
+			Session session = currentSession();
+			Criteria criteria = session.createCriteria(getObjectClass());
+			criteria.setMaxResults(getMaxResults());
+			List<T> returnedList = (List<T>) criteria.setCacheable(getCacheable()).list();
+			if (isChildrenInitialized) {
+				for (T object : returnedList) {
+					initializeChildren(object);
+				}
+			}
+			return returnedList;
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+	}
+
+	/**
+	 * Récupère la liste des objets correspondant aux critères de l'objet passé en paramètre
+	 *
+	 * @param object L'objet contenant les critères
+	 * @throws ServiceException
+	 * @return la liste des objets trouvé
+	 */
+	public List<T> search(T object) throws ServiceException {
+		return search(object, false);
+	}
+
+	/**
+	 * Récupère la liste des objets correspondant aux critères de l'objet passé en paramètre
+	 *
+	 * @param object L'objet contenant les critères
+	 * @param initializeSecondLevelObjects Force l'initialisation des objets liés en mode 'lazy' aux objets trouvés
+	 * @throws ServiceException
+	 * @return la liste des objets trouvé
+	 */
+	@SuppressWarnings("unchecked")
+	public List<T> search(T exampleEntity, boolean initializeSecondLevelObjects) throws ServiceException {
+		try {
+			Session session = currentSession();
+			Criteria criteria = session.createCriteria(getObjectClass());
+			Example example = Example.create(exampleEntity);
+			example.setPropertySelector(NOT_NULL_OR_EMPTY);
+			example.ignoreCase();
+			example.enableLike();
+			logger.debug("Search example object: "+example.toString());
+			criteria.add(example);
+			addAssociationCriteria(criteria, exampleEntity);
+			criteria.setMaxResults(getMaxResults());
+			criteria.setCacheable(getCacheable());
+            return (List<T>) criteria.list();
+		} catch (HibernateException e) {
+			logger.error(e.getCause(), e);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeSession();
+		}
+	}
+
+	protected abstract void addAssociationCriteria(Criteria criteria, T object);
+
+	/**
+	 * Si l'objet a des relations cette méthode doit être implémenté
+	 * @param object
+	 */
+	protected void initializeChildren(T object) {
+
+	}
+
+	/**
+	 * Effectue le commit de la transaction passé en paramètre.
+	 * @param tx La transaction à commité
+	 */
+	protected static void commitTransaction(Transaction tx) throws ServiceException {
+		try {
+			tx.commit();
+		} catch (JDBCException e) {
+			Logger logger = Logger.getLogger(GenericService.class);
+			String errorMessage = "";
+			// 1 == Violation de contrainte unique
+			if (e.getErrorCode() == 1) {
+				errorMessage = "UniqueConstraintViolation";
+			}
+			// 2292 == Contrainte d'integrité non respectée
+			else if (e.getErrorCode() == 2292) {
+				errorMessage = "ConstraintViolation";
+			}
+			logger.error(errorMessage, e);
+			rollbackTransaction(tx);
+			throw new DatabaseServiceException(errorMessage, e);
+		}
+	}
+
+	protected static void rollbackTransaction(Transaction tx) {
+		if (tx != null)
+			tx.rollback();
+	}
+}

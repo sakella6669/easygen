@@ -1,0 +1,72 @@
+@CHARSET "ISO-8859-1";
+
+.wwFormTable {
+}
+.pageTitle {
+	font-weight: bold;
+	font-size: 1.2em;
+	color: black;
+	text-align: center;
+}
+.label {
+    font-style:italic;
+    float:left;
+    width:30%
+}
+.errorLabel {
+	font-style:italic;
+}
+.errorMessage {
+	font-weight: bold;
+	font-size: 0.9em;
+	color: red;
+	text-align: left;
+}
+.checkboxLabel {
+}
+.checkboxErrorLabel {
+	color:red;
+}
+.required {
+	color:red;
+}
+
+#header {
+	width: 100%;
+	height: 70px;
+	text-align: center;
+	background-color: #CC3355;
+	font-size: 1.4em;
+	color: #FFFFFF;
+}
+
+#header a {
+	text-decoration: underline;
+	color: #FFFFFF;
+}
+
+#menu a {
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 0.9em;
+}
+
+#messages {
+	width: 300;
+}
+
+#messages li {
+	font-weight: bold;
+	font-size: 0.9em;
+}
+
+#messages .errorMessage {
+	font-weight: bold;
+	font-size: 0.9em;
+	color: red;
+}
+
+#footer p {
+ 	font-size: 0.7em;
+ 	text-align: center;
+}

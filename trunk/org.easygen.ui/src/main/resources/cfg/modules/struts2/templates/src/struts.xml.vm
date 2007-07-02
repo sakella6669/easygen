@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <constant name="struts.action.extension" value="action" />
+    <constant name="struts.devMode" value="true" />
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+
+	<package name="easygen-default" extends="tiles-default">
+	</package>
+
+#foreach ($className in $classList)
+#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+##set ($actionName = "${project.viewModuleConfig.packageName}.${className}Action")
+#set ($actionName = "${lowerClassName}Action")
+	<package name="${lowerClassName}" extends="easygen-default" namespace="/${lowerClassName}">
+	
+		<action name="index" class="${actionName}" method="list">
+			<result >show.jsp</result>
+			<result name="error">show.jsp</result>
+		</action>
+
+		<action name="search" class="${actionName}" method="search">
+			<result >show.jsp</result>
+			<result name="error">show.jsp</result>
+		</action>
+
+		<action name="prepareadd" class="${actionName}" method="prepareadd">
+			<result >add.jsp</result>
+			<result name="error">show.jsp</result>
+		</action>
+
+		<action name="add" class="${actionName}" method="add">
+			<result type="redirect-action">index</result>
+			<result name="input" type="chain">prepareadd</result>
+			<result name="error" type="chain">prepareadd</result>
+		</action>
+
+		<action name="edit" class="${actionName}" method="edit">
+			<result >edit.jsp</result>
+			<result name="error">show.jsp</result>
+		</action>
+
+		<action name="update" class="${actionName}" method="update">
+			<result type="redirect-action">index</result>
+			<result name="input" type="chain">edit.jsp</result>
+			<result name="error" type="chain">edit.jsp</result>
+		</action>
+
+		<action name="delete" class="${actionName}" method="delete">
+			<result type="redirect-action">index</result>
+			<result name="error">show.jsp</result>
+		</action>
+
+	</package>
+
+#end
+</struts>

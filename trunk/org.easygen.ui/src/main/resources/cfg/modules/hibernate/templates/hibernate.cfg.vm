@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd" >
+
+<hibernate-configuration>
+	<session-factory>
+
+		<property name="hibernate.connection.url">${jdbc.url}</property>
+		<property name="hibernate.connection.username">${jdbc.username}</property>
+		<property name="hibernate.connection.password">$!jdbc.password</property>
+		<property name="hibernate.connection.driver_class">${jdbc.driver}</property>
+		<property name="dialect">${jdbc.dialect}</property>
+
+		<property name="hibernate.show_sql">false</property>
+		<property name="hibernate.format_sql">false</property>
+		<property name="hibernate.use_sql_comments">false</property>
+		<property name="hibernate.connection.autocommit">false</property>
+		<property name="hibernate.connection.charSet">UTF-8</property>
+		<property name="hibernate.connection.pool_size">1</property>
+		<property name="hibernate.cache.use_second_level_cache">true</property>
+		<property name="hibernate.cache.use_query_cache">true</property>
+		<property name="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
+
+#foreach ($mapping in $classList)
+	#if ($useAnnotations == true)
+		<mapping class="$mapping" />
+	#else
+		<mapping resource="$mapping" />
+	#end
+#end
+
+	</session-factory>
+</hibernate-configuration>

@@ -1,0 +1,140 @@
+
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+#macro( showForeignObjectHeader $aObject )
+	#foreach ($anotherField in $aObject.fields)
+		#if ($anotherField.foreignKey == true && $anotherField.foreignList == false)
+	    	<th>$stringutils.capitalizeFirstLetter($anotherField.propertyName)</th>
+			#showForeignObjectHeader( $anotherField.foreignObject )
+	    #end
+	#end
+#end
+
+#macro( showForeignObject $anotherObject )
+	#foreach ($anotherField in $anotherObject.fields)
+		#if ($anotherField.foreignKey == true && $anotherField.foreignList == false)
+    		<td><s:property value="${aField.propertyName}"/></td>
+			#showForeignObject( $anotherField.foreignObject )
+	    #end
+	#end
+#end
+
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
+
+<tiles:insertDefinition name="mainLayout">
+  <tiles:putAttribute name="title"  value="Liste des ${objectVarName}s" />
+  <tiles:putAttribute name="body">
+
+<script type="text/javascript">
+<!--
+	function confirmDelete(id)
+	{
+		return confirm("Voulez-vous vraiment supprimer l'objet ayant pour id: "+id);
+	}
+//-->
+</script>
+
+<s:url id="prepareaddUrl" action="prepareadd" />
+<p><s:a href="%{prepareaddUrl}" cssClass="commandLink">Ajouter un objet ${objectVarName}</s:a></p>
+
+<p class="pageTitle">Liste des ${objectVarName}s</p>
+
+<table width="90%">
+  <tr>
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == true)
+    	<th>$stringutils.capitalizeFirstLetter($aField.propertyName)</th>
+    #end
+#end
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == false && $aField.foreignKey == false)
+    	<th>$stringutils.capitalizeFirstLetter($aField.propertyName)</th>
+    #end
+#end
+#foreach ($aField in $object.fields)
+	#if ($aField.foreignKey == true && $aField.foreignList == false)
+    	<th>$stringutils.capitalizeFirstLetter($aField.propertyName)</th>
+		#showForeignObjectHeader( $aField.foreignObject )
+    #end
+#end
+    <th>&nbsp;</th>
+
+  </tr>
+
+<s:iterator value="%{#request.${objectVarName}s}">
+  <tr>
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == true)
+    <td>
+    <s:url id="editUrl" action="edit" >
+		<s:param name="${aField.propertyName}" value="%{${aField.propertyName}}" />
+	</s:url>
+    <s:a href="%{editUrl}" cssClass="commandLink"><s:property value="${aField.propertyName}"/></s:a>
+    </td>
+    #end
+#end
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == false && $aField.foreignKey == false)
+    <td><s:property value="${aField.propertyName}"/></td>
+    #end
+#end
+#foreach ($aField in $object.fields)
+	#if ($aField.foreignKey == true && $aField.foreignList == false)
+    <td><s:property value="${aField.propertyName}"/></td>
+    #showForeignObject( $aField.foreignObject )
+    #end
+#end
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == true)
+    <td>
+    <s:url id="deleteUrl" action="delete" >
+		<s:param name="${aField.propertyName}" value="%{${aField.propertyName}}" />
+	</s:url>
+    <s:a href="%{deleteUrl}" cssClass="commandLink" onclick="return confirmDelete(%{${aField.propertyName}});">Supprimer</s:a>
+    </td>
+	#end
+#end
+  </tr>
+</s:iterator>
+
+</table>
+
+<p class="spacer">&nbsp;</p>
+
+<fieldset title="Recherche">
+<legend><b>Recherche d'un objet ${objectVarName}</b></legend>
+<s:form action="search" method="post" validate="false">
+#foreach ($aField in $object.fields)
+#if ($aField.primaryKey == false)
+	#if ($aField.foreignKey == false)
+		#if ($aField.propertyShortType == "Date")
+		<s:datetimepicker label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}" />
+		#else
+  		<s:textfield label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}" />
+  		#end
+  	#end
+#end
+#end
+#foreach ($aField in $object.fields)
+#if ($aField.primaryKey == false)
+  	#if ($aField.foreignKey == true && $aField.foreignList == false)
+  		#foreach ($foreignField in $aField.foreignObject.fields)
+  			#if ($foreignField.primaryKey == true)
+			 	<s:select label="${aField.propertyName}"
+					name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
+					list="%{#request.${aField.propertyName}s}"
+					listKey="${foreignField.propertyName}"
+					multiple="false" emptyOption="true"
+				/>
+	  		#end
+		#end
+	#end
+#end
+#end	
+  <s:submit value="Rechercher"/>
+</s:form>
+</fieldset>
+
+  </tiles:putAttribute>
+</tiles:insertDefinition>

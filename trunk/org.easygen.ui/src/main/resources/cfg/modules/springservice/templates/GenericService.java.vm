@@ -1,0 +1,328 @@
+package ${project.serviceModuleConfig.packageName};
+
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.commons.beanutils.PropertyUtils;
+
+import org.apache.log4j.Logger;
+
+import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.JDBCException;
+import org.hibernate.ObjectNotFoundException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.collection.AbstractPersistentCollection;
+import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Example.PropertySelector;
+import org.hibernate.type.Type;
+
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.util.Assert;
+
+/**
+ *
+ */
+public abstract class GenericService<T> extends HibernateDaoSupport implements Service<T> {
+
+	public static final int DEFAULT_MAX_RESULTS = 200;
+	public static final PropertySelector NOT_NULL_OR_EMPTY = new NotNullOrEmptyPropertySelector();
+	
+	private static final class NotNullOrEmptyPropertySelector implements PropertySelector {
+		private static final long serialVersionUID = 1L;
+
+		public boolean include(Object object, String propertyName, Type type) {
+			if (object == null) {
+				return false;
+			}
+			try {
+				Object property = PropertyUtils.getProperty(object, propertyName);
+				Logger.getLogger(getClass()).debug(object);
+				if (property == null) {
+					return false;
+				}
+				if ( (property instanceof String) && ((String) property).trim().length() == 0) {
+					return false;
+				}
+				if ( (property instanceof Number) && ((Number) property).longValue() == 0) {
+					return false;
+				}
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		
+		private Object readResolve() {
+			return NOT_NULL_OR_EMPTY;
+		}
+	}
+
+	protected Logger logger = Logger.getLogger(getClass());
+
+	/**
+	 * Renvoie true si les données de la requête peuvent être mises en cache
+	 * @return true/false
+	 */
+	protected boolean getCacheable() {
+		return false;
+	}
+
+	/**
+	 * Renvoie l'objet Class relatif à l'objet édité par ce service.
+	 * @return La classe de l'objet traitée par ce service
+	 */
+	protected abstract Class getObjectClass();
+
+	/**
+	 * Renvoi le nombre d'enregistrement maximum ramené par une recherche
+	 * @return
+	 */
+	public int getMaxResults() {
+		return DEFAULT_MAX_RESULTS;
+	}
+
+	/**
+	 * Enregistre en base la liste d'objets passés en paramètre.
+	 *
+	 * @param listeObject la liste d'objets à enregistrer
+	 * @throws ServiceException
+	 * @return L'objet enregistré
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Serializable> save(final List<T> listeObject) throws ServiceException {
+//		getHibernateTemplate().saveOrUpdateAll(objects);
+		List<Serializable> listeReturn = (List<Serializable>) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				List<Serializable> listeReturn = new LinkedList<Serializable>();
+				for (int i = 0; i < listeObject.size(); i++)
+					listeReturn.add(session.save(listeObject.get(i)));
+
+				return listeReturn;
+			}
+		});
+		return listeReturn;
+	}
+
+	/**
+	 * Crée en base l'objet passé en paramètre
+	 *
+	 * @param object L'objet à créer
+	 * @return l'objet créé (avec son id)
+	 * @throws ServiceException
+	 */
+	public Serializable save(T object) throws ServiceException {
+		return getHibernateTemplate().save(object);
+	}
+
+	/**
+	 * Met à jour en base l'objet passé en paramètre
+	 *
+	 * @param object L'objet à mettre à jour
+	 * @throws ServiceException
+	 * @return l'objet mis à jour
+	 */
+	public void update(T object) throws ServiceException {
+		getHibernateTemplate().update(object);
+	}
+
+	/**
+	 * Met à jour en base l'objet passé en paramètre
+	 *
+	 * @param object L'objet à mettre à jour
+	 * @throws ServiceException
+	 * @return l'objet mis à jour
+	 */
+	public void update(List<T> objects) throws ServiceException {
+		getHibernateTemplate().saveOrUpdateAll(objects);
+	}
+
+	/**
+	 * Supprime en base la liste d'objets passés en paramètre.
+	 *
+	 * @param listeObject la liste d'objets à supprimer
+	 * @throws ServiceException
+	 */
+	@SuppressWarnings("unchecked")
+	public void deleteById(final List<? extends Serializable> listeObject) throws ServiceException {
+		getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				for (Serializable serializable : listeObject) {
+					Object object = session.load(getObjectClass(), serializable);
+					session.delete(object);
+				}
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Supprime l'objet correspondant à l'id passé en paramètre
+	 *
+	 * @param id L'id de l'objet à supprimer
+	 * @throws ServiceException
+	 */
+	public void deleteById(final Serializable id) throws ServiceException {
+		getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				Object object = session.load(getObjectClass(), id);
+				session.delete(object);
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Supprime en base la liste d'objet passée en paramètre.
+	 * Si le paramètre session est null, alors crée la session et la transaction.
+	 *
+	 * @param object les objets à supprimer
+	 * @throws ServiceException
+	 */
+	public void delete(final List<T> objects) throws ServiceException {
+		getHibernateTemplate().deleteAll(objects);
+	}
+
+	/**
+	 * Supprime en base l'objet passé en paramètre.
+	 * Si le paramètre session est null, alors crée la session et la transaction.
+	 *
+	 * @param object l'objet à supprimer
+	 * @throws ServiceException
+	 */
+	public void delete(T object) throws ServiceException {
+		getHibernateTemplate().delete(object);
+	}
+
+	/**
+	 * Récupère l'objet correspondant à l'id passé en paramètre
+	 *
+	 * @param id L'id de l'objet à récupérer
+	 * @throws ServiceException
+	 * @return L'objet récupéré
+	 */
+	public T get(Serializable id) throws ServiceException {
+		return get(id, false);
+	}
+
+	/**
+	 * Récupère l'objet correspondant à l'id passé en paramètre. Les descendants
+	 * de l'objet sont initialisés si isChildrenInitialized vaut true.
+	 *
+	 * @param id L'id de l'objet à récupérer
+	 * @param initializeChildren indique si les descendants de l'objet doivent être initialiser.
+	 * @throws ServiceException
+	 * @return L'objet récupéré
+	 */
+	@SuppressWarnings("unchecked")
+	public T get(final Serializable id, final boolean initializeChildren) throws ServiceException {
+		T object = (T) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				T object = (T) session.get(getObjectClass(), id);
+				if (object == null) {
+					throw new HibernateException("Object Not Found (id="+id+')');
+				}
+				Hibernate.initialize(object);
+				if (initializeChildren) {
+					initializeChildren(object);
+				}
+				return object;
+			}
+		});
+		return object;
+	}
+
+	/**
+	 * Récupère la liste complète des objets
+	 *
+	 * @throws ServiceException
+	 * @return la liste des objets
+	 */
+	@SuppressWarnings("unchecked")
+	public List<T> list() throws ServiceException {
+		return list(false);
+	}
+
+	/**
+	 * Récupère la liste complète des objets
+	 *
+	 * @param application_id l'id de l'application pour laquelle il faut récupérer les objets
+	 * @throws ServiceException
+	 * @return la liste des objets
+	 */
+	@SuppressWarnings("unchecked")
+	public List<T> list(final boolean isChildrenInitialized) throws ServiceException {
+		List<T> objects = (List<T>) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				Criteria criteria = session.createCriteria(getObjectClass());
+				criteria.setMaxResults(getMaxResults());
+				criteria.setCacheable(getCacheable());
+				List<T> returnedList = (List<T>) criteria.list();
+				if (isChildrenInitialized) {
+					for (T object : returnedList) {
+						initializeChildren(object);
+					}
+				}
+				return returnedList;
+			}
+		});
+		return objects;
+	}
+
+	/**
+	 * Récupère la liste des objets correspondant aux critères de l'objet passé en paramètre
+	 *
+	 * @param object L'objet contenant les critères
+	 * @throws ServiceException
+	 * @return la liste des objets trouvé
+	 */
+	public List<T> search(T object) throws ServiceException {
+		return search(object, false);
+	}
+
+	/**
+	 * Récupère la liste des objets correspondant aux critères de l'objet passé en paramètre
+	 *
+	 * @param object L'objet contenant les critères
+	 * @param initializeSecondLevelObjects Force l'initialisation des objets liés en mode 'lazy' aux objets trouvés
+	 * @throws ServiceException
+	 * @return la liste des objets trouvé
+	 */
+	@SuppressWarnings("unchecked")
+	public List<T> search(final T exampleEntity, final boolean initializeSecondLevelObjects) throws ServiceException {
+        Assert.notNull(exampleEntity, "Example entity must not be null");
+        logger.debug("Search: "+exampleEntity.toString());
+        return (List) getHibernateTemplate().execute(new HibernateCallback() {
+            public Object doInHibernate(Session session) throws HibernateException {
+                Criteria criteria = session.createCriteria(exampleEntity.getClass());
+				Example example = Example.create(exampleEntity);
+				example.setPropertySelector(NOT_NULL_OR_EMPTY);
+				example.ignoreCase();
+				example.enableLike();
+				logger.debug("Search example object: "+example.toString());
+				criteria.add(example);
+				addAssociationCriteria(criteria, exampleEntity);
+				criteria.setMaxResults(getMaxResults());
+				criteria.setCacheable(getCacheable());
+                return (List<T>) criteria.list();
+            }
+        });
+	}
+
+	protected abstract void addAssociationCriteria(Criteria criteria, T object);
+
+	/**
+	 * Si l'objet a des relations cette méthode doit être implémenté
+	 * @param object
+	 */
+	protected void initializeChildren(T object) {
+
+	}
+}
