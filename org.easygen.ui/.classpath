@@ -14,6 +14,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.11.jar"/>
 	<classpathentry kind="lib" path="lib/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/xstream-1.2.1.jar"/>
-	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry kind="var" path="JUNIT4_HOME/junit-4.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
