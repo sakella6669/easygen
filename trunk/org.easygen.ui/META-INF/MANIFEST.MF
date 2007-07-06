@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.easygen.ui;singleton:=true
 Bundle-Vendor: Manuel EVENO (Xebia)
 Bundle-Version: 1.1
 Bundle-Activator: org.easygen.ui.EasyGenActivator
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.core.runtime,

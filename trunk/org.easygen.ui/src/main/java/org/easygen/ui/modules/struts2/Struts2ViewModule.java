@@ -1,6 +1,7 @@
 package org.easygen.ui.modules.struts2;
 
 import org.easygen.core.InitException;
+import org.easygen.core.config.ModuleConfig;
 import org.easygen.core.generators.struts2.Struts2ModuleConfig;
 import org.easygen.ui.modules.Module;
 import org.easygen.ui.modules.struts2.pages.Struts2ConfigPage;
@@ -14,7 +15,7 @@ public class Struts2ViewModule implements Module {
 	/**
 	 * @see org.easygen.ui.modules.Module#getConfigClass()
 	 */
-	public Class getConfigClass() {
+	public Class<? extends ModuleConfig> getConfigClass() {
 		return Struts2ModuleConfig.class;
 	}
 	/**

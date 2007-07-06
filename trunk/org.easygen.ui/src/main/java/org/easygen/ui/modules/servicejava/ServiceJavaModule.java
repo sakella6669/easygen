@@ -1,6 +1,7 @@
 package org.easygen.ui.modules.servicejava;
 
 import org.easygen.core.InitException;
+import org.easygen.core.config.ModuleConfig;
 import org.easygen.core.generators.servicejava.ServiceJavaModuleConfig;
 import org.easygen.ui.modules.Module;
 import org.easygen.ui.modules.servicejava.pages.ServiceJavaConfigPage;
@@ -14,7 +15,7 @@ public class ServiceJavaModule implements Module {
 	/**
 	 * @see org.easygen.ui.modules.Module#getConfigClass()
 	 */
-	public Class getConfigClass() {
+	public Class<? extends ModuleConfig> getConfigClass() {
 		return ServiceJavaModuleConfig.class;
 	}
 

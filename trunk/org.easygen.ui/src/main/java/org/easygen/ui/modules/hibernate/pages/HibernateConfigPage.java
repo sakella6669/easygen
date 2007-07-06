@@ -1,5 +1,6 @@
 package org.easygen.ui.modules.hibernate.pages;
 
+import org.easygen.core.config.ModuleConfig;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.hibernate.HibernateModuleConfig;
 import org.easygen.ui.localization.Localization;
@@ -40,7 +41,7 @@ public class HibernateConfigPage extends BasicModulePage {
 	 * @param nature
 	 * @param configClass
 	 */
-	public HibernateConfigPage(String nature, Class configClass) {
+	public HibernateConfigPage(String nature, Class<? extends ModuleConfig> configClass) {
 		super("hibernateConfigPage", nature, configClass);
 	}
 

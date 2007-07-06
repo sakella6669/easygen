@@ -255,7 +255,7 @@ public class DatabaseManager {
 	protected boolean isPrimaryKey(Map<String, List<String>> keysByTables, String tableName, String columnName) {
 		if (!keysByTables.containsKey(tableName))
 			return false;
-		List pks = keysByTables.get(tableName);
+		List<String> pks = keysByTables.get(tableName);
 		if (pks.contains(columnName))
 			return true;
 		return false;
