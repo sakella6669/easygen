@@ -23,7 +23,7 @@ public class BasicModulePage extends CommonPage
 {
 	private Text packageField;
 	private String nature;
-	private Class configClass;
+	private Class<? extends ModuleConfig> configClass;
 
 	/**
 	 * 
@@ -31,7 +31,7 @@ public class BasicModulePage extends CommonPage
 	 * @param nature
 	 * @param configClass
 	 */
-	public BasicModulePage(String pageName, String nature, Class configClass)
+	public BasicModulePage(String pageName, String nature, Class<? extends ModuleConfig> configClass)
 	{
 		this(pageName, Localization.get("easygen.title.page.basicModulePage"), nature, configClass);
 	}
@@ -42,7 +42,7 @@ public class BasicModulePage extends CommonPage
 	 * @param nature
 	 * @param configClass
 	 */
-	public BasicModulePage(String pageName, String title, String nature, Class configClass)
+	public BasicModulePage(String pageName, String title, String nature, Class<? extends ModuleConfig> configClass)
 	{
 		super(pageName, title);
 		this.nature = nature;
@@ -70,7 +70,7 @@ public class BasicModulePage extends CommonPage
 		
 		String packageName = pProjectConfig.getPackageName();
 		try {
-			ModuleConfig moduleconfig = (ModuleConfig) configClass.newInstance();
+			ModuleConfig moduleconfig = configClass.newInstance();
 			if (moduleconfig instanceof ProjectModuleConfig) {
 				pProjectConfig.setProjectModuleConfig( (ProjectModuleConfig) moduleconfig);
 				packageName += '.'+Localization.get("easygen.default.project.package");

@@ -1,6 +1,7 @@
 package org.easygen.ui.modules.hibernate;
 
 import org.easygen.core.InitException;
+import org.easygen.core.config.ModuleConfig;
 import org.easygen.core.generators.hibernate.HibernateModuleConfig;
 import org.easygen.ui.modules.Module;
 import org.easygen.ui.modules.common.pages.DatabaseConfigurationPage;
@@ -25,7 +26,7 @@ public class HibernateDataModule implements Module {
 	/**
 	 * @see org.easygen.ui.modules.Module#getConfigClass()
 	 */
-	public Class getConfigClass() {
+	public Class<? extends ModuleConfig> getConfigClass() {
 		return HibernateModuleConfig.class;
 	}
 

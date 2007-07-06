@@ -1,6 +1,7 @@
 package org.easygen.ui.modules.springservice;
 
 import org.easygen.core.InitException;
+import org.easygen.core.config.ModuleConfig;
 import org.easygen.core.generators.springservice.SpringServiceModuleConfig;
 import org.easygen.ui.modules.Module;
 import org.easygen.ui.modules.springservice.pages.SpringServiceConfigPage;
@@ -14,7 +15,7 @@ public class SpringServiceModule implements Module {
 	/**
 	 * @see org.easygen.ui.modules.Module#getConfigClass()
 	 */
-	public Class getConfigClass() {
+	public Class<? extends ModuleConfig> getConfigClass() {
 		return SpringServiceModuleConfig.class;
 	}
 
