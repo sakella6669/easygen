@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.easygen.ui.EasyGenActivator;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -40,7 +39,7 @@ import org.eclipse.ui.ide.IDE;
  */
 public class EclipseUtils
 {
-	protected static Log logger = LogFactory.getLog(EclipseUtils.class);
+	protected static Logger logger = Logger.getLogger(EclipseUtils.class);
 
 	private EclipseUtils() {
 	}

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.easygen.ui.modules.hibernate.HibernateDataModule;
 import org.easygen.ui.modules.servicejava.ServiceJavaModule;
 import org.easygen.ui.modules.springservice.SpringServiceModule;
@@ -46,7 +46,7 @@ public class ModuleManagerImpl implements ModuleManager
     	}
     	Map<String, Module> modules = moduleKinds.get(kind);
     	if (modules.containsKey(module.getNature())) {
-    		LogFactory.getLog(getClass()).warn("A module for this nature has already been registered: "
+    		Logger.getLogger(getClass()).warn("A module for this nature has already been registered: "
     			+module.getNature()+" ("+modules.get(module.getNature()).getClass().getName()+")");
     	}
 		modules.put(module.getNature(), module);

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.easygen.core.config.DataField;
 
@@ -38,7 +37,7 @@ public class SQLDataConverter {
 		key = key.replace(' ', '.');
 		String javaType = properties.getProperty(key, "");
 		if (javaType.length() == 0)
-			LogFactory.getLog(SQLDataConverter.class).warn("SQL Type -> Key not found: " + key);
+			logger.warn("SQL Type -> Key not found: " + key);
 		return javaType;
 	}
 

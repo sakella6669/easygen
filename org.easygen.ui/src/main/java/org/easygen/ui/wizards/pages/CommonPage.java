@@ -1,7 +1,6 @@
 package org.easygen.ui.wizards.pages;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.ui.wizards.validator.Validator;
 import org.eclipse.jface.wizard.WizardPage;
@@ -16,7 +15,7 @@ import org.eclipse.swt.widgets.Control;
  */
 public abstract class CommonPage extends WizardPage implements ICommonPage
 {
-	protected Log logger = LogFactory.getLog(getClass());
+	protected Logger logger = Logger.getLogger(getClass());
 	protected Validator validator = null;
 
     /**

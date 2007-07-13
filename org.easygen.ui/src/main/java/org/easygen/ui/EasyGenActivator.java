@@ -2,9 +2,8 @@ package org.easygen.ui;
 
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -24,6 +23,8 @@ public class EasyGenActivator extends AbstractUIPlugin {
 	// The shared instance
 	private static EasyGenActivator plugin;
 
+	private Logger logger = Logger.getLogger(getClass());
+
 	/**
 	 * The constructor
 	 */
@@ -42,7 +43,6 @@ public class EasyGenActivator extends AbstractUIPlugin {
 			DOMConfigurator.configure(log4jConfigFile);
 		else
 			BasicConfigurator.configure();
-		Log logger = LogFactory.getLog(getClass());
 		try {
 			super.start(context);
 			logger.info("Starting EasyGen Plugin");
@@ -58,7 +58,6 @@ public class EasyGenActivator extends AbstractUIPlugin {
 	@Override
 	public void stop(BundleContext context) throws Exception
 	{
-		Log logger = LogFactory.getLog(getClass());
 		try {
 			plugin = null;
 			super.stop(context);
