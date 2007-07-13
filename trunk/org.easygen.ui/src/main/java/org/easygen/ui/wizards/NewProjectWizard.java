@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.easygen.core.InitException;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.config.ProjectConfigSerializer;
@@ -42,7 +41,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 
 	private static final String EASYGEN_XML = "easygen.xml";
 	
-	protected Log logger = LogFactory.getLog(getClass());
+	protected Logger logger = Logger.getLogger(getClass());
 	protected ProjectConfig projectConfig = null;
 
 	protected boolean commonPageDone = false;

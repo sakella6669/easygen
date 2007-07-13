@@ -4,8 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.easygen.core.config.ProjectConfig;
 
 /**
@@ -13,7 +12,8 @@ import org.easygen.core.config.ProjectConfig;
  */
 public class GeneratorManager {
 
-	private Log logger = LogFactory.getLog(getClass());
+	private Logger logger = Logger.getLogger(getClass());
+
 	/**
 	 * Génération des modules
 	 * @param projectConfig

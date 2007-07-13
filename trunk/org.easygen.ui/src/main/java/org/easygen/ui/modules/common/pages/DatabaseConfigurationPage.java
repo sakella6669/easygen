@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.log4j.Logger;
 import org.easygen.core.config.DatabaseConfig;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.db.DatabaseException;
@@ -35,6 +36,8 @@ public class DatabaseConfigurationPage extends CommonPage implements SelectionLi
 	public static final String NAME = "databaseConfigurationPage";
 
 	protected static final String[] JAR_FILTER = { "*.jar", "*.zip" };
+
+	private Logger logger = Logger.getLogger(getClass());
 
 	private Combo databaseType;
 	private Combo databaseDriver;

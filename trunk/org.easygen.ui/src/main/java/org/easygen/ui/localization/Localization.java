@@ -8,12 +8,11 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 public class Localization
 {
-	private static Log logger = LogFactory.getLog(Localization.class);
+	private static Logger logger = Logger.getLogger(Localization.class);
 	private static Map<String, ResourceBundle> bundles = new Hashtable<String, ResourceBundle>();
 
 	static

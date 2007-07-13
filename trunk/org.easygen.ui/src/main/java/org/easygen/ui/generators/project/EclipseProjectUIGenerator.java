@@ -4,8 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.AbstractGenerator;
 import org.easygen.core.generators.GenerationException;
@@ -26,7 +25,7 @@ import org.eclipse.jdt.core.JavaModelException;
 public class EclipseProjectUIGenerator extends AbstractGenerator {
 
 	private static final String MODULE_NAME = "eclipse.uiproject";
-	protected Log logger = LogFactory.getLog(getClass());
+	protected Logger logger = Logger.getLogger(getClass());
 
 	@Override
 	protected String getModuleName() {

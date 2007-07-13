@@ -5,8 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.easygen.ui.localization.Localization;
 import org.easygen.ui.util.SWTUtils;
 import org.easygen.ui.wizards.pages.ICommonPage;
@@ -29,7 +28,7 @@ public class Validator {
 	public static final short PATH = 4;
 	public static final short PACKAGE = 5;
 
-	private Log logger = LogFactory.getLog(getClass());
+	private Logger logger = Logger.getLogger(getClass());
 	private ICommonPage wizardPage;
 	private ModifyListener listener;
 	private List<ValidateField> fields = new LinkedList<ValidateField>();

@@ -25,8 +25,6 @@ import java.util.Map;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.WordUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.easygen.core.InitException;
 import org.easygen.core.config.DataField;
@@ -43,7 +41,7 @@ public class DatabaseManager {
 
 	private static final Map<String, PropertiesConfiguration> databaseProperties = new Hashtable<String, PropertiesConfiguration>();
 
-	protected static Log logger = LogFactory.getLog(DatabaseManager.class);
+	protected static Logger logger = Logger.getLogger(DatabaseManager.class);
 
 	public static String[] getDriverList(String databaseType) {
 		String driverNames = getDatabaseProperty(databaseType, "driverNames");

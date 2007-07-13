@@ -3,8 +3,7 @@ package org.easygen.ui.widgets;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -48,7 +47,7 @@ public abstract class CheckboxCellModifier extends LabelProvider implements ITab
 		);
 	}
 
-	protected Log logger = LogFactory.getLog(getClass());
+	protected Logger logger = Logger.getLogger(getClass());
 	protected List<String> columnNames;
 	protected TableViewer tableViewer;
 
