@@ -154,11 +154,17 @@ public class ProjectConfig
 	public String getLibPath() {
 		return getPath() + libDirname + File.separatorChar;
 	}
+	
 	public String[] getLibraries() {
-		return libraries;
+		String[] clonedlibrairies = new String[libraries.length];
+		System.arraycopy(libraries, 0, clonedlibrairies, 0, libraries.length);
+		return clonedlibrairies;
 	}
-	public void setLibraries(String[] libraries) {
-		this.libraries = libraries;
+	
+	public void setLibraries(String[] newLibraries) {
+		String[] clonedlibrairies = new String[newLibraries.length];
+		System.arraycopy(newLibraries, 0, clonedlibrairies, 0, newLibraries.length);
+		this.libraries = clonedlibrairies;
 	}
 	/**
      * @return the classes path

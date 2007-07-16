@@ -23,14 +23,13 @@ public abstract class CheckboxCellModifier extends LabelProvider implements ITab
 	protected static final String CHECKED_IMAGE = "checked";
 	protected static final String UNCHECKED_IMAGE = "unchecked";
 	protected static final String ICON_PATH = "icons/";
-	protected static ImageRegistry imageRegistry = null;
+	protected static final ImageRegistry imageRegistry = new ImageRegistry();
 	/**
 	 * Note: An image registry owns all of the image objects registered with it, and automatically disposes of them
 	 * the SWT Display is disposed.
 	 */
 	static
 	{
-		imageRegistry = new ImageRegistry();
 		imageRegistry.put(
 			CHECKED_IMAGE,
 			ImageDescriptor.createFromFile(

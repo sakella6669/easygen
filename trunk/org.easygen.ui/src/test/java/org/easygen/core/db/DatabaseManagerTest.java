@@ -19,7 +19,7 @@ public class DatabaseManagerTest extends TestCase {
 //			"help_topic", "host", "proc", "procs_priv", "tables_priv", "time_zone", "time_zone_leap_second",
 //			"time_zone_name", "time_zone_transition", "time_zone_transition_type", "user" };
 
-	protected static final String[] expectedTableNames = { "categorie", "competence", "eleve", "livret", "livret_contenu", "matiere", "note" };
+	private static final String[] expectedTableNames = { "categorie", "competence", "eleve", "livret", "livret_contenu", "matiere", "note" };
 
 	@Override
 	protected void setUp() throws Exception {

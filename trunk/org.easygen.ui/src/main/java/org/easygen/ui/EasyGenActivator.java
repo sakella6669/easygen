@@ -12,7 +12,8 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class EasyGenActivator extends AbstractUIPlugin {
+public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
+	
 //	Pour que le plug-in soit chargé au lancement d'Eclipse,
 //  on ajoute une extension org.eclipse.ui.startup.
 //	Il faut pointer sur une classe qui implémente l'interface IStartup.
@@ -49,6 +50,12 @@ public class EasyGenActivator extends AbstractUIPlugin {
 		} catch (Throwable e) {
 			logger.error("Can't start plugin", e);
 			e.printStackTrace();
+		}
+		try {
+			Class.forName("org.easygen.ui.wizards.NewProjectWizard");
+			logger.info("Classe org.easygen.ui.wizards.NewProjectWizard chargée avec succès");
+		} catch (Exception e) {
+			logger.error("Impossible de charger la classe : org.easygen.ui.wizards.NewProjectWizard", e);
 		}
 	}
 

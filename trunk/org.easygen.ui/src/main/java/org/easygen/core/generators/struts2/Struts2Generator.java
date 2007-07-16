@@ -98,9 +98,9 @@ public class Struts2Generator extends AbstractGenerator {
         String webPath = projectConfig.getWebContentPath();
         copyFile("WEB-INF/tiles.xml", webPath + "WEB-INF/tiles.xml");
         copyFile("WEB-INF/web.xml", webPath + "WEB-INF/web.xml");
-        copyFile("www/common/layout.jsp", webPath + "common/layout.jsp");
+        copyFile("www/common/layout.jsp.vm", webPath + "common/layout.jsp");
         copyFile("www/common/styles.css", webPath + "common/styles.css");
-        copyFile("www/index.jsp", webPath + "index.jsp");
+        copyFile("www/index.jsp.vm", webPath + "index.jsp");
 	}
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#postProcess(org.easygen.core.config.ProjectConfig)
