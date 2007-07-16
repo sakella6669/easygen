@@ -37,9 +37,8 @@ import org.eclipse.ui.ide.IDE;
  * Created on 9 mars 07
  *
  */
-public class EclipseUtils
-{
-	protected static Logger logger = Logger.getLogger(EclipseUtils.class);
+public class EclipseUtils {
+	protected final static Logger logger = Logger.getLogger(EclipseUtils.class);
 
 	private EclipseUtils() {
 	}
@@ -251,7 +250,7 @@ public class EclipseUtils
 	}
 
 	public static void throwCoreException(String message) throws CoreException {
-		throwCoreException(message);
+		throwCoreException(message, null);
 	}
 
 	public static void throwCoreException(String message, Throwable cause) throws CoreException {

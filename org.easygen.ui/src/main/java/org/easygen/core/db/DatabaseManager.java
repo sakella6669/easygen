@@ -41,7 +41,7 @@ public class DatabaseManager {
 
 	private static final Map<String, PropertiesConfiguration> databaseProperties = new Hashtable<String, PropertiesConfiguration>();
 
-	protected static Logger logger = Logger.getLogger(DatabaseManager.class);
+	protected final static Logger logger = Logger.getLogger(DatabaseManager.class);
 
 	public static String[] getDriverList(String databaseType) {
 		String driverNames = getDatabaseProperty(databaseType, "driverNames");

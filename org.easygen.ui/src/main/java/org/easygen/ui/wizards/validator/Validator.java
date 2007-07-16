@@ -95,7 +95,7 @@ public class Validator {
 			result = validateAlphaNumeric(SWTUtils.getText(pField.getControl()));
 			break;
 		case NUMERIC:
-			result = validateNumeric(SWTUtils.getText(pField.getControl()).toString());
+			result = validateNumeric(SWTUtils.getText(pField.getControl()));
 			break;
 		case PATH:
 			result = validatePath(SWTUtils.getText(pField.getControl()));

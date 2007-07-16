@@ -35,7 +35,7 @@ public class DatabaseConfigurationPage extends CommonPage implements SelectionLi
 {
 	public static final String NAME = "databaseConfigurationPage";
 
-	protected static final String[] JAR_FILTER = { "*.jar", "*.zip" };
+	private static final String[] JAR_FILTER = { "*.jar", "*.zip" };
 
 	private Logger logger = Logger.getLogger(getClass());
 
@@ -184,7 +184,7 @@ public class DatabaseConfigurationPage extends CommonPage implements SelectionLi
 		if (jarUrl != null) {
 			chosenLibraryField.setText(jarUrl.toString());
 		} else {
-			logger.warn("Driver Jar file not found: "+jarUrl.getPath());
+			logger.warn("Driver Jar file not found for database "+pDatabaseType);
 		}
 		databaseUrl.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "host.default"));
 		databasePort.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "port.default"));
