@@ -79,7 +79,7 @@ public abstract class GenericService<T> extends HibernateDaoSupport implements S
 	 * Renvoie l'objet Class relatif à l'objet édité par ce service.
 	 * @return La classe de l'objet traitée par ce service
 	 */
-	protected abstract Class getObjectClass();
+	protected abstract Class<T> getObjectClass();
 
 	/**
 	 * Renvoi le nombre d'enregistrement maximum ramené par une recherche

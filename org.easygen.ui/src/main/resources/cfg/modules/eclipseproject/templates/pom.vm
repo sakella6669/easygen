@@ -1,0 +1,204 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>${project.packageName}</groupId>
+	<artifactId>${project.name.toLowerCase()}</artifactId>
+	<packaging>war</packaging>
+	<version>1.0</version>
+	<name>${project.name} Webapp</name>
+
+	<properties>
+#if ($isStruts2ViewModule)
+		<struts2.version>[2.0.9,)</struts2.version>
+		<tiles2.version>[2.0.4,)</tiles2.version>
+#end
+#if ($isSpringServiceModule)
+		<spring.version>[2.0.7,)</spring.version>
+#end
+#if ($isHibernateDataModule)
+		<hibernate.version>3.2.5.ga</hibernate.version>
+#end
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>[3.1,)</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>[2.1,)</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>[1.7.0,)</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>[1.2.13,)</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-servlet_2.4_spec</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jsp_2.1_spec</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+#if ($isStruts2ViewModule)
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-core</artifactId>
+			<version>${struts2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-spring-plugin</artifactId>
+			<version>${struts2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-tiles-plugin</artifactId>
+			<version>${struts2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-jsp</artifactId>
+			<version>${tiles2.version}</version>
+		</dependency>
+#end
+
+#if ($isSpringServiceModule)
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+#end
+
+#if ($isHibernateDataModule)
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+#if ($project.dataModuleConfig.useAnnotations)
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-annotations</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+#end
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>[1.3.0,)</version>
+			<exclusions>
+				<exclusion>
+					<groupId>backport-util-concurrent</groupId>
+					<artifactId>backport-util-concurrent</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+#end
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector</artifactId>
+			<version>5.0.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>[4,)</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<wtpversion>1.5</wtpversion>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-source</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<archiveClasses>true</archiveClasses>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>codehaus-plugins</id>
+			<url>http://dist.codehaus.org/</url>
+			<layout>legacy</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<!--repositories>
+		<repository>
+			<id>ibiblio-repository</id>
+			<name>Original Repository</name>
+			<url>http://ibiblio.org/maven2</url>
+		</repository>
+		<repository>
+			<id>codehaus-repository</id>
+			<name>Codehaus Repository</name>
+			<url>http://repository.codehaus.org</url>
+		</repository>
+	</repositories-->
+
+</project>

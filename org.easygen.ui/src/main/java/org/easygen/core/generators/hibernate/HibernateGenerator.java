@@ -115,9 +115,9 @@ public class HibernateGenerator extends AbstractGenerator {
 
 		context.put(JDBC_CONFIG, convert(projectConfig.getDatabaseConfig()));
 		context.put(CLASS_LIST, hbmList);
-		generateFile(getTemplate("hibernate.cfg.vm"), projectConfig.getSrcPath() + HIBERNATE_CFG_FILE);
+		generateFile(getTemplate("hibernate.cfg.vm"), projectConfig.getCfgPath() + HIBERNATE_CFG_FILE);
 		context.put(CLASS_LIST, cachedClassList);
-		generateFile(getTemplate("ehcache.vm"), projectConfig.getSrcPath() + EHCACHE_CFG_FILE);
+		generateFile(getTemplate("ehcache.vm"), projectConfig.getCfgPath() + EHCACHE_CFG_FILE);
 	}
 
 	/**

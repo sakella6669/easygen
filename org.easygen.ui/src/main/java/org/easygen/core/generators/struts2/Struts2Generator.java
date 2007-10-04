@@ -8,6 +8,7 @@ import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.config.ViewModuleConfig;
 import org.easygen.core.generators.AbstractGenerator;
 import org.easygen.core.generators.GenerationException;
+import org.easygen.core.generators.springservice.SpringServiceModuleConfig;
 
 /**
  * 
@@ -38,7 +39,7 @@ public class Struts2Generator extends AbstractGenerator {
 		createPath(projectConfig.getWebContentPath(), "common");
 
 		// Variable qui précise si la couche service utilise Spring ou non
-		boolean isSpringServiceModule = projectConfig.getServiceModuleNature().equals("spring");
+		boolean isSpringServiceModule = projectConfig.getServiceModuleNature().equals(SpringServiceModuleConfig.NATURE);
 		context.put(IS_SPRING_SERVICE_MODULE, isSpringServiceModule);
 		
 		copyStaticFiles(projectConfig);
@@ -75,11 +76,11 @@ public class Struts2Generator extends AbstractGenerator {
 		}
 		
 		context.put(CLASS_LIST, classList);
-		generateFile(getTemplate("src/applicationContext-view.xml.vm"), srcPath + "applicationContext-view.xml");
+		generateFile(getTemplate("src/applicationContext-view.xml.vm"), projectConfig.getCfgPath() + "applicationContext-view.xml");
 		context.remove(CLASS_LIST);
 
 		context.put(CLASS_LIST, classList);
-		generateFile(getTemplate("src/struts.xml.vm"), srcPath + "struts.xml");
+		generateFile(getTemplate("src/struts.xml.vm"), projectConfig.getCfgPath() + "struts.xml");
 		generateFile(getTemplate("www/common/menu.jsp.vm"), projectConfig.getWebContentPath() + "common/menu.jsp");
 		context.remove(CLASS_LIST);
 	}

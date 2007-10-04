@@ -6,6 +6,9 @@ import org.easygen.core.InitException;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.AbstractGenerator;
 import org.easygen.core.generators.GenerationException;
+import org.easygen.core.generators.hibernate.HibernateModuleConfig;
+import org.easygen.core.generators.springservice.SpringServiceModuleConfig;
+import org.easygen.core.generators.struts2.Struts2ModuleConfig;
 
 
 /**
@@ -71,9 +74,15 @@ public class EclipseProjectGenerator extends AbstractGenerator
     	createPath(projectConfig.getPath());
     	createPath(projectConfig.getSrcPath());
 
+    	context.put("isStruts2ViewModule", projectConfig.getViewModuleNature().equals(Struts2ModuleConfig.NATURE));
+    	context.put("isSpringServiceModule", projectConfig.getServiceModuleNature().equals(SpringServiceModuleConfig.NATURE));
+    	context.put("isHibernateDataModule", projectConfig.getDataModuleNature().equals(HibernateModuleConfig.NATURE));
+
     	// Génération du fichier .project
-        String filename = ".project";
-        generateFile(getTemplate("project.vm"), projectConfig.getPath() + filename);
+        generateFile(getTemplate("project.vm"), projectConfig.getPath() + ".project");
+
+    	// Génération du fichier pom.xml pour Maven
+        generateFile(getTemplate("pom.vm"), projectConfig.getPath() + "pom.xml");
 
         if (projectConfig.getProjectNature().equals(EclipseProjectConfig.WTP_NATURE))
         {
@@ -81,7 +90,7 @@ public class EclipseProjectGenerator extends AbstractGenerator
         	String settingsDir = projectConfig.getPath() + SETTINGS_DIR + File.separatorChar;
 
         	// Génération du fichier org.eclipse.wst.common.component
-            filename = "org.eclipse.wst.common.component";
+            String filename = "org.eclipse.wst.common.component";
             generateFile(getTemplate(filename+".vm"), settingsDir + filename);
 
             // Génération du fichier org.eclipse.wst.common.project.facet.core.xml

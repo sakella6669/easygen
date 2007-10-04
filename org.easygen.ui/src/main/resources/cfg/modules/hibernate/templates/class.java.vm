@@ -8,6 +8,7 @@
 
 package ${project.dataModuleConfig.packageName};
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
@@ -35,7 +36,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Entity
 @Table(name = "${object.tableName}")
 #end
-public class $object.className {
+public class $object.className implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 #foreach ($field in $object.fields)
 	#if ($field.foreignKey)
 		#if ($field.foreignList == false)
@@ -56,7 +60,7 @@ public class $object.className {
 	 * @returns the $field.propertyShortType List
 	 */
 	#if ($useAnnotations == true)
-	@OneToMany(targetEntity=${field.propertyShortType}.class, cascade=CascadeType.REMOVE, fetch=FetchType.LAZY)
+	@OneToMany(cascade=CascadeType.REMOVE, fetch=FetchType.LAZY)
     @JoinColumn(name="${field.columnName}")
     #end
 	public Set<$field.propertyShortType> get${methodName}() {
@@ -89,7 +93,7 @@ public class $object.className {
 	)
 		#end
 	#elseif ($field.foreignKey == true)
-	@ManyToOne( cascade = {CascadeType.REFRESH}, targetEntity=${field.propertyShortType}.class )
+	@ManyToOne( cascade = {CascadeType.REFRESH} )
     @JoinColumn(name="${field.columnName}")
 	#else
 	@Column(name = "${field.columnName}")

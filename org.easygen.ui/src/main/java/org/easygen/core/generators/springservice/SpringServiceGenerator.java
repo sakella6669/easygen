@@ -51,7 +51,8 @@ public class SpringServiceGenerator extends AbstractGenerator {
 		createPackagePath(srcPath, serviceModuleConfig.getPackageName());
 		createPackagePath(projectConfig.getTestPath(), serviceModuleConfig.getPackageName());
 
-		delete(srcPath + "hibernate.cfg.xml");
+		String cfgPath = projectConfig.getCfgPath();
+		delete(cfgPath + "hibernate.cfg.xml");
 		// Génération des services Java
 		List<String> classList = new LinkedList<String>();
 		for (DataObject object : projectConfig.getObjects()) {
@@ -74,9 +75,9 @@ public class SpringServiceGenerator extends AbstractGenerator {
 
 		// Génération de la classe ServiceLocator
 		context.put(CLASS_LIST, classList);
-		generateFile(getTemplate("applicationContext-service.xml.vm"), srcPath + "applicationContext-service.xml");
+		generateFile(getTemplate("applicationContext-service.xml.vm"), cfgPath + "applicationContext-service.xml");
 		String javaFilename = createJavaFilename(serviceModuleConfig, "ServiceLocator");
-		generateFile(getTemplate("ServiceLocator.java.vm"), projectConfig.getSrcPath() + javaFilename);
+		generateFile(getTemplate("ServiceLocator.java.vm"), srcPath + javaFilename);
 		context.remove(CLASS_LIST);
 
 		String filename = createJavaFilename(serviceModuleConfig, "Service");
