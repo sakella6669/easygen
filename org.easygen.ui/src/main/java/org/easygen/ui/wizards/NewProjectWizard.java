@@ -10,6 +10,7 @@ import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.config.ProjectConfigSerializer;
 import org.easygen.core.generators.GenerationException;
 import org.easygen.core.generators.GeneratorManager;
+import org.easygen.core.generators.common.MavenHandler;
 import org.easygen.ui.localization.Localization;
 import org.easygen.ui.modules.Module;
 import org.easygen.ui.modules.ModuleManager;
@@ -301,7 +302,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 	 * the editor on the newly created file.
 	 */
 	protected void doFinish(IProgressMonitor progressMonitor) throws CoreException {
-		int numTask = 2;
+		int numTask = 4;
 		int totalWork = 1;
 		progressMonitor.beginTask("Génération des modules", numTask);
 		GeneratorManager generatorManager = new GeneratorManager();
@@ -319,6 +320,10 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 			MessageDialog.openError(getShell(), "Generation Error", "Impossible d'écrire la configuration EasyGen: "+e.toString());
 			logger.warn("Impossible d'écrire la configuration EasyGen", e);
 		}
+		progressMonitor.worked(totalWork++);
+		MavenHandler mavenHandler = new MavenHandler();
+		mavenHandler.callMaven(projectConfig.getPath(), "eclipse:eclipse");
+		progressMonitor.worked(totalWork++);
 		EclipseUtils.refreshLocal(projectConfig.getName(), progressMonitor);
 		progressMonitor.worked(totalWork++);
 	}
