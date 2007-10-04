@@ -54,7 +54,7 @@ public class BasicModulePage extends CommonPage
     @Override
 	public void initControl(Composite mainComposite)
     {
-		Group group = WidgetUtils.createGroup(mainComposite, Localization.get("easygen.label.page.basicModulePage.layer.group"), 2);
+		Group group = WidgetUtils.createGroup(mainComposite, Localization.get("easygen.title.page.basicModulePage.layer.group"), 2);
 
 		WidgetUtils.createLabel(group, Localization.get("easygen.label.page.basicModulePage.layer.type"));
 		WidgetUtils.createLabel(group, nature);

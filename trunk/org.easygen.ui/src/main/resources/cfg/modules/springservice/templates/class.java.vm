@@ -21,7 +21,7 @@ public class ${object.className}Service extends GenericService<${object.classNam
 	 * @see org.xebia.service.spring.GenericService#getObjectClass()
 	 */
 	@Override
-	protected Class getObjectClass() {
+	protected Class<${object.className}> getObjectClass() {
 		return ${object.className}.class;
 	}
 

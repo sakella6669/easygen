@@ -33,8 +33,8 @@ public class CommonGenerator extends AbstractGenerator
 	 */
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
-		createPath(projectConfig.getSrcPath());
-		generateFile(getTemplate("log4j.xml.vm"), projectConfig.getSrcPath()+"log4j.xml");
+		createPath(projectConfig.getCfgPath());
+		generateFile(getTemplate("log4j.xml.vm"), projectConfig.getCfgPath()+"log4j.xml");
 	}
 	/**
      * @see org.easygen.core.generators.AbstractGenerator#postProcess(ProjectConfig)

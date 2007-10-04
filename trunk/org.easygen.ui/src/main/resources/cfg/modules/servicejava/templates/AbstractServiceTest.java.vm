@@ -67,6 +67,7 @@ public abstract class AbstractServiceTest<T> extends TestCase {
 		initialized = true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private int findTestCount() {
 		int count = 0;
 		Class superClass = this.getClass();
