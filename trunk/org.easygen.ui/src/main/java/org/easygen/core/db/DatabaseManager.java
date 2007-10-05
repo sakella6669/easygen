@@ -140,9 +140,9 @@ public class DatabaseManager {
 		try {
 			URL[] urls = { new URL(pDatabaseConfig.getJarPath()) };
 			URLClassLoader urlLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
-			urlLoader.loadClass(pDatabaseConfig.getDataBaseDriver());
+			urlLoader.loadClass(pDatabaseConfig.getDatabaseDriver());
 
-			Object o = Class.forName(pDatabaseConfig.getDataBaseDriver(), true, urlLoader).newInstance();
+			Object o = Class.forName(pDatabaseConfig.getDatabaseDriver(), true, urlLoader).newInstance();
 			DriverManager.registerDriver(new FakeDriver((Driver) o));
 		} catch (MalformedURLException e) {
 			throw new InitException("Fichier jar introuvable: " + pDatabaseConfig.getJarPath(), e);

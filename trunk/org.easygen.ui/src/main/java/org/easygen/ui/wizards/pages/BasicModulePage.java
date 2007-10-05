@@ -73,19 +73,19 @@ public class BasicModulePage extends CommonPage
 			ModuleConfig moduleconfig = configClass.newInstance();
 			if (moduleconfig instanceof ProjectModuleConfig) {
 				pProjectConfig.setProjectModuleConfig( (ProjectModuleConfig) moduleconfig);
-				packageName += '.'+Localization.get("easygen.default.project.package");
+				packageName += '.'+Localization.get("defaults.project.package");
 			} else if (moduleconfig instanceof CommonConfig) {
 				pProjectConfig.setCommonConfig( (CommonConfig) moduleconfig);
-				packageName += '.'+Localization.get("easygen.default.package.common");
+				packageName += '.'+Localization.get("defaults.package.common");
 			} else if (moduleconfig instanceof DataModuleConfig) {
 				pProjectConfig.setDataModuleConfig( (DataModuleConfig) moduleconfig);
-				packageName += '.'+Localization.get("easygen.default.package.data");
+				packageName += '.'+Localization.get("defaults.package.data");
 			} else if (moduleconfig instanceof ServiceModuleConfig) {
 				pProjectConfig.setServiceModuleConfig( (ServiceModuleConfig) moduleconfig);
-				packageName += '.'+Localization.get("easygen.default.package.service");
+				packageName += '.'+Localization.get("defaults.package.service");
 			} else if (moduleconfig instanceof ViewModuleConfig) {
 				pProjectConfig.setViewModuleConfig( (ViewModuleConfig) moduleconfig);
-				packageName += '.'+Localization.get("easygen.default.package.view");
+				packageName += '.'+Localization.get("defaults.package.view");
 			}
 		} catch (Exception e) {
 			logger.error("Page initialization failed", e);

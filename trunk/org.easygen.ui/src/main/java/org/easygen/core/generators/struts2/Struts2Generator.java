@@ -98,6 +98,7 @@ public class Struts2Generator extends AbstractGenerator {
 
         String webPath = projectConfig.getWebContentPath();
         copyFile("WEB-INF/tiles.xml", webPath + "WEB-INF/tiles.xml");
+        copyFile("WEB-INF/tiles-config_2_0.dtd", webPath + "WEB-INF/tiles-config_2_0.dtd");
         copyFile("WEB-INF/web.xml", webPath + "WEB-INF/web.xml");
         copyFile("www/common/layout.jsp.vm", webPath + "common/layout.jsp");
         copyFile("www/common/styles.css", webPath + "common/styles.css");

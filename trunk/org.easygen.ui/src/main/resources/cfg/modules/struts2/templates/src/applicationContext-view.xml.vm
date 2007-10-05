@@ -4,7 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:aop="http://www.springframework.org/schema/aop"
     xmlns:tx="http://www.springframework.org/schema/tx"
-    default-autowire="autodetect"
+    default-autowire="no"
     xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
@@ -15,13 +15,7 @@
 #set ($lowerClassName = "${objectClassName.toLowerCase().charAt(0)}${objectClassName.substring(1)}" )
 	<bean id="${lowerClassName}Action" class="${fullClassName}" scope="prototype">
 	#if ($isSpringServiceModule)
-		<property name="serviceLocator"><ref bean="serviceLocator" />
-##		<property name="${lowerClassName}Service"><ref bean="${lowerClassName}Service" />
-##		#foreach ($aField in $object.fields)
-##			#if ($aField.foreignKey == true && $aField.foreignList == false && $aField.nullable == false)
-##		<property name="${aField.propertyName}Service"><ref bean="${aField.propertyName}Service" />
-##			#end
-##		#end
+		<property name="serviceLocator"><ref bean="serviceLocator" /></property>
 	#end
 	</bean>
 

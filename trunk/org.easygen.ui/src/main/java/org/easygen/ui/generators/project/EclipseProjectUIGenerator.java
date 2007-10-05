@@ -29,12 +29,6 @@ public class EclipseProjectUIGenerator extends AbstractGenerator {
 	protected String getModuleName() {
 		return MODULE_NAME;
 	}
-//	/**
-//	 * @see org.easygen.core.generators.AbstractGenerator#initTemplates(org.easygen.core.config.ProjectConfig)
-//	 */
-//	@Override
-//	public void initTemplates(ProjectConfig projectConfig) {
-//	}
 	/**
 	 * @see org.easygen.core.generators.Generator#generate(org.easygen.core.config.ProjectConfig)
 	 */
@@ -114,6 +108,9 @@ public class EclipseProjectUIGenerator extends AbstractGenerator {
 		Collection<IClasspathEntry> classpathEntries = new LinkedList<IClasspathEntry>();
 		classpathEntries.add(
 			EclipseUtils.newSourceFolder(projectConfig.getName(), projectConfig.getSrcDirname())
+		);
+		classpathEntries.add(
+			EclipseUtils.newSourceFolder(projectConfig.getName(), projectConfig.getCfgDirname())
 		);
 		classpathEntries.add(
 			EclipseUtils.newSourceFolder(projectConfig.getName(), projectConfig.getTestDirname())

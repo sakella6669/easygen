@@ -47,6 +47,7 @@ public class ${object.className}Action extends GenericAction implements ModelDri
 	/**
 	 * @see com.opensymphony.xwork2.Preparable#prepare()
 	 */
+	@Override
 	public void prepare() throws Exception {
 		super.prepare();
 		logger.debug("Preparing "+getClass().getName());
