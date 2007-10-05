@@ -5,14 +5,25 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class MavenHandler {
-
-	private static final String MVN_CMD = "mvn";
-
+	
 	private static final Logger logger = Logger.getLogger(MavenHandler.class);
+
+	private static final String MVN_WIN_CMD = "mvn.bat";
+	private static final String MVN_UNIX_CMD = "mvn.bat";
+
+	private static String MVN_CMD = MVN_UNIX_CMD;
+	
+	static {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Running on "+System.getProperty("os.name"));
+		}
+		if (System.getProperty("os.name").indexOf("indows") != -1) {
+			MVN_CMD = MVN_WIN_CMD;
+		}
+	}
 
 	private boolean mavenFound = false;
 
@@ -37,7 +48,7 @@ public class MavenHandler {
 			if (logger.isDebugEnabled()) {
 				InputStream inputStream = process.getInputStream();
 				String processOutput = IOUtils.toString(inputStream);
-				logger.debug(MVN_CMD+" " + goal + "\n" + processOutput);
+				logger.debug("Executing command: "+MVN_CMD+" " + goal + "\n" + processOutput);
 			}
 			if (process.waitFor() != 0) {
 				logger.warn("Can't execute maven goal " + goal + ", maybe "+MVN_CMD+" command is not in the PATH var");
