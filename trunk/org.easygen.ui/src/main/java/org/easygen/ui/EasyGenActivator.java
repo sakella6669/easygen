@@ -1,10 +1,9 @@
 package org.easygen.ui;
 
-import java.net.URL;
-
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.eclipse.core.runtime.ILogListener;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -13,7 +12,7 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
-	
+
 //	Pour que le plug-in soit chargé au lancement d'Eclipse,
 //  on ajoute une extension org.eclipse.ui.startup.
 //	Il faut pointer sur une classe qui implémente l'interface IStartup.
@@ -24,13 +23,31 @@ public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
 	// The shared instance
 	private static EasyGenActivator plugin;
 
-	private Logger logger = Logger.getLogger(getClass());
+	private static final Logger logger = Logger.getLogger(EasyGenActivator.class);
 
 	/**
 	 * The constructor
 	 */
 	public EasyGenActivator() {
-		plugin = this;
+		try {
+			plugin = this;
+			getLog().addLogListener(new ILogListener() {
+				public void logging(IStatus status, String plugin) {
+					if (status.getSeverity() == IStatus.ERROR) {
+						logger.error(status.getMessage(), status.getException());
+					} else if (status.getSeverity() == IStatus.WARNING) {
+						logger.warn(status.getMessage(), status.getException());
+					} else if (status.getSeverity() == IStatus.INFO) {
+						logger.info(status.getMessage(), status.getException());
+					} else {
+						logger.debug(status.getMessage(), status.getException());
+					}
+					logger.debug(status);
+				}
+			});
+		} catch (RuntimeException e) {
+			logger.error("Création du PluginActivator en erreur", e);
+		}
 	}
 
 	/**
@@ -39,23 +56,24 @@ public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
 	@Override
 	public void start(BundleContext context) throws Exception
 	{
-		URL log4jConfigFile = Thread.currentThread().getContextClassLoader().getResource("log4j.xml");
-		if (log4jConfigFile != null)
-			DOMConfigurator.configure(log4jConfigFile);
-		else
-			BasicConfigurator.configure();
+//		URL log4jConfigFile = Thread.currentThread().getContextClassLoader().getResource("log4j.xml");
+//		if (log4jConfigFile != null) {
+//			DOMConfigurator.configure(log4jConfigFile);
+//		} else {
+//			BasicConfigurator.configure();
+//		}
+//		logger = Logger.getLogger(getClass());
 		try {
 			super.start(context);
-			logger.info("Starting EasyGen Plugin");
+			logInfo("Starting EasyGen Plugin");
 		} catch (Throwable e) {
-			logger.error("Can't start plugin", e);
-			e.printStackTrace();
+			logError("Can't start plugin", e);
 		}
 		try {
 			Class.forName("org.easygen.ui.wizards.NewProjectWizard");
-			logger.info("Classe org.easygen.ui.wizards.NewProjectWizard chargée avec succès");
+			logInfo("Classe org.easygen.ui.wizards.NewProjectWizard chargée avec succès");
 		} catch (Exception e) {
-			logger.error("Impossible de charger la classe : org.easygen.ui.wizards.NewProjectWizard", e);
+			logError("Impossible de charger la classe : org.easygen.ui.wizards.NewProjectWizard", e);
 		}
 	}
 
@@ -68,10 +86,9 @@ public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
 		try {
 			plugin = null;
 			super.stop(context);
-			logger.info("Stopping EasyGen Plugin");
+			logInfo("Stopping EasyGen Plugin");
 		} catch (Throwable e) {
-			logger.error("Can't stop plugin", e);
-			e.printStackTrace();
+			logError("Can't stop plugin", e);
 		}
 	}
 
@@ -93,5 +110,23 @@ public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+
+	private void logInfo(String message) {
+		logger.info(message);
+		Status status = new Status(Status.INFO, PLUGIN_ID, message);
+		getLog().log(status);
+	}
+
+//	private void logWarn(String message, Throwable t) {
+//		logger.warn(message);
+//	Status status = new Status(Status.WARNING, PLUGIN_ID, message, t);
+//	getLog().log(status);
+//	}
+
+	private void logError(String message, Throwable t) {
+		logger.error(message);
+		Status status = new Status(Status.ERROR, PLUGIN_ID, message, t);
+		getLog().log(status);
 	}
 }

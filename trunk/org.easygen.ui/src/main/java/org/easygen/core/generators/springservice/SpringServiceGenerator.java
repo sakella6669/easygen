@@ -75,6 +75,7 @@ public class SpringServiceGenerator extends AbstractGenerator {
 
 		// Génération de la classe ServiceLocator
 		context.put(CLASS_LIST, classList);
+		// TODO Générer correctement la datasource et le dialect Hibernate 
 		generateFile(getTemplate("applicationContext-service.xml.vm"), cfgPath + "applicationContext-service.xml");
 		String javaFilename = createJavaFilename(serviceModuleConfig, "ServiceLocator");
 		generateFile(getTemplate("ServiceLocator.java.vm"), srcPath + javaFilename);

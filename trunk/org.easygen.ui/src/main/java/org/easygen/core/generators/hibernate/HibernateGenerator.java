@@ -11,7 +11,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.easygen.core.InitException;
 import org.easygen.core.config.DataField;
 import org.easygen.core.config.DataObject;
-import org.easygen.core.config.DatabaseConfig;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.db.DatabaseManager;
 import org.easygen.core.generators.AbstractGenerator;
@@ -30,8 +29,8 @@ public class HibernateGenerator extends AbstractGenerator {
 
 	private static final String MAPPING_FILE_EXTENSION = ".hbm.xml";
 
-	private static final String JDBC_CONFIG = "jdbc";
 	private static final String USE_ANNOTATIONS = "useAnnotations";
+	private static final String HIBERNATE_DIALECT = "hibernateDialect";
 
 	/**
 	 * @throws InitException
@@ -49,28 +48,6 @@ public class HibernateGenerator extends AbstractGenerator {
 		return MODULE_NAME;
 	}
 
-//	/**
-//	 * @see org.easygen.core.generators.AbstractGenerator#init(org.easygen.core.config.ProjectConfig)
-//	 */
-//	@Override
-//	public void init(ProjectConfig projectConfig) {
-//		super.init(projectConfig);
-//		addConfiguration(getModuleDir() + "hibernate.properties");
-//	}
-
-	//	/**
-	//     * @see org.easygen.core.generators.AbstractGenerator#init()
-	//     */
-	//    @Override
-	//	public void initTemplates(ProjectConfig pProjectConfig) throws InitException
-	//    {
-	//        loadTemplate("hibernate.cfg.vm");
-	//        loadTemplate("mapping.hbm.vm");
-	//        loadTemplate("class.java.vm");
-	//        loadTemplate("ehcache.vm");
-	//
-	//        addConfiguration(getModuleDir() + "hibernate.properties");
-	//    }
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#generate()
 	 */
@@ -113,7 +90,9 @@ public class HibernateGenerator extends AbstractGenerator {
 				cachedClassList.add(packageName + '.' + mapping.getClassName());
 		}
 
-		context.put(JDBC_CONFIG, convert(projectConfig.getDatabaseConfig()));
+		// TODO Tester si le dialect est necessaire
+		String hibernateDialect = getConfiguration().getString(projectConfig.getDatabaseConfig().getDatabaseType().toLowerCase() + ".dialect");
+		context.put(HIBERNATE_DIALECT, hibernateDialect);
 		context.put(CLASS_LIST, hbmList);
 		generateFile(getTemplate("hibernate.cfg.vm"), projectConfig.getCfgPath() + HIBERNATE_CFG_FILE);
 		context.put(CLASS_LIST, cachedClassList);
@@ -153,20 +132,6 @@ public class HibernateGenerator extends AbstractGenerator {
 				return object;
 		}
 		return null;
-	}
-
-	/**
-	 * @param pDbConfig
-	 * @return
-	 */
-	protected JDBCConfig convert(DatabaseConfig pDbConfig) {
-		JDBCConfig jdbcConfig = new JDBCConfig();
-		jdbcConfig.setDriver(pDbConfig.getDataBaseDriver());
-		jdbcConfig.setDialect(getConfiguration().getString(pDbConfig.getDatabaseType().toLowerCase() + ".dialect"));
-		jdbcConfig.setUrl(pDbConfig.getUrl());
-		jdbcConfig.setUsername(pDbConfig.getUsername());
-		jdbcConfig.setPassword(pDbConfig.getPassword());
-		return jdbcConfig;
 	}
 
 	/**

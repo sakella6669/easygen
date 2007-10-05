@@ -94,6 +94,7 @@ public class NewProjectPage extends CommonPage
      */
     protected void createPropertiesGroup(Composite pMainComposite)
     {
+    	// TODO Option tu use Maven2 directory style
 		Group propertiesGroup = WidgetUtils.createGroup(pMainComposite, Localization.get("easygen.title.page.newproject.properties"), 2);
 
 		projectSrcDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.src.dir"), Localization.get("easygen.default.project.src.dir"));
@@ -115,7 +116,7 @@ public class NewProjectPage extends CommonPage
 		addFieldToValidate(Localization.get("easygen.label.page.newproject.test.dir"), projectLibDirField, Validator.PATH);
 		
 		projectPackageField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.package"), Localization.get("easygen.default.project.package"));
-		addFieldToValidate(Localization.get("easygen.label.page.newproject.package"), projectClassesDirField, Validator.PACKAGE);
+		addFieldToValidate(Localization.get("easygen.label.page.newproject.package"), projectPackageField, Validator.PACKAGE);
     }
 	/**
      * @see org.easygen.ui.wizards.pages.ICommonPage#updateConfig(ProjectConfig)

@@ -4,11 +4,11 @@
 <hibernate-configuration>
 	<session-factory>
 
-		<property name="hibernate.connection.url">${jdbc.url}</property>
-		<property name="hibernate.connection.username">${jdbc.username}</property>
-		<property name="hibernate.connection.password">$!jdbc.password</property>
-		<property name="hibernate.connection.driver_class">${jdbc.driver}</property>
-		<property name="dialect">${jdbc.dialect}</property>
+		<property name="hibernate.connection.url">${projectConfig.databaseConfig.url}</property>
+		<property name="hibernate.connection.username">${projectConfig.databaseConfig.username}</property>
+		<property name="hibernate.connection.password">$!{projectConfig.databaseConfig.password}</property>
+		<property name="hibernate.connection.driver_class">${projectConfig.databaseConfig.dataBaseDriver}</property>
+		<property name="dialect">${hibernateDialect}</property>
 
 		<property name="hibernate.show_sql">false</property>
 		<property name="hibernate.format_sql">false</property>
