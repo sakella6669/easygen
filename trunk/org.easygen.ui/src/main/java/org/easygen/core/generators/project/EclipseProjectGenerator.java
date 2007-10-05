@@ -79,6 +79,7 @@ public class EclipseProjectGenerator extends AbstractGenerator
     @Override
 	public void postProcess(ProjectConfig projectConfig) throws GenerationException {
     	// Génération du fichier .classpath
+    	// TODO Gérer les différences Eclipse 3.2 et 3.3 
         String filename = ".classpath";
 		context.put(LIBRARY_LIST, projectConfig.getLibraries());
         generateFile(getTemplate("classpath.vm"), projectConfig.getPath() + filename);

@@ -76,6 +76,7 @@ public class EclipseProjectUIGenerator extends AbstractGenerator {
 				classpathEntries.add(entry);
 			}
 		}
+		// TODO Gérer les différences Eclipse 3.2 et 3.3
 		classpathEntries.add(JavaCore.newVariableEntry(new Path("JUNIT4_HOME/junit-4.1.jar"), null, null));
 		EclipseUtils.setProjectClasspath(progressMonitor, javaProject, classpathEntries);
 	}

@@ -42,7 +42,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	protected static final String LIBRARY_EXTENSION = ".jar";
 	protected static final String LIBRARY_INDEX_FILE = "dir.list";
 	
-	protected Logger logger = Logger.getLogger(getClass());
+	protected final Logger logger = Logger.getLogger(getClass());
 	protected VelocityContext context = null;
 	protected Map<String,Template> templates;
 	
