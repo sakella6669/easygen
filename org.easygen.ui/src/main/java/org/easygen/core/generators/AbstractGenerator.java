@@ -107,8 +107,9 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 			logger.info("Initialisation de Velocity");
 			initVelocity();
 			context.put("stringutils", new StringUtils());
-			if (projectConfig != null)
+			if (projectConfig != null) {
 			   	context.put(PROJECT_INFO, projectConfig);
+			}
         }
         catch (Exception e)
         {

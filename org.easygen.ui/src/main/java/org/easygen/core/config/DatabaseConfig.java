@@ -6,7 +6,7 @@ public class DatabaseConfig
 {
 	private String databaseType;
 	private String databaseName;
-	private String dataBaseDriver;
+	private String databaseDriver;
 	private String jarPath;
 	private String host;
 	private int port;
@@ -113,14 +113,14 @@ public class DatabaseConfig
 	/**
 	 * @return Returns the dataBaseDriver.
 	 */
-	public String getDataBaseDriver() {
-		return dataBaseDriver;
+	public String getDatabaseDriver() {
+		return databaseDriver;
 	}
 	/**
-	 * @param dataBaseDriver The dataBaseDriver to set.
+	 * @param databaseDriver The dataBaseDriver to set.
 	 */
-	public void setDataBaseDriver(String d) {
-		this.dataBaseDriver = d.trim();
+	public void setDatabaseDriver(String d) {
+		this.databaseDriver = d.trim();
 	}
     
     @Override
@@ -130,7 +130,7 @@ public class DatabaseConfig
     	buffer.append("** DatabaseConfig **\n");
     	buffer.append("\tName:").append(databaseName).append("\n");
     	buffer.append("\tType:").append(databaseType).append("\n");
-    	buffer.append("\tDriver:").append(dataBaseDriver).append("\n");
+    	buffer.append("\tDriver:").append(databaseDriver).append("\n");
     	buffer.append("\tJar:").append(jarPath).append("\n");
     	buffer.append("\tHost:").append(host).append("\n");
     	buffer.append("\tPort:").append(port).append("\n");

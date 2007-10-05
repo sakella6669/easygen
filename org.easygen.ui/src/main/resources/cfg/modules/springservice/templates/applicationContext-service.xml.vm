@@ -4,17 +4,17 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:aop="http://www.springframework.org/schema/aop"
     xmlns:tx="http://www.springframework.org/schema/tx"
-    default-autowire="autodetect"
+    default-autowire="no"
     xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName"><value>${projectConfig.databaseConfig.dataBaseDriver}</value></property>
-		<property name="url"><value>${projectConfig.databaseConfig.url}</value></property>
-		<property name="username"><value>${projectConfig.databaseConfig.username}</value></property>
-		<property name="password"><value>$!{projectConfig.databaseConfig.password}</value></property>
+		<property name="driverClassName"><value>${project.databaseConfig.databaseDriver}</value></property>
+		<property name="url"><value>${project.databaseConfig.url}</value></property>
+		<property name="username"><value>${project.databaseConfig.username}</value></property>
+		<property name="password"><value>$!{project.databaseConfig.password}</value></property>
 	</bean>
 
 #if ($project.dataModuleConfig.useAnnotations == true)
@@ -41,7 +41,7 @@
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				<!--prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop-->
+				<prop key="hibernate.dialect">${hibernateSqlDialect}</prop>
 				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.format_sql">false</prop>
 				<prop key="hibernate.use_sql_comments">false</prop>

@@ -62,6 +62,7 @@ public class WidgetUtils {
 	 * @param pString
 	 * @param pString2
 	 * @param pListener
+	 * TODO Voir si on peut ajouter la validation dans la foulée
 	 */
 	public static Text createLabelTextPair(Composite pParent, String pLabel, String pDefaultText) {
 		createLabel(pParent, pLabel);

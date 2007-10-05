@@ -50,12 +50,12 @@ public class NewProjectPage extends CommonPage
 		projectNameField = WidgetUtils.createLabelTextPair(
 			mainComposite,
 			Localization.get("easygen.label.page.newproject.name"),
-			Localization.get("easygen.default.project.name")
+			Localization.get("defaults.project.name")
 		);
 		addFieldToValidate(
 			Localization.get("easygen.label.page.newproject.name"),
 			projectNameField,
-			Validator.ALPHA_NUMERIC
+			Validator.PACKAGE
 		);
 		projectNameField.setFocus();
 
@@ -81,8 +81,7 @@ public class NewProjectPage extends CommonPage
 		addFieldToValidate(Localization.get("easygen.label.page.newproject.location"), projectPathField, Validator.PATH);
 		useDefaultLocation.addSelectionListener(new CheckSelectedListener(projectPathField, false));
 		projectNameField.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent pEvent)
-			{
+			public void modifyText(ModifyEvent pEvent) {
 				projectPathField.setText(
 					EclipseUtils.getDefaultProjectLocationForName(projectNameField.getText())
 				);
@@ -97,27 +96,49 @@ public class NewProjectPage extends CommonPage
     	// TODO Option tu use Maven2 directory style
 		Group propertiesGroup = WidgetUtils.createGroup(pMainComposite, Localization.get("easygen.title.page.newproject.properties"), 2);
 
-		projectSrcDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.src.dir"), Localization.get("easygen.default.project.src.dir"));
+		projectSrcDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.src.dir"), Localization.get("defaults.project.src.dir"));
 		addFieldToValidate(Localization.get("easygen.label.page.newproject.src.dir"), projectSrcDirField, Validator.PATH);
 
-		projectCfgDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.config.dir"), Localization.get("easygen.default.project.config.dir"));
+		projectCfgDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.config.dir"), Localization.get("defaults.project.config.dir"));
 		addFieldToValidate(Localization.get("easygen.label.page.newproject.config.dir"), projectCfgDirField, Validator.PATH);
 
-		projectClassesDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.classes.dir"), Localization.get("easygen.default.project.classes.dir"));
+		projectClassesDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.classes.dir"), Localization.get("defaults.project.classes.dir"));
 		addFieldToValidate(Localization.get("easygen.label.page.newproject.classes.dir"), projectClassesDirField, Validator.PATH);
 		
-		projectWebDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.web.dir"), Localization.get("easygen.default.project.web.dir"));
+		projectWebDirField = WidgetUtils.createLabelTextPair(propertiesGroup,
+				Localization.get("easygen.label.page.newproject.web.dir"),
+				Localization.get("defaults.project.web.dir"));
 		addFieldToValidate(Localization.get("easygen.label.page.newproject.web.dir"), projectWebDirField, Validator.PATH);
 		
-		projectTestDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.test.dir"), Localization.get("easygen.default.project.test.dir"));
+		projectTestDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.test.dir"), Localization.get("defaults.project.test.dir"));
 		addFieldToValidate(Localization.get("easygen.label.page.newproject.test.dir"), projectTestDirField, Validator.PATH);
 		
-		projectLibDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.lib.dir"), Localization.get("easygen.default.project.lib.dir"));
-		addFieldToValidate(Localization.get("easygen.label.page.newproject.test.dir"), projectLibDirField, Validator.PATH);
+		projectLibDirField = WidgetUtils.createLabelTextPair(propertiesGroup,
+				Localization.get("easygen.label.page.newproject.lib.dir"),
+				"");
+		String defaultLibDir = Localization.get("defaults.project.lib.dir");
+		if (defaultLibDir.startsWith("/") == false)
+			defaultLibDir = '/'+defaultLibDir;
+		updateLibDir(defaultLibDir);
+		final String defaultProjectLibDir = defaultLibDir;
+		projectLibDirField.setEditable(false);
+		//addFieldToValidate(Localization.get("easygen.label.page.newproject.test.dir"), projectLibDirField, Validator.PATH);
+		projectWebDirField.addModifyListener(new ModifyListener() {
+			private final String DEFAULT_PROJECT_LIB_DIR = defaultProjectLibDir;
+			public void modifyText(ModifyEvent pEvent) {
+				updateLibDir(DEFAULT_PROJECT_LIB_DIR);
+			}
+		});
 		
-		projectPackageField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.package"), Localization.get("easygen.default.project.package"));
+		projectPackageField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.package"), Localization.get("defaults.project.package"));
 		addFieldToValidate(Localization.get("easygen.label.page.newproject.package"), projectPackageField, Validator.PACKAGE);
     }
+    
+	private void updateLibDir(String defaultProjectLibDir) {
+		projectLibDirField.setText(
+			projectWebDirField.getText() + defaultProjectLibDir
+		);
+	}
 	/**
      * @see org.easygen.ui.wizards.pages.ICommonPage#updateConfig(ProjectConfig)
      */

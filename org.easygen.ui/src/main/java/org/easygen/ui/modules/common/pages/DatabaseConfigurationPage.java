@@ -186,10 +186,10 @@ public class DatabaseConfigurationPage extends CommonPage implements SelectionLi
 		} else {
 			logger.warn("Driver Jar file not found for database "+pDatabaseType);
 		}
-		databaseUrl.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "host.default"));
-		databasePort.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "port.default"));
-		databaseUser.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "user.default"));
-		databaseInstance.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "instance.default"));
+		databaseUrl.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "default.host"));
+		databasePort.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "default.port"));
+		databaseUser.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "default.user"));
+		databaseInstance.setText(DatabaseManager.getDatabaseProperty(pDatabaseType, "default.instance"));
     }
 	/**
      * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
@@ -235,7 +235,7 @@ public class DatabaseConfigurationPage extends CommonPage implements SelectionLi
     {
 	    DatabaseConfig dbConfig = new DatabaseConfig();
 	    dbConfig.setDatabaseType(databaseType.getText());
-	    dbConfig.setDataBaseDriver(databaseDriver.getText());
+	    dbConfig.setDatabaseDriver(databaseDriver.getText());
 	    dbConfig.setHost(databaseUrl.getText());
 	    dbConfig.setPort(databasePort.getText());
 	    dbConfig.setDatabaseName(databaseInstance.getText());

@@ -64,7 +64,7 @@ public class GenerationTestCase extends TestCase
 		projectConfig.setTestDirname("test");
 
 		DatabaseConfig dbConfig = new DatabaseConfig();
-		dbConfig.setDataBaseDriver( DatabaseManager.getDriverList("mysql")[0] );
+		dbConfig.setDatabaseDriver( DatabaseManager.getDriverList("mysql")[0] );
 		dbConfig.setDatabaseType("mysql");
 		dbConfig.setDatabaseName("teachertools");
 		dbConfig.setHost("localhost");

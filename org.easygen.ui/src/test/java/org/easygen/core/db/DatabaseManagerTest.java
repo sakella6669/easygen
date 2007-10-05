@@ -26,7 +26,7 @@ public class DatabaseManagerTest extends TestCase {
 		super.setUp();
 		if (dbConfig == null) {
 			dbConfig = new DatabaseConfig();
-			dbConfig.setDataBaseDriver( DatabaseManager.getDriverList("mysql")[0] );
+			dbConfig.setDatabaseDriver( DatabaseManager.getDriverList("mysql")[0] );
 			dbConfig.setDatabaseType("mysql");
 			dbConfig.setDatabaseName("teachertools");
 			dbConfig.setHost("localhost");

@@ -21,6 +21,7 @@ import org.easygen.core.generators.GenerationException;
  * Created on 16 nov. 06
  */
 public class HibernateGenerator extends AbstractGenerator {
+
 	private static final String MODULE_NAME = "hibernate";
 
 	private static final String HIBERNATE_CFG_FILE = "hibernate.cfg.xml";
@@ -30,7 +31,7 @@ public class HibernateGenerator extends AbstractGenerator {
 	private static final String MAPPING_FILE_EXTENSION = ".hbm.xml";
 
 	private static final String USE_ANNOTATIONS = "useAnnotations";
-	private static final String HIBERNATE_DIALECT = "hibernateDialect";
+	private static final String HIBERNATE_DIALECT = "hibernateSqlDialect";
 
 	/**
 	 * @throws InitException
