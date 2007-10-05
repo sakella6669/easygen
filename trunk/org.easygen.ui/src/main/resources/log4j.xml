@@ -2,11 +2,13 @@
 <!DOCTYPE log4j:configuration SYSTEM "jar:file:lib/log4j.jar!/org/apache/log4j/xml/log4j.dtd">
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<layout class="org.apache.log4j.PatternLayout">
   		     <param name="ConversionPattern" value="%d %-5p [%C{1}:%L] - %m%n"/> <!-- %C{2} (%F:%L)  -->
 		</layout>
 	</appender>
+
 	<appender name="LOGFILE" class="org.apache.log4j.FileAppender">
 		<param name="File" value="org.easygen.ui.log"/>
 		<param name="append" value="false"/>
