@@ -11,10 +11,10 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
-		<property name="url"><value>jdbc:mysql://localhost:3306/teachertools</value></property>
-		<property name="username"><value>root</value></property>
-		<property name="password"><value></value></property>
+		<property name="driverClassName"><value>${projectConfig.databaseConfig.dataBaseDriver}</value></property>
+		<property name="url"><value>${projectConfig.databaseConfig.url}</value></property>
+		<property name="username"><value>${projectConfig.databaseConfig.username}</value></property>
+		<property name="password"><value>$!{projectConfig.databaseConfig.password}</value></property>
 	</bean>
 
 #if ($project.dataModuleConfig.useAnnotations == true)
@@ -41,7 +41,7 @@
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!--prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop-->
 				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.format_sql">false</prop>
 				<prop key="hibernate.use_sql_comments">false</prop>
