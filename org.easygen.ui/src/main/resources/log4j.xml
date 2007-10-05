@@ -14,13 +14,9 @@
   		     <param name="ConversionPattern" value="%d %-5p [%C{1}:%L] - %m%n"/> <!-- %C{2} (%F:%L)  -->
 		</layout>
 	</appender>
-
-	<!--category name="org.easygen.ui.wizards.NewProjectWizard">
-		<priority value="INFO"/>
-	</category-->
-
+	
 	<category name="org.easygen.ui">
-		<priority value="DEBUG"/>
+		<priority value="INFO"/>
 	</category>
 
 	<category name="org.easygen.core.generators">
@@ -29,9 +25,7 @@
 
 	<root>
 		<priority value="INFO"/>
-		<appender-ref ref="LOGFILE"/>
-		<!--appender-ref ref="CONSOLE"/-->
-		<!--appender-ref ref="LOGFILE"/-->
+		<appender-ref ref="CONSOLE"/>
 	</root>
 
 </log4j:configuration>
