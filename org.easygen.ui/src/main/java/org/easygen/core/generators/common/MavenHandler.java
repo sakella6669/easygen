@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class MavenHandler {
+
+	private static final String MVN_CMD = "mvn";
 
 	private static final Logger logger = Logger.getLogger(MavenHandler.class);
 
@@ -26,10 +29,7 @@ public class MavenHandler {
 	}
 
 	public boolean callMaven(String path, String goal) {
-		if (isMavenFound() == false) {
-			return false;
-		}
-		ProcessBuilder builder = new ProcessBuilder("mvn", goal);
+		ProcessBuilder builder = new ProcessBuilder(MVN_CMD, goal);
 		builder.directory(new File(path));
 		Process process = null;
 		try {
@@ -37,10 +37,10 @@ public class MavenHandler {
 			if (logger.isDebugEnabled()) {
 				InputStream inputStream = process.getInputStream();
 				String processOutput = IOUtils.toString(inputStream);
-				logger.debug("mvn " + goal + "\n" + processOutput);
+				logger.debug(MVN_CMD+" " + goal + "\n" + processOutput);
 			}
 			if (process.waitFor() != 0) {
-				logger.warn("Can't execute maven goal " + goal + ", maybe mvn is not in the PATH var");
+				logger.warn("Can't execute maven goal " + goal + ", maybe "+MVN_CMD+" command is not in the PATH var");
 				return false;
 			}
 			return true;
