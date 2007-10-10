@@ -22,9 +22,12 @@ import org.easygen.core.generators.GenerationException;
  */
 public class HibernateGenerator extends AbstractGenerator {
 
+	private static final String META_INF_DIR = "META-INF/";
+
 	private static final String MODULE_NAME = "hibernate";
 
-	private static final String HIBERNATE_CFG_FILE = "hibernate.cfg.xml";
+//	private static final String HIBERNATE_CFG_FILE = "hibernate.cfg.xml";
+	private static final String JPA_CFG_FILE = "persistence.xml";
 
 	private static final String EHCACHE_CFG_FILE = "ehcache.xml";
 
@@ -92,10 +95,14 @@ public class HibernateGenerator extends AbstractGenerator {
 		}
 
 		// TODO Tester si le dialect est necessaire
-		String hibernateDialect = getConfiguration().getString(projectConfig.getDatabaseConfig().getDatabaseType().toLowerCase() + ".dialect");
+		String databaseType = projectConfig.getDatabaseConfig().getDatabaseType().toLowerCase();
+		String hibernateDialect = getConfiguration().getString(databaseType + ".dialect");
 		context.put(HIBERNATE_DIALECT, hibernateDialect);
 		context.put(CLASS_LIST, hbmList);
-		generateFile(getTemplate("hibernate.cfg.vm"), projectConfig.getCfgPath() + HIBERNATE_CFG_FILE);
+//		generateFile(getTemplate("hibernate.cfg.vm"), projectConfig.getCfgPath() + HIBERNATE_CFG_FILE);
+		String metaInfPath = projectConfig.getCfgPath() + META_INF_DIR;
+		createPath(metaInfPath);
+		generateFile(getTemplate("persistence.xml.vm"), metaInfPath + JPA_CFG_FILE);
 		context.put(CLASS_LIST, cachedClassList);
 		generateFile(getTemplate("ehcache.vm"), projectConfig.getCfgPath() + EHCACHE_CFG_FILE);
 	}

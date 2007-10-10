@@ -63,32 +63,24 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	 */
 	protected void loadConfiguration() {
 		addConfiguration("cfg/generators.properties");
-		String filename = getTemplateDir()+getModuleName()+PROPERTY_FILE_EXTENSION;
-		URL configFile = Thread.currentThread().getContextClassLoader().getResource(filename);
-		if (configFile != null) {
-			logger.info("Loading module specific configuration from: "+filename);
-			addConfiguration(configFile);
-		}
+		String moduleConfigFile = getModuleDir()+getModuleName()+PROPERTY_FILE_EXTENSION;
+		logger.info("Trying to load module specific configuration file: "+moduleConfigFile);
+		addConfiguration(moduleConfigFile);
 	}
 	/**
 	 * @param filename
 	 * @throws InitException
 	 */
 	protected void addConfiguration(String filename) throws InitException {
+		logger.info("Trying to load module specific configuration file: "+filename);
 		URL resource = Thread.currentThread().getContextClassLoader().getResource(filename);
-		addConfiguration(resource);
-	}
-	/**
-	 * @param resource
-	 * @throws ConfigurationException
-	 */
-	protected void addConfiguration(URL resource) throws InitException {
-		try {
-			configuration.addConfiguration(new PropertiesConfiguration(
-					resource
-			));
-		} catch (ConfigurationException e) {
-			throw new InitException("Can't load configuration file: "+resource.toString(), e);
+		if (resource != null) {
+			logger.info("Loading module specific configuration from: "+filename);
+			try {
+				configuration.addConfiguration(new PropertiesConfiguration(resource));
+			} catch (ConfigurationException e) {
+				throw new InitException("Can't load configuration file: "+resource.toString(), e);
+			}
 		}
 	}
 	/**
@@ -281,7 +273,10 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	 * @param filePath
 	 */
 	protected void delete(String filePath) {
-		new File(filePath).delete();
+		File file = new File(filePath);
+		if (file.exists()) {
+			file.delete();
+		}
 	}
 	/**
 	 * Adds {@link VelocityStackUtils} the the Velocity context under "stack" variable name.

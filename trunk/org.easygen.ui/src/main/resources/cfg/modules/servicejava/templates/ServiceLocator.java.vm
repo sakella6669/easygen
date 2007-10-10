@@ -44,34 +44,33 @@ public class ServiceLocator
 	    GenericService.destroy();
 	}
 
-    /**
-     * La hashtable qui contient les différents services déjà instanciés
-     */
-    private Map<String, Service> cache;
+	/**
+	 * La hashtable qui contient les différents services déjà instanciés
+	 */
+	private Map<String, Service<?>> cache;
 
-    /**
-     * Constructeur privé pour empêcher la création d'instance
-     * Implémentation du Singleton Pattern
-     * @throws ServiceLocatorException
-     */
-    private ServiceLocator() throws ServiceException
-    {
-        cache = new Hashtable<String, Service>();
-    }
+	/**
+	 * Constructeur privé pour empêcher la création d'instance Implémentation du
+	 * Singleton Pattern
+	 * 
+	 * @throws ServiceLocatorException
+	 */
+	private ServiceLocator() throws ServiceException {
+		cache = new Hashtable<String, Service<?>>();
+	}
 
-    protected Service getService(String serviceName, Class serviceClass) throws ServiceException
-    {
-        Service service = null;
-        if (cache.containsKey(serviceName))
-            return cache.get(serviceName);
-        try {
-			service = (Service) serviceClass.newInstance();
+	protected Service<?> getService(String serviceName, Class<? extends Service<?>> serviceClass) throws ServiceException {
+		Service<?> service = null;
+		if (cache.containsKey(serviceName))
+			return cache.get(serviceName);
+		try {
+			service = (Service<?>) serviceClass.newInstance();
 			cache.put(serviceName, service);
-	        return service;
+			return service;
 		} catch (Exception e) {
 			throw new ServiceException("Service Lookup Error", e);
 		}
-    }
+	}
 
 #foreach ($serviceClassName in $classList)
     public ${serviceClassName}Service get${serviceClassName}Service() throws ServiceException

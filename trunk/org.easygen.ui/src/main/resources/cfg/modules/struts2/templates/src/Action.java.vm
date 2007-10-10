@@ -103,8 +103,7 @@ public class ${object.className}Action extends GenericAction implements ModelDri
 	public String add() throws Exception {
 		try {
 			logger.info("Adding new ${objectVarName}");
-			Long id = (Long) ${objectVarName}Service.save(${objectVarName});
-			${objectVarName}.setId(id);
+			${objectVarName}Service.save(${objectVarName});
 			addActionMessage("Added new ${objectVarName} with id: " + ${objectVarName}.getId());
 			return Action.SUCCESS;
 		} catch (Exception e) {

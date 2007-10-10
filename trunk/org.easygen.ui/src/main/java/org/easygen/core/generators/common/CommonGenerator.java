@@ -37,23 +37,15 @@ public class CommonGenerator extends AbstractGenerator
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
 
-    	context.put("isStruts2ViewModule", projectConfig.getViewModuleNature().equals(Struts2ModuleConfig.NATURE));
-    	context.put("isSpringServiceModule", projectConfig.getServiceModuleNature().equals(SpringServiceModuleConfig.NATURE));
-    	context.put("isHibernateDataModule", projectConfig.getDataModuleNature().equals(HibernateModuleConfig.NATURE));
+    	context.put("isStruts2ViewModule", Struts2ModuleConfig.NATURE.equals(projectConfig.getViewModuleNature()));
+    	context.put("isSpringServiceModule", SpringServiceModuleConfig.NATURE.equals(projectConfig.getServiceModuleNature()));
+    	context.put("isHibernateDataModule", HibernateModuleConfig.NATURE.equals(projectConfig.getDataModuleNature()));
 
     	// Génération du fichier pom.xml pour Maven
         generateFile(getTemplate("pom.vm"), projectConfig.getPath() + "pom.xml");
 
         createPath(projectConfig.getCfgPath());
-
-    	context.put("isStruts2ViewModule", projectConfig.getViewModuleNature().equals(Struts2ModuleConfig.NATURE));
-    	context.put("isSpringServiceModule", projectConfig.getServiceModuleNature().equals(SpringServiceModuleConfig.NATURE));
-    	context.put("isHibernateDataModule", projectConfig.getDataModuleNature().equals(HibernateModuleConfig.NATURE));
-
-    	// Génération du fichier pom.xml pour Maven
-        generateFile(getTemplate("pom.vm"), projectConfig.getPath() + "pom.xml");
-
-        generateFile(getTemplate("log4j.xml.vm"), projectConfig.getCfgPath()+"log4j.xml");
+		generateFile(getTemplate("log4j.xml.vm"), projectConfig.getCfgPath()+"log4j.xml");
 	}
 	/**
      * @see org.easygen.core.generators.AbstractGenerator#postProcess(ProjectConfig)

@@ -62,8 +62,8 @@ public class HibernateConfigPage extends BasicModulePage {
 	 * @param mainComposite
 	 */
 	protected void createGeneralPropertiesGroup(Composite mainComposite) {
-		Group group = WidgetUtils.createGroup(mainComposite, Localization.get("hibernate.title.page.hibernateConfigPage.group"), 2);
-		useAnnotations = WidgetUtils.createCheckBox(group, Localization.get("hibernate.label.page.hibernateConfigPage.useAnnotations"), true);
+		Group group = WidgetUtils.createGroup(mainComposite, Localization.get("hibernate.title.hibernateConfigPage.group"), 2);
+		useAnnotations = WidgetUtils.createCheckBox(group, Localization.get("hibernate.label.hibernateConfigPage.useAnnotations"), true);
 	}
 
 	/**
@@ -71,58 +71,27 @@ public class HibernateConfigPage extends BasicModulePage {
 	 */
 	protected void createIdConfigurationGroup(Composite pParent) {
 		Group idConfigurationGroup = WidgetUtils.createGroup(pParent, Localization
-				.get("hibernate.title.page.tableSelector.idConfiguration"), 2);
+				.get("hibernate.title.tableSelector.idConfiguration"), 2);
 
 		nativeIdRadio = WidgetUtils.createRadioButton(idConfigurationGroup, Localization
-				.get("hibernate.label.page.tableSelector.nativeId"));
+				.get("hibernate.label.tableSelector.nativeId"));
 		WidgetUtils.createHorizontalSpan(nativeIdRadio, 2);
 		nativeIdRadio.setSelection(true);
 
 		assignedIdRadio = WidgetUtils.createRadioButton(idConfigurationGroup, Localization
-				.get("hibernate.label.page.tableSelector.assignedId"));
+				.get("hibernate.label.tableSelector.assignedId"));
 		WidgetUtils.createHorizontalSpan(assignedIdRadio, 2);
 
 		sequenceIdRadio = WidgetUtils.createRadioButton(idConfigurationGroup, Localization
-				.get("hibernate.label.page.tableSelector.sequenceId"));
+				.get("hibernate.label.tableSelector.sequenceId"));
 		WidgetUtils.createHorizontalSpan(sequenceIdRadio, 2);
 
 		sequenceFormatField = WidgetUtils.createLabelTextPair(idConfigurationGroup, Localization
-				.get("hibernate.label.page.tableSelector.sequenceFormat"), Localization
-				.get("hibernate.default.page.tableSelector.sequenceFormat"));
+				.get("hibernate.label.tableSelector.sequenceFormat"), Localization
+				.get("hibernate.default.tableSelector.sequenceFormat"));
 		sequenceFormatField.setEnabled(false);
 
 		sequenceIdRadio.addSelectionListener(new CheckSelectedListener(sequenceFormatField, true));
-	}
-
-	/**
-	 * This method initializes hbmLocationGroup
-	 */
-	protected void createHbmLocationGroup(Composite pParent) {
-//		Group hbmLocationGroup = WidgetUtils.createGroup(pParent, Localization
-//				.get("hibernate.title.page.tableSelector.hbmLocation"), 3);
-//
-//		GridData gridData1 = new GridData();
-//		gridData1.horizontalSpan = 3;
-//
-//		sourceLocationRadio = WidgetUtils.createRadioButton(hbmLocationGroup, Localization
-//				.get("hibernate.label.page.tableSelector.srcDir"));
-//		WidgetUtils.createHorizontalSpan(sourceLocationRadio, 3);
-//		sourceLocationRadio.setSelection(true);
-//
-//		specifiedLocationRadio = WidgetUtils.createRadioButton(hbmLocationGroup, Localization
-//				.get("hibernate.label.page.tableSelector.custom"));
-//		WidgetUtils.createHorizontalSpan(specifiedLocationRadio, 3);
-//
-//		customHbmLocationField = WidgetUtils.createLabelTextPair(hbmLocationGroup, Localization
-//				.get("hibernate.label.page.tableSelector.location"), null);
-//		customHbmLocationField.setEnabled(false);
-//
-//		chooseLocationButton = WidgetUtils.createSimpleButton(hbmLocationGroup, Localization
-//		        .get("hibernate.label.page.tableSelector.browse"));
-//		chooseLocationButton.setEnabled(false);
-//
-//		specifiedLocationRadio.addSelectionListener(new CheckSelectedListener(new Control[] { customHbmLocationField,
-//		        chooseLocationButton }, true));
 	}
 
 	/**
@@ -143,13 +112,6 @@ public class HibernateConfigPage extends BasicModulePage {
 			hibernateConfig.setDefaultIdConfiguration(HibernateModuleConfig.SEQUENCE_ID);
 			hibernateConfig.setSequencePattern(sequenceFormatField.getText());
 		}
-
-//		if (sourceLocationRadio.getSelection())
-//			hibernateConfig.setHbmDir(HibernateModuleConfig.SOURCE_DIR);
-//		else if (specifiedLocationRadio.getSelection()) {
-//			hibernateConfig.setHbmDir(HibernateModuleConfig.OTHER_DIR);
-//			hibernateConfig.setHbmCustomDir(customHbmLocationField.getText());
-//		}
 	}
 
 	/**
