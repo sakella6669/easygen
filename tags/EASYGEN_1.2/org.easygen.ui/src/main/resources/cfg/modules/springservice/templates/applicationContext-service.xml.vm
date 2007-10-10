@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    default-autowire="no"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+      <property name="persistenceUnitName" value="mainManager"/>
+   </bean>
+	
+	<bean id="serviceLocator" class="${project.serviceModuleConfig.packageName}.ServiceLocator">
+#foreach ($className in $classList)
+#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+		<property name="${lowerClassName}Service"><ref local="${lowerClassName}Service"/></property>
+#end
+	</bean>
+
+#foreach ($className in $classList)
+#set ($serviceClass = "${project.serviceModuleConfig.packageName}.${className}Service")
+#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+	<bean id="${lowerClassName}Service" class="${serviceClass}">
+		<property name="entityManagerFactory"><ref local="entityManagerFactory"/></property>
+	</bean>
+
+#end
+
+</beans>

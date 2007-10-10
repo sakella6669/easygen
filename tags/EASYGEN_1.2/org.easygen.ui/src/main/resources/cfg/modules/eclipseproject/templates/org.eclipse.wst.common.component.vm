@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="${project.name}">
+        <wb-resource source-path="/${project.webContentDirname}" deploy-path="/"/>
+        <wb-resource source-path="/${project.srcDirname}" deploy-path="/WEB-INF/classes"/>
+        <property name="java-output-path" value="${project.buildDirname}"/>
+        <property name="context-root" value="${project.name.toLowerCase()}"/>
+    </wb-module>
+</project-modules>
+

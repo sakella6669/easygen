@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="EasyGen"
+            id="org.easygen.ui.category" />
+      <wizard
+            id="org.easygen.ui.wizards.NewProjectWizard"
+			name="Projet EasyGen" 
+            class="org.easygen.ui.wizards.NewProjectWizard"
+            icon="icons/easygen.gif"
+            category="org.easygen.ui.category"
+            hasPages="true"
+            project="true"
+            />
+   </extension>
+
+</plugin>

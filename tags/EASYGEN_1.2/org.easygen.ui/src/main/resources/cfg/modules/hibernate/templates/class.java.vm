@@ -1,0 +1,152 @@
+#macro( writeGeneratorStrategy $generatorName )
+	#if ($generatorName.equals("native"))
+		strategy=GenerationType.AUTO
+	#elseif ($generatorName.equals("sequence"))
+		strategy=GenerationType.SEQUENCE
+	#end
+#end
+
+package ${project.dataModuleConfig.packageName};
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
+
+#if ($useAnnotations == true)
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+#end
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
+/**
+ * 
+ */
+#if ($useAnnotations == true)
+@Entity
+@Table(name = "${object.tableName}")
+#end
+public class $object.className implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+#foreach ($field in $object.fields)
+	#if ($field.foreignKey)
+		#if ($field.foreignList == false)
+	private $field.propertyShortType $field.propertyName;
+		#else
+	private Set<$field.propertyShortType> $field.propertyName;
+		#end
+	#else
+	private $field.propertyShortType $field.propertyName;
+	#end
+#end
+
+#foreach ($field in $object.fields)
+	#if ($field.foreignKey == true && $field.foreignList == true)
+	#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+	/**
+	 * Gets the list of $field.propertyShortType
+	 * @returns the $field.propertyShortType List
+	 */
+	#if ($useAnnotations == true)
+	@OneToMany(cascade=CascadeType.REMOVE, fetch=FetchType.LAZY)
+    @JoinColumn(name="${field.columnName}")
+    #end
+	public Set<$field.propertyShortType> get${methodName}() {
+		return this.$field.propertyName;
+	}
+	/**
+	 * Sets the $field.propertyName
+	 * @param the $field.propertyName
+	 */
+	public void set${methodName}(Set<${field.propertyShortType}> $field.propertyName) {
+		this.$field.propertyName = $field.propertyName;
+	}
+	#else
+	#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+	/**
+	 * Gets the $field.propertyName
+	 * @returns the $field.propertyName
+	 */
+	#if ($useAnnotations == true)
+	#if ($field.primaryKey == true)
+	@Id
+		#if ($object.primaryKeyGeneratorName != "assigned")
+	@GeneratedValue(
+		#writeGeneratorStrategy( $object.primaryKeyGeneratorName )
+			#if ($object.primaryKeyGeneratorParams && $object.primaryKeyGeneratorParams.size() != 0 )
+				#foreach ($paramKey in $object.primaryKeyGeneratorParams.keySet())
+		,generator="$object.primaryKeyGeneratorParams.get($paramKey)"
+				#end
+			#end
+	)
+		#end
+	#elseif ($field.foreignKey == true)
+	@ManyToOne( cascade = {CascadeType.REFRESH} )
+    @JoinColumn(name="${field.columnName}")
+	#else
+	@Column(name = "${field.columnName}")
+	#end
+	#end
+	public ${field.propertyShortType} get${methodName}() {
+		return this.$field.propertyName;
+	}
+	/**
+	 * Sets the $field.propertyName
+	 * @param the $field.propertyName
+	 */
+	public void set${methodName}($field.propertyShortType p$methodName) {
+		this.$field.propertyName = p$methodName;
+	}
+	#end
+#end
+	
+	@Override
+	public boolean equals(Object obj) {
+		$object.className other$object.className = ($object.className) obj;
+		EqualsBuilder equalsBuilder = new EqualsBuilder();
+#foreach ($field in $object.fields)
+#if ($field.foreignKey == false)
+#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+		equalsBuilder.append(get${methodName}(), other${object.className}.get${methodName}());
+#end
+#end
+		return equalsBuilder.isEquals();
+	}
+
+	@Override
+	public int hashCode() {
+		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+#foreach ($field in $object.fields)
+#if ($field.foreignKey == false)
+#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+		hashCodeBuilder.append(get${methodName}());
+#end
+#end
+		return hashCodeBuilder.toHashCode();
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+//		buffer.append("$object.className");
+//		buffer.append('\n');
+#foreach ($field in $object.fields)
+#if ($field.primaryKey == false && $field.foreignKey == false)
+		buffer.append("${field.propertyName}=").append(${field.propertyName}).append(',');
+#end
+#end
+		return buffer.toString();
+	}
+}		
