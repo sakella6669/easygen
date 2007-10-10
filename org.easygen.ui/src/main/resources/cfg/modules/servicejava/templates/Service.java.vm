@@ -21,7 +21,7 @@ public interface Service<T> {
 	 * @throws ServiceException
 	 * @return L'objet enregistré
 	 */
-	public abstract List<Serializable> save(List<T> listeObject)
+	public abstract void save(List<T> listeObject)
 			throws ServiceException;
 
 	/**
@@ -31,7 +31,7 @@ public interface Service<T> {
 	 * @return l'objet créé (avec son id)
 	 * @throws ServiceException
 	 */
-	public abstract Serializable save(T object) throws ServiceException;
+	public abstract void save(T object) throws ServiceException;
 
 	/**
 	 * Met à jour en base l'objet passé en paramètre

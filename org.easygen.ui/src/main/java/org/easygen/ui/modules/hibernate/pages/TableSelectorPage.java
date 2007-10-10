@@ -36,10 +36,10 @@ public class TableSelectorPage extends ModulePage
 	private List<DataObject> objects;
 
 	private static final String[] columnNames = new String[] {
-	        Localization.get("hibernate.label.page.tableSelector.selected"),
-	        Localization.get("hibernate.label.page.tableSelector.tableName"),
-	        Localization.get("hibernate.label.page.tableSelector.className"),
-	        Localization.get("hibernate.label.page.tableSelector.useCache") };
+	        Localization.get("hibernate.label.tableSelector.selected"),
+	        Localization.get("hibernate.label.tableSelector.tableName"),
+	        Localization.get("hibernate.label.tableSelector.className"),
+	        Localization.get("hibernate.label.tableSelector.useCache") };
 
 	/**
 	 * @param pName
@@ -47,7 +47,7 @@ public class TableSelectorPage extends ModulePage
 	 */
 	public TableSelectorPage()
 	{
-		super(NAME, Localization.get("hibernate.title.page.tableSelector"));
+		super(NAME, Localization.get("hibernate.title.tableSelector"));
 	}
 
 	/**
@@ -76,9 +76,9 @@ public class TableSelectorPage extends ModulePage
 	protected void createTableSelectionGroup(Composite pParent)
 	{
 		Group tableSelectionGroup = WidgetUtils.createGroup(pParent, Localization
-		        .get("hibernate.title.page.tableSelector.tableSelection"), 1);
+		        .get("hibernate.title.tableSelector.tableSelection"), 1);
 
-		selectDeselectButton = WidgetUtils.createSimpleButton(tableSelectionGroup, Localization.get("hibernate.label.page.tableSelector.invertSelection"));
+		selectDeselectButton = WidgetUtils.createSimpleButton(tableSelectionGroup, Localization.get("hibernate.label.tableSelector.invertSelection"));
 
 		tableSelectionTable = WidgetUtils.createTable(tableSelectionGroup, 200);
 		tableSelectionTable.addSelectionListener(new SelectionListener() {

@@ -1,31 +1,32 @@
 package ${project.serviceModuleConfig.packageName};
 
+import java.io.Serializable;
+
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Expression;
+
 import ${project.dataModuleConfig.packageName}.${object.className};
 
 /**
  * Service pour l'objet ${object.className} qui permet d'effectuer les actions standards (save, update, get, list, search, delete)
  */
-public class ${object.className}Service extends GenericService<${object.className}>
-{
+public class ${object.className}Service extends GenericService<${object.className}> {
+
 	@Override
 	protected Class<${object.className}> getObjectClass() {
 		return ${object.className}.class;
 	}
-##
-##	@Override
-##	protected ${object.className} clone(${object.className} object) {
-##		${object.className} new${object.className} = new ${object.className}();
-##foreach ($field in $object.fields)
-##if ($field.foreignKey == false || $field.foreignList == false)
-##		#set ( $fieldName = $stringutils.capitalizeFirstLetter(${field.propertyName}) )
-##		new${object.className}.set${fieldName}(object.get${fieldName}());
-##end
-##end
-##		return new${object.className};
-##	}
+
+	@Override
+	protected Serializable getObjectId(${object.className} object) {
+#foreach ($field in $object.fields)
+#if ($field.primaryKey == true)
+#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+		return object.get${methodName}();
+#end
+#end
+	}
 
 	@Override
 	protected void initializeChildren(${object.className} object) {

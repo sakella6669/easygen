@@ -31,11 +31,11 @@ public class FieldConfigurationPage extends ModulePage {
 	public static final String NAME = "fieldConfigurationPage";
 
 	private static final String[] columnNames = new String[] {
-			Localization.get("hibernate.label.page.fieldSelector.selected"),
-			Localization.get("hibernate.label.page.fieldSelector.columnName"),
-			Localization.get("hibernate.label.page.fieldSelector.columnType"),
-			Localization.get("hibernate.label.page.fieldSelector.fieldName"),
-			Localization.get("hibernate.label.page.fieldSelector.fieldType")
+			Localization.get("hibernate.label.fieldSelector.selected"),
+			Localization.get("hibernate.label.fieldSelector.columnName"),
+			Localization.get("hibernate.label.fieldSelector.columnType"),
+			Localization.get("hibernate.label.fieldSelector.fieldName"),
+			Localization.get("hibernate.label.fieldSelector.fieldType")
 			// TODO Afficher les primary keys
 			// TODO Afficher les foreign keys avec possibilité de les supprimer (d'un seul coté ou des deux)
 		};
@@ -57,7 +57,7 @@ public class FieldConfigurationPage extends ModulePage {
 	 * @param pTitle
 	 */
 	public FieldConfigurationPage() {
-		super(NAME, Localization.get("hibernate.title.page.fieldSelector"));
+		super(NAME, Localization.get("hibernate.title.fieldSelector"));
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class FieldConfigurationPage extends ModulePage {
 	@Override
 	public void initControl(Composite mainComposite) {
 		Group tableSelectionGroup = WidgetUtils.createGroup(mainComposite, Localization
-				.get("hibernate.title.page.fieldSelector.fieldConfiguration"), 1);
+				.get("hibernate.title.fieldSelector.fieldConfiguration"), 1);
 
 		createTableCruiser(tableSelectionGroup);
 		createFieldConfigurationTable(tableSelectionGroup);

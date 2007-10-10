@@ -4,18 +4,20 @@
 <hibernate-configuration>
 	<session-factory>
 
-		<property name="hibernate.connection.url">${projectConfig.databaseConfig.url}</property>
-		<property name="hibernate.connection.username">${projectConfig.databaseConfig.username}</property>
-		<property name="hibernate.connection.password">$!{projectConfig.databaseConfig.password}</property>
-		<property name="hibernate.connection.driver_class">${projectConfig.databaseConfig.dataBaseDriver}</property>
-		<property name="dialect">${hibernateDialect}</property>
+		<!-- Dev Only, replace this with a jdbc datasource -->
+		<property name="hibernate.connection.driver_class">${project.databaseConfig.databaseDriver}</property>
+		<property name="hibernate.connection.url">${project.databaseConfig.url}</property>
+		<property name="hibernate.connection.username">${project.databaseConfig.username}</property>
+		<property name="hibernate.connection.password">$!{project.databaseConfig.password}</property>
+
+		<property name="hibernate.dialect">$!{hibernateSqlDialect}</property>
 
 		<property name="hibernate.show_sql">false</property>
 		<property name="hibernate.format_sql">false</property>
 		<property name="hibernate.use_sql_comments">false</property>
 		<property name="hibernate.connection.autocommit">false</property>
 		<property name="hibernate.connection.charSet">UTF-8</property>
-		<property name="hibernate.connection.pool_size">1</property>
+		<property name="hibernate.connection.pool_size">2</property>
 		<property name="hibernate.cache.use_second_level_cache">true</property>
 		<property name="hibernate.cache.use_query_cache">true</property>
 		<property name="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>

@@ -1,32 +1,29 @@
 package ${project.serviceModuleConfig.packageName};
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
+
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
-import org.hibernate.JDBCException;
-import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-#if ($project.dataModuleConfig.useAnnotations == true)
-import org.hibernate.cfg.AnnotationConfiguration;
-#else
-import org.hibernate.cfg.Configuration;
-#end
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Example.PropertySelector;
 import org.hibernate.type.Type;
 
 /**
- *
+ * Defines the generic method (save, update, delete, search, etc) for all kind of objets
  */
 public abstract class GenericService<T> implements Service<T> {
+
 	public static final int DEFAULT_MAX_RESULTS = 200;
 	public static final PropertySelector NOT_NULL_OR_EMPTY = new NotNullOrEmptyPropertySelector();
 	
@@ -60,55 +57,54 @@ public abstract class GenericService<T> implements Service<T> {
 		}
 	}
 
-	private static SessionFactory sessionFactory;
+	private static EntityManagerFactory entityManagerFactory;
 
 	public static void init() {
 		try {
-			// Crée la SessionFactory
 			long startTime = System.currentTimeMillis();
-			#if ($project.dataModuleConfig.useAnnotations == true)
-			sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
-			#else
-			sessionFactory = new Configuration().configure().buildSessionFactory();
-			#end
+			// Use persistence.xml configuration
+			entityManagerFactory = Persistence.createEntityManagerFactory("mainManager");
 			long endTime = System.currentTimeMillis();
-			Logger.getLogger(GenericService.class).info("Initialisation d'Hibernate en " + ((endTime - startTime) / 1000.0) + " s");
-		} catch (HibernateException ex) {
+			Logger.getLogger(GenericService.class).info(
+					"Initialisation d'Hibernate en " + ((endTime - startTime) / 1000.0) + " s");
+		} catch (PersistenceException ex) {
 			Logger.getLogger(GenericService.class).fatal("Problème de configuration : " + ex.getMessage(), ex);
 			throw new RuntimeException("Problème de configuration : " + ex.getMessage(), ex);
 		}
 	}
 
 	public static void destroy() {
-		if (sessionFactory != null) {
+		if (entityManagerFactory != null) {
 			Logger.getLogger(GenericService.class).info("Destruction de la sessionFactory Hibernate");
-			sessionFactory.close();
+			entityManagerFactory.close();
 		}
 	}
 
-	private static final ThreadLocal<Session> sessionCache = new ThreadLocal<Session>();
+	private final ThreadLocal<EntityManager> entityManagerCache = new ThreadLocal<EntityManager>();
 
-	protected static Session currentSession() throws HibernateException {
-		Session s = (Session) sessionCache.get();
+	protected EntityManager currentEntityManager() throws PersistenceException {
+		EntityManager entityManager = (EntityManager) entityManagerCache.get();
 		// Ouvre une nouvelle Session, si ce Thread n'en a aucune
-		if (s == null) {
-			s = sessionFactory.openSession();
-			sessionCache.set(s);
+		if (entityManager == null) {
+			// Retrieve an application managed entity manager
+			entityManager = entityManagerFactory.createEntityManager();
+			entityManagerCache.set(entityManager);
 		}
-		return s;
+		return entityManager;
 	}
 
-	protected static void closeSession() throws HibernateException {
-		Session s = (Session) sessionCache.get();
-		sessionCache.set(null);
-		if (s != null)
-			s.close();
+	protected void closeEntityManager() throws PersistenceException {
+		EntityManager entityManager = (EntityManager) entityManagerCache.get();
+		entityManagerCache.set(null);
+		if (entityManager != null)
+			entityManager.close();
 	}
 
-	protected Logger logger = Logger.getLogger(getClass());
+	protected final Logger logger = Logger.getLogger(getClass());
 
 	/**
 	 * Renvoie true si les données de la requête peuvent être mises en cache
+	 * 
 	 * @return true/false
 	 */
 	protected boolean getCacheable() {
@@ -117,12 +113,20 @@ public abstract class GenericService<T> implements Service<T> {
 
 	/**
 	 * Renvoie l'objet Class relatif à l'objet édité par ce service.
+	 * 
 	 * @return La classe de l'objet traitée par ce service
 	 */
 	protected abstract Class<T> getObjectClass();
+	
+	/**
+	 * Return the object Primary Key
+	 * @return
+	 */
+	protected abstract Serializable getObjectId(T object);
 
 	/**
 	 * Renvoi le nombre d'enregistrement maximum ramené par une recherche
+	 * 
 	 * @return
 	 */
 	public int getMaxResults() {
@@ -131,218 +135,208 @@ public abstract class GenericService<T> implements Service<T> {
 
 	/**
 	 * Enregistre en base la liste d'objets passés en paramètre.
-	 *
+	 * 
 	 * @param listeObject la liste d'objets à enregistrer
 	 * @throws ServiceException
 	 * @return L'objet enregistré
 	 */
-	public List<Serializable> save(List<T> listeObject) throws ServiceException {
-		List<Serializable> listeReturn = new LinkedList<Serializable>();
-
-		Transaction tx = null;
+	public void save(List<T> listeObject) throws ServiceException {
 		try {
-			Session session = currentSession();
-			tx = session.beginTransaction();
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
 
-			for (int i = 0; i < listeObject.size(); i++)
-				listeReturn.add(session.save(listeObject.get(i)));
-
-			commitTransaction(tx);
-			return listeReturn;
-		} catch (HibernateException e) {
+			for (int i = 0; i < listeObject.size(); i++) {
+				T object = listeObject.get(i);
+				entityManager.persist(object);
+			}
+			commitTransaction();
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			rollbackTransaction(tx);
+			rollbackTransaction();
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 	}
 
 	/**
 	 * Crée en base l'objet passé en paramètre
-	 *
+	 * 
 	 * @param object L'objet à créer
 	 * @return l'objet créé (avec son id)
 	 * @throws ServiceException
 	 */
-	public Serializable save(T object) throws ServiceException {
-		Transaction tx = null;
+	public void save(T object) throws ServiceException {
 		try {
-			Session session = currentSession();
-			tx = session.beginTransaction();
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
 
-			Serializable id = session.save(object);
+			entityManager.persist(object);
 
-			commitTransaction(tx);
-			return id;
-		} catch (HibernateException e) {
+			commitTransaction();
+//			return id;
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			rollbackTransaction(tx);
+			rollbackTransaction();
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 	}
 
 	/**
 	 * Met à jour en base l'objet passé en paramètre
-	 *
+	 * 
 	 * @param object L'objet à mettre à jour
 	 * @throws ServiceException
 	 * @return l'objet mis à jour
 	 */
 	public void update(T object) throws ServiceException {
-		Session session;
-		Transaction tx = null;
 		try {
-			session = currentSession();
-			tx = session.beginTransaction();
-			session.update(object);
-			commitTransaction(tx);
-		} catch (HibernateException e) {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+			//((Session)entityManager.getDelegate()).update(object);
+			entityManager.merge(object);
+			commitTransaction();
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			rollbackTransaction(tx);
+			rollbackTransaction();
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 	}
 
 	/**
 	 * Met à jour en base l'objet passé en paramètre
-	 *
+	 * 
 	 * @param object L'objet à mettre à jour
 	 * @throws ServiceException
 	 * @return l'objet mis à jour
 	 */
 	public void update(List<T> objects) throws ServiceException {
-		Session session;
-		Transaction tx = null;
 		try {
-			session = currentSession();
-			tx = session.beginTransaction();
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
 			for (T object : objects) {
-				session.update(object);
+//				((Session)entityManager.getDelegate()).update(object);
+				entityManager.merge(object);
 			}
-			commitTransaction(tx);
-		} catch (HibernateException e) {
+			commitTransaction();
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			rollbackTransaction(tx);
+			rollbackTransaction();
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 	}
 
 	/**
 	 * Supprime en base la liste d'objets passés en paramètre.
-	 *
+	 * 
 	 * @param listeObject la liste d'objets à supprimer
 	 * @throws ServiceException
 	 */
 	@SuppressWarnings("unchecked")
-	public void deleteById(List<? extends Serializable> listeObject)
-			throws ServiceException {
-		Session session;
-		Transaction tx = null;
+	public void deleteById(List<? extends Serializable> listeObject) throws ServiceException {
 		try {
-			session = currentSession();
-			tx = session.beginTransaction();
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
 
 			for (Serializable serializable : listeObject) {
-				Object object = session.load(getObjectClass(), serializable);
-				session.delete(object);
+				Object object = entityManager.find(getObjectClass(), serializable);
+				entityManager.remove(object);
 			}
 
-			commitTransaction(tx);
-		} catch (HibernateException e) {
+			commitTransaction();
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			rollbackTransaction(tx);
+			rollbackTransaction();
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 
 	}
 
 	/**
 	 * Supprime l'objet correspondant à l'id passé en paramètre
-	 *
+	 * 
 	 * @param id L'id de l'objet à supprimer
 	 * @throws ServiceException
 	 */
 	public void deleteById(Serializable id) throws ServiceException {
-		Transaction tx = null;
 		try {
-			Session session = currentSession();
-			tx = session.beginTransaction();
-			Object object = session.load(getObjectClass(), id);
-			session.delete(object);
-			commitTransaction(tx);
-		} catch (HibernateException e) {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+			Object object = entityManager.find(getObjectClass(), id);
+			entityManager.remove(object);
+			commitTransaction();
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			rollbackTransaction(tx);
+			rollbackTransaction();
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 	}
 
 	/**
-	 * Supprime en base la liste d'objet passée en paramètre.
-	 * Si le paramètre session est null, alors crée la session et la transaction.
-	 *
+	 * Supprime en base la liste d'objet passée en paramètre. Si le paramètre
+	 * session est null, alors crée la session et la transaction.
+	 * 
 	 * @param object les objets à supprimer
 	 * @throws ServiceException
 	 */
 	public void delete(List<T> objects) throws ServiceException {
-		Transaction tx = null;
 		try {
-			Session session = currentSession();
-			tx = session.beginTransaction();
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
 
 			for (T object : objects) {
-				session.delete(object);
+				object = entityManager.find(getObjectClass(), getObjectId(object));
+				entityManager.remove(object);
 			}
 
-			commitTransaction(tx);
-		} catch (HibernateException e) {
+			commitTransaction();
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			rollbackTransaction(tx);
+			rollbackTransaction();
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 	}
 
 	/**
-	 * Supprime en base l'objet passé en paramètre.
-	 * Si le paramètre session est null, alors crée la session et la transaction.
-	 *
+	 * Supprime en base l'objet passé en paramètre. Si le paramètre session est
+	 * null, alors crée la session et la transaction.
+	 * 
 	 * @param object l'objet à supprimer
 	 * @throws ServiceException
 	 */
 	public void delete(T object) throws ServiceException {
-		Transaction tx = null;
 		try {
-			Session session = currentSession();
-			tx = session.beginTransaction();
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
 
-			session.delete(object);
+			object = entityManager.find(getObjectClass(), getObjectId(object));
+			entityManager.remove(object);
 
-			commitTransaction(tx);
-		} catch (HibernateException e) {
+			commitTransaction();
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			rollbackTransaction(tx);
+			rollbackTransaction();
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 	}
 
 	/**
 	 * Récupère l'objet correspondant à l'id passé en paramètre
-	 *
+	 * 
 	 * @param id L'id de l'objet à récupérer
 	 * @throws ServiceException
 	 * @return L'objet récupéré
@@ -354,40 +348,41 @@ public abstract class GenericService<T> implements Service<T> {
 	/**
 	 * Récupère l'objet correspondant à l'id passé en paramètre. Les descendants
 	 * de l'objet sont initialisés si isChildrenInitialized vaut true.
-	 *
+	 * 
 	 * @param id L'id de l'objet à récupérer
-	 * @param initializeChildren indique si les descendants de l'objet doivent être initialiser.
+	 * @param initializeChildren indique si les descendants de l'objet doivent
+	 *            être initialiser.
 	 * @throws ServiceException
 	 * @return L'objet récupéré
 	 */
 	@SuppressWarnings("unchecked")
 	public T get(Serializable id, boolean initializeChildren) throws ServiceException {
 		try {
-			Session session = currentSession();
-			T object = (T) session.get(getObjectClass(), id);
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+			T object = (T) entityManager.find(getObjectClass(), id);
 			if (object == null) {
-				throw new ServiceException("Object Not Found (id="+id+')');
+				throw new ServiceException("Object Not Found (id=" + id + ')');
 			}
-			Hibernate.initialize(object);
 			if (initializeChildren) {
 				initializeChildren(object);
 			}
 			return object;
-		} catch (ObjectNotFoundException e) {
+		} catch (EntityNotFoundException e) {
 			logger.error(e.getCause(), e);
-			throw new ServiceException("Object Not Found (id="+id+')', e);
-		} catch (HibernateException e) {
+			throw new ServiceException("Object Not Found (id=" + id + ')', e);
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 
 	}
 
 	/**
 	 * Récupère la liste complète des objets
-	 *
+	 * 
 	 * @throws ServiceException
 	 * @return la liste des objets
 	 */
@@ -398,16 +393,19 @@ public abstract class GenericService<T> implements Service<T> {
 
 	/**
 	 * Récupère la liste complète des objets
-	 *
-	 * @param application_id l'id de l'application pour laquelle il faut récupérer les objets
+	 * 
+	 * @param application_id l'id de l'application pour laquelle il faut
+	 *            récupérer les objets
 	 * @throws ServiceException
 	 * @return la liste des objets
 	 */
 	@SuppressWarnings("unchecked")
 	public List<T> list(boolean isChildrenInitialized) throws ServiceException {
 		try {
-			Session session = currentSession();
-			Criteria criteria = session.createCriteria(getObjectClass());
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+
+			Criteria criteria = ((Session) entityManager.getDelegate()).createCriteria(getObjectClass());
 			criteria.setMaxResults(getMaxResults());
 			List<T> returnedList = (List<T>) criteria.setCacheable(getCacheable()).list();
 			if (isChildrenInitialized) {
@@ -416,17 +414,18 @@ public abstract class GenericService<T> implements Service<T> {
 				}
 			}
 			return returnedList;
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			throw new DatabaseServiceException(e);
 		} finally {
-			closeSession();
+			closeEntityManager();
 		}
 	}
 
 	/**
-	 * Récupère la liste des objets correspondant aux critères de l'objet passé en paramètre
-	 *
+	 * Récupère la liste des objets correspondant aux critères de l'objet passé
+	 * en paramètre
+	 * 
 	 * @param object L'objet contenant les critères
 	 * @throws ServiceException
 	 * @return la liste des objets trouvé
@@ -444,32 +443,28 @@ public abstract class GenericService<T> implements Service<T> {
 	 * @return la liste des objets trouvé
 	 */
 	@SuppressWarnings("unchecked")
-	public List<T> search(T exampleEntity, boolean initializeSecondLevelObjects) throws ServiceException {
-		try {
-			Session session = currentSession();
-			Criteria criteria = session.createCriteria(getObjectClass());
-			Example example = Example.create(exampleEntity);
-			example.setPropertySelector(NOT_NULL_OR_EMPTY);
-			example.ignoreCase();
-			example.enableLike();
-			logger.debug("Search example object: "+example.toString());
-			criteria.add(example);
-			addAssociationCriteria(criteria, exampleEntity);
-			criteria.setMaxResults(getMaxResults());
-			criteria.setCacheable(getCacheable());
-            return (List<T>) criteria.list();
-		} catch (HibernateException e) {
-			logger.error(e.getCause(), e);
-			throw new DatabaseServiceException(e);
-		} finally {
-			closeSession();
-		}
+	public List<T> search(final T exampleEntity, final boolean initializeSecondLevelObjects) throws ServiceException {
+        Validate.notNull(exampleEntity, "Example entity must not be null");
+        logger.debug("Search: "+exampleEntity.toString());
+        Session session = ((Session) currentEntityManager().getDelegate());
+        Criteria criteria = session.createCriteria(exampleEntity.getClass());
+		Example example = Example.create(exampleEntity);
+		example.setPropertySelector(NOT_NULL_OR_EMPTY);
+		example.ignoreCase();
+		example.enableLike();
+		logger.debug("Search example object: "+example.toString());
+		criteria.add(example);
+		addAssociationCriteria(criteria, exampleEntity);
+		criteria.setMaxResults(getMaxResults());
+		criteria.setCacheable(getCacheable());
+        return (List<T>) criteria.list();
 	}
 
 	protected abstract void addAssociationCriteria(Criteria criteria, T object);
 
 	/**
 	 * Si l'objet a des relations cette méthode doit être implémenté
+	 * 
 	 * @param object
 	 */
 	protected void initializeChildren(T object) {
@@ -478,30 +473,29 @@ public abstract class GenericService<T> implements Service<T> {
 
 	/**
 	 * Effectue le commit de la transaction passé en paramètre.
+	 * 
 	 * @param tx La transaction à commité
 	 */
-	protected static void commitTransaction(Transaction tx) throws ServiceException {
+	protected void commitTransaction() throws ServiceException {
 		try {
-			tx.commit();
-		} catch (JDBCException e) {
-			Logger logger = Logger.getLogger(GenericService.class);
-			String errorMessage = "";
-			// 1 == Violation de contrainte unique
-			if (e.getErrorCode() == 1) {
-				errorMessage = "UniqueConstraintViolation";
+			EntityTransaction transaction = currentEntityManager().getTransaction();
+			if (transaction.isActive()) {
+				transaction.commit();
 			}
-			// 2292 == Contrainte d'integrité non respectée
-			else if (e.getErrorCode() == 2292) {
-				errorMessage = "ConstraintViolation";
-			}
-			logger.error(errorMessage, e);
-			rollbackTransaction(tx);
-			throw new DatabaseServiceException(errorMessage, e);
+		} catch (Exception e) {
+			rollbackTransaction();
+			throw new DatabaseServiceException("Can't commit transaction", e);
 		}
 	}
 
-	protected static void rollbackTransaction(Transaction tx) {
-		if (tx != null)
-			tx.rollback();
+	protected void rollbackTransaction() throws ServiceException {
+		try {
+			EntityTransaction transaction = currentEntityManager().getTransaction();
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+		} catch (PersistenceException e) {
+			throw new DatabaseServiceException("Can't rollback transaction", e);
+		}
 	}
 }

@@ -10,11 +10,7 @@ import java.util.Random;
 import junit.framework.Test;
 import junit.framework.TestCase;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.UrlResource;
 
@@ -22,24 +18,18 @@ import org.springframework.core.io.UrlResource;
  *
  */
 public abstract class AbstractServiceTest<T> extends TestCase {
-	
-	static {
-		ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%-5p [%C{1}.%M:%L] - %m%n"));
-		BasicConfigurator.configure(appender);
-		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger("org.hibernate").setLevel(Level.WARN);
-	}
 
 	protected Logger logger = Logger.getLogger(getClass());
+
+	protected static boolean initialized = false;
+	protected static int currentExecutedTestCount = 0;
+	protected static int totalTestCount = 0;
+
+	protected static XmlBeanFactory factory;
 
 	protected ServiceLocator serviceLocator;
 	protected Service<T> service;
 	protected Random randomizer;
-
-	protected static XmlBeanFactory factory;
-	protected static boolean initialized = false;
-	protected static int currentExecutedTestCount = 0;
-	protected static int totalTestCount = 0;
 	
 	public AbstractServiceTest() {
 		super();
@@ -111,110 +101,118 @@ public abstract class AbstractServiceTest<T> extends TestCase {
 	 */
 	protected void destroy() throws Exception {
 		logger.info("Destroying Services");
-//		GenericService.destroy();
+		factory.destroySingletons();
+//		ServiceLocator.releaseInstance();
 		initialized = false;
 	}
 
-	
 	public void testAdd() throws ServiceException {
 		T object = createObject();
-		Long id = (Long) service.save(object);
-		logger.info("Inserted object with id: "+id);
+		service.save(object);
+		logger.info("Inserted object with id: " + extractId(object));
 	}
 
 	public void testAddList() throws ServiceException {
 		List<T> objects = createObjects(5);
 		service.save(objects);
-		logger.info("Inserted "+objects.size()+" objects");
+		logger.info("Inserted " + objects.size() + " objects");
 	}
 
 	public void testList() throws ServiceException {
 		List<T> objects = service.list();
 		assertTrue(objects.size() != 0);
-		logger.info("Objects extracted count : "+objects.size());
+		logger.info("Objects extracted count : " + objects.size());
 	}
-	
+
 	public void testListInitializeChildren() throws ServiceException {
 		List<T> objects = service.list(true);
 		assertTrue(objects.size() != 0);
-		logger.info("Objects extracted count : "+objects.size());
+		logger.info("Objects extracted count : " + objects.size());
 	}
 
 	public void testGet() throws ServiceException {
 		List<T> objects = service.list();
-		if (objects.size() == 0)
+		if (objects.size() == 0) {
 			fail("No item retreived by getList");
+		}
 		Serializable id = extractId(objects.get(0));
-		logger.info("Getting object with id: "+id);
+		logger.info("Getting object with id: " + id);
 		service.get(id);
 	}
-	
+
 	public void testUpdate() throws ServiceException {
 		List<T> objects = service.list();
-		if (objects.size() == 0)
+		if (objects.size() == 0) {
 			fail("No item retreived by getList");
+		}
 		Serializable id = extractId(objects.get(0));
 		T object = service.get(id);
 		updateObject(object);
-		logger.info("Updating object with id: "+id);
+		logger.info("Updating object with id: " + id);
 		service.update(object);
 	}
-	
+
 	public void testGetWithChildren() throws ServiceException {
 		List<T> objects = service.list();
-		if (objects.size() == 0)
+		if (objects.size() == 0) {
 			fail("No item retreived by getList");
+		}
 		Serializable id = extractId(objects.get(0));
-		logger.info("Getting object with id: "+id);
+		logger.info("Getting object with id: " + id);
 		service.get(id, true);
 	}
-	
+
 	public void testSearch() throws ServiceException {
 		List<T> objects = service.list();
-		if (objects.size() == 0)
+		if (objects.size() == 0) {
 			fail("No item retreived by getList");
+		}
 		T fromObject = objects.get(0);
 		T object = createSearchObject(fromObject);
 		List<T> categories = service.search(object);
-		logger.info("Search found "+categories.size()+" objects");
-		assertTrue(categories.size() == 1);
+		logger.info("Search found " + categories.size() + " objects");
+		assertTrue(categories.size() == 6);
 		assertEquals(fromObject, categories.get(0));
 	}
 
 	public void testDeleteById() throws ServiceException {
 		List<T> objects = service.list();
-		if (objects.size() == 0)
+		if (objects.size() == 0) {
 			fail("No item retreived by getList");
+		}
 		Serializable id = extractId(objects.get(0));
-		logger.info("Deleting object with id: "+id);
+		logger.info("Deleting object with id: " + id);
 		service.deleteById(id);
 	}
-	
+
 	public void testDeleteByIdList() throws ServiceException {
 		List<T> objects = service.list();
-		if (objects.size() < 2)
+		if (objects.size() < 2) {
 			fail("No item retreived by getList");
+		}
 		List<Serializable> ids = new LinkedList<Serializable>();
 		ids.add(extractId(objects.get(0)));
 		ids.add(extractId(objects.get(1)));
-		logger.info("Deleting "+ids.size()+" objects");
+		logger.info("Deleting " + ids.size() + " objects");
 		service.deleteById(ids);
 	}
 
 	public void testDelete() throws ServiceException {
 		List<T> objects = service.list();
-		if (objects.size() == 0)
+		if (objects.size() == 0) {
 			fail("No item retreived by getList");
+		}
 		T object = objects.get(0);
-		logger.info("Deleting object with id: "+extractId(objects.get(0)));
-		service.delete(object);
+		logger.info("Deleting object with id: " + extractId(object));
+		service.deleteById(extractId(object));
 	}
-	
+
 	public void testDeleteList() throws ServiceException {
 		List<T> objects = service.list();
-		if (objects.size() == 0)
+		if (objects.size() == 0) {
 			fail("No item retreived by getList");
-		logger.info("Deleting "+objects.size()+" objects");
+		}
+		logger.info("Deleting " + objects.size() + " objects");
 		service.delete(objects);
 	}
 
@@ -231,31 +229,27 @@ public abstract class AbstractServiceTest<T> extends TestCase {
 	protected abstract void updateObject(T object);
 
 	protected abstract T createSearchObject(T fromObject);
-	
+
 	protected abstract Serializable extractId(T object);
-	
+
 	protected abstract Service<T> getService() throws ServiceException;
 }
 /*
-package org.xebia.service;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-public class AllServiceTests {
-
-	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for org.xebia.service");
-		//JUnit-BEGIN
-		suite.addTestSuite(CategorieServiceTestCase.class);
-		suite.addTestSuite(MatiereServiceTestCase.class);
-		suite.addTestSuite(CompetenceServiceTestCase.class);
-		suite.addTestSuite(EleveServiceTestCase.class);
-		suite.addTestSuite(NoteServiceTestCase.class);
-		suite.addTestSuite(LivretServiceTestCase.class);
-		//JUnit-END
-		return suite;
-	}
-
-}
-*/
+ * package org.xebia.service;
+ * 
+ * import junit.framework.Test; import junit.framework.TestSuite;
+ * 
+ * public class AllServiceTests {
+ * 
+ * 		public static Test suite() {
+ *			TestSuite suite = new TestSuite("Test for org.xebia.service");
+ * 			suite.addTestSuite(CategorieServiceTestCase.class);
+ * 			suite.addTestSuite(MatiereServiceTestCase.class);
+ * 			suite.addTestSuite(CompetenceServiceTestCase.class);
+ * 			suite.addTestSuite(EleveServiceTestCase.class);
+ * 			suite.addTestSuite(NoteServiceTestCase.class);
+ * 			suite.addTestSuite(LivretServiceTestCase.class);
+ * 			return suite; 
+ * 		}
+ * }
+ */

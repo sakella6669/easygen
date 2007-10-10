@@ -1,41 +1,33 @@
-package ${project.serviceModuleConfig.packageName};
+package test.service;
 
 import java.io.Serializable;
-import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
+
 import org.apache.commons.beanutils.PropertyUtils;
-
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
-import org.hibernate.JDBCException;
-import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.collection.AbstractPersistentCollection;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Example.PropertySelector;
 import org.hibernate.type.Type;
 
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.springframework.util.Assert;
-
 /**
- *
+ * Defines the generic method (save, update, delete, search, etc) for all kind of objets
  */
-public abstract class GenericService<T> extends HibernateDaoSupport implements Service<T> {
+public abstract class GenericService<T> implements Service<T> {
 
 	public static final int DEFAULT_MAX_RESULTS = 200;
 	public static final PropertySelector NOT_NULL_OR_EMPTY = new NotNullOrEmptyPropertySelector();
-	
+
 	private static final class NotNullOrEmptyPropertySelector implements PropertySelector {
+
 		private static final long serialVersionUID = 1L;
 
 		public boolean include(Object object, String propertyName, Type type) {
@@ -48,10 +40,12 @@ public abstract class GenericService<T> extends HibernateDaoSupport implements S
 				if (property == null) {
 					return false;
 				}
-				if ( (property instanceof String) && ((String) property).trim().length() == 0) {
+				if ((property instanceof String)
+						&& ((String) property).trim().length() == 0) {
 					return false;
 				}
-				if ( (property instanceof Number) && ((Number) property).longValue() == 0) {
+				if ((property instanceof Number)
+						&& ((Number) property).longValue() == 0) {
 					return false;
 				}
 				return true;
@@ -59,16 +53,43 @@ public abstract class GenericService<T> extends HibernateDaoSupport implements S
 				return false;
 			}
 		}
-		
+
 		private Object readResolve() {
 			return NOT_NULL_OR_EMPTY;
 		}
 	}
 
-	protected Logger logger = Logger.getLogger(getClass());
+	private EntityManagerFactory entityManagerFactory;
 
+	public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+		this.entityManagerFactory = entityManagerFactory;
+	}
+
+	private final ThreadLocal<EntityManager> entityManagerCache = new ThreadLocal<EntityManager>();
+
+	protected EntityManager currentEntityManager() throws PersistenceException {
+		EntityManager entityManager = (EntityManager) entityManagerCache.get();
+		// Ouvre une nouvelle Session, si ce Thread n'en a aucune
+		if (entityManager == null) {
+			// Retrieve an application managed entity manager
+			entityManager = entityManagerFactory.createEntityManager();
+			entityManagerCache.set(entityManager);
+		}
+		return entityManager;
+	}
+
+	protected void closeEntityManager() throws PersistenceException {
+		EntityManager entityManager = (EntityManager) entityManagerCache.get();
+		entityManagerCache.set(null);
+		if (entityManager != null)
+			entityManager.close();
+	}
+	
+	protected final Logger logger = Logger.getLogger(getClass());
+	
 	/**
 	 * Renvoie true si les données de la requête peuvent être mises en cache
+	 * 
 	 * @return true/false
 	 */
 	protected boolean getCacheable() {
@@ -77,12 +98,20 @@ public abstract class GenericService<T> extends HibernateDaoSupport implements S
 
 	/**
 	 * Renvoie l'objet Class relatif à l'objet édité par ce service.
+	 * 
 	 * @return La classe de l'objet traitée par ce service
 	 */
 	protected abstract Class<T> getObjectClass();
+	
+	/**
+	 * Return the object Primary Key
+	 * @return
+	 */
+	protected abstract Serializable getObjectId(T object);
 
 	/**
 	 * Renvoi le nombre d'enregistrement maximum ramené par une recherche
+	 * 
 	 * @return
 	 */
 	public int getMaxResults() {
@@ -91,119 +120,208 @@ public abstract class GenericService<T> extends HibernateDaoSupport implements S
 
 	/**
 	 * Enregistre en base la liste d'objets passés en paramètre.
-	 *
+	 * 
 	 * @param listeObject la liste d'objets à enregistrer
 	 * @throws ServiceException
 	 * @return L'objet enregistré
 	 */
-	@SuppressWarnings("unchecked")
-	public List<Serializable> save(final List<T> listeObject) throws ServiceException {
-//		getHibernateTemplate().saveOrUpdateAll(objects);
-		List<Serializable> listeReturn = (List<Serializable>) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				List<Serializable> listeReturn = new LinkedList<Serializable>();
-				for (int i = 0; i < listeObject.size(); i++)
-					listeReturn.add(session.save(listeObject.get(i)));
+	public void save(List<T> listeObject) throws ServiceException {
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
 
-				return listeReturn;
+			for (int i = 0; i < listeObject.size(); i++) {
+				T object = listeObject.get(i);
+				entityManager.persist(object);
 			}
-		});
-		return listeReturn;
+			commitTransaction();
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction();
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
 	}
 
 	/**
 	 * Crée en base l'objet passé en paramètre
-	 *
+	 * 
 	 * @param object L'objet à créer
 	 * @return l'objet créé (avec son id)
 	 * @throws ServiceException
 	 */
-	public Serializable save(T object) throws ServiceException {
-		return getHibernateTemplate().save(object);
+	public void save(T object) throws ServiceException {
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+
+			entityManager.persist(object);
+
+			commitTransaction();
+//			return id;
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction();
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
 	}
 
 	/**
 	 * Met à jour en base l'objet passé en paramètre
-	 *
+	 * 
 	 * @param object L'objet à mettre à jour
 	 * @throws ServiceException
 	 * @return l'objet mis à jour
 	 */
 	public void update(T object) throws ServiceException {
-		getHibernateTemplate().update(object);
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+			//((Session)entityManager.getDelegate()).update(object);
+			entityManager.merge(object);
+			commitTransaction();
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction();
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
 	}
 
 	/**
 	 * Met à jour en base l'objet passé en paramètre
-	 *
+	 * 
 	 * @param object L'objet à mettre à jour
 	 * @throws ServiceException
 	 * @return l'objet mis à jour
 	 */
 	public void update(List<T> objects) throws ServiceException {
-		getHibernateTemplate().saveOrUpdateAll(objects);
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+			for (T object : objects) {
+//				((Session)entityManager.getDelegate()).update(object);
+				entityManager.merge(object);
+			}
+			commitTransaction();
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction();
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
 	}
 
 	/**
 	 * Supprime en base la liste d'objets passés en paramètre.
-	 *
+	 * 
 	 * @param listeObject la liste d'objets à supprimer
 	 * @throws ServiceException
 	 */
 	@SuppressWarnings("unchecked")
-	public void deleteById(final List<? extends Serializable> listeObject) throws ServiceException {
-		getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				for (Serializable serializable : listeObject) {
-					Object object = session.load(getObjectClass(), serializable);
-					session.delete(object);
-				}
-				return null;
+	public void deleteById(List<? extends Serializable> listeObject) throws ServiceException {
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+
+			for (Serializable serializable : listeObject) {
+				Object object = entityManager.find(getObjectClass(), serializable);
+				entityManager.remove(object);
 			}
-		});
+
+			commitTransaction();
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction();
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
+
 	}
 
 	/**
 	 * Supprime l'objet correspondant à l'id passé en paramètre
-	 *
+	 * 
 	 * @param id L'id de l'objet à supprimer
 	 * @throws ServiceException
 	 */
-	public void deleteById(final Serializable id) throws ServiceException {
-		getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Object object = session.load(getObjectClass(), id);
-				session.delete(object);
-				return null;
-			}
-		});
+	public void deleteById(Serializable id) throws ServiceException {
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+			Object object = entityManager.find(getObjectClass(), id);
+			entityManager.remove(object);
+			commitTransaction();
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction();
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
 	}
 
 	/**
-	 * Supprime en base la liste d'objet passée en paramètre.
-	 * Si le paramètre session est null, alors crée la session et la transaction.
-	 *
+	 * Supprime en base la liste d'objet passée en paramètre. Si le paramètre
+	 * session est null, alors crée la session et la transaction.
+	 * 
 	 * @param object les objets à supprimer
 	 * @throws ServiceException
 	 */
-	public void delete(final List<T> objects) throws ServiceException {
-		getHibernateTemplate().deleteAll(objects);
+	public void delete(List<T> objects) throws ServiceException {
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+
+			for (T object : objects) {
+				object = entityManager.find(getObjectClass(), getObjectId(object));
+				entityManager.remove(object);
+			}
+
+			commitTransaction();
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction();
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
 	}
 
 	/**
-	 * Supprime en base l'objet passé en paramètre.
-	 * Si le paramètre session est null, alors crée la session et la transaction.
-	 *
+	 * Supprime en base l'objet passé en paramètre. Si le paramètre session est
+	 * null, alors crée la session et la transaction.
+	 * 
 	 * @param object l'objet à supprimer
 	 * @throws ServiceException
 	 */
 	public void delete(T object) throws ServiceException {
-		getHibernateTemplate().delete(object);
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+
+			object = entityManager.find(getObjectClass(), getObjectId(object));
+			entityManager.remove(object);
+
+			commitTransaction();
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			rollbackTransaction();
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
 	}
 
 	/**
 	 * Récupère l'objet correspondant à l'id passé en paramètre
-	 *
+	 * 
 	 * @param id L'id de l'objet à récupérer
 	 * @throws ServiceException
 	 * @return L'objet récupéré
@@ -215,33 +333,41 @@ public abstract class GenericService<T> extends HibernateDaoSupport implements S
 	/**
 	 * Récupère l'objet correspondant à l'id passé en paramètre. Les descendants
 	 * de l'objet sont initialisés si isChildrenInitialized vaut true.
-	 *
+	 * 
 	 * @param id L'id de l'objet à récupérer
-	 * @param initializeChildren indique si les descendants de l'objet doivent être initialiser.
+	 * @param initializeChildren indique si les descendants de l'objet doivent
+	 *            être initialiser.
 	 * @throws ServiceException
 	 * @return L'objet récupéré
 	 */
 	@SuppressWarnings("unchecked")
-	public T get(final Serializable id, final boolean initializeChildren) throws ServiceException {
-		T object = (T) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				T object = (T) session.get(getObjectClass(), id);
-				if (object == null) {
-					throw new HibernateException("Object Not Found (id="+id+')');
-				}
-				Hibernate.initialize(object);
-				if (initializeChildren) {
-					initializeChildren(object);
-				}
-				return object;
+	public T get(Serializable id, boolean initializeChildren) throws ServiceException {
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+			T object = (T) entityManager.find(getObjectClass(), id);
+			if (object == null) {
+				throw new ServiceException("Object Not Found (id=" + id + ')');
 			}
-		});
-		return object;
+			if (initializeChildren) {
+				initializeChildren(object);
+			}
+			return object;
+		} catch (EntityNotFoundException e) {
+			logger.error(e.getCause(), e);
+			throw new ServiceException("Object Not Found (id=" + id + ')', e);
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
+
 	}
 
 	/**
 	 * Récupère la liste complète des objets
-	 *
+	 * 
 	 * @throws ServiceException
 	 * @return la liste des objets
 	 */
@@ -252,33 +378,39 @@ public abstract class GenericService<T> extends HibernateDaoSupport implements S
 
 	/**
 	 * Récupère la liste complète des objets
-	 *
-	 * @param application_id l'id de l'application pour laquelle il faut récupérer les objets
+	 * 
+	 * @param application_id l'id de l'application pour laquelle il faut
+	 *            récupérer les objets
 	 * @throws ServiceException
 	 * @return la liste des objets
 	 */
 	@SuppressWarnings("unchecked")
-	public List<T> list(final boolean isChildrenInitialized) throws ServiceException {
-		List<T> objects = (List<T>) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Criteria criteria = session.createCriteria(getObjectClass());
-				criteria.setMaxResults(getMaxResults());
-				criteria.setCacheable(getCacheable());
-				List<T> returnedList = (List<T>) criteria.list();
-				if (isChildrenInitialized) {
-					for (T object : returnedList) {
-						initializeChildren(object);
-					}
+	public List<T> list(boolean isChildrenInitialized) throws ServiceException {
+		try {
+			EntityManager entityManager = currentEntityManager();
+			entityManager.getTransaction().begin();
+
+			Criteria criteria = ((Session) entityManager.getDelegate()).createCriteria(getObjectClass());
+			criteria.setMaxResults(getMaxResults());
+			List<T> returnedList = (List<T>) criteria.setCacheable(getCacheable()).list();
+			if (isChildrenInitialized) {
+				for (T object : returnedList) {
+					initializeChildren(object);
 				}
-				return returnedList;
 			}
-		});
-		return objects;
+			return returnedList;
+		} catch (PersistenceException e) {
+			logger.error(e.getCause(), e);
+			throw new DatabaseServiceException(e);
+		} finally {
+			closeEntityManager();
+		}
 	}
 
 	/**
-	 * Récupère la liste des objets correspondant aux critères de l'objet passé en paramètre
-	 *
+	 * Récupère la liste des objets correspondant aux critères de l'objet passé
+	 * en paramètre
+	 * 
 	 * @param object L'objet contenant les critères
 	 * @throws ServiceException
 	 * @return la liste des objets trouvé
@@ -297,32 +429,58 @@ public abstract class GenericService<T> extends HibernateDaoSupport implements S
 	 */
 	@SuppressWarnings("unchecked")
 	public List<T> search(final T exampleEntity, final boolean initializeSecondLevelObjects) throws ServiceException {
-        Assert.notNull(exampleEntity, "Example entity must not be null");
+        Validate.notNull(exampleEntity, "Example entity must not be null");
         logger.debug("Search: "+exampleEntity.toString());
-        return (List) getHibernateTemplate().execute(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(exampleEntity.getClass());
-				Example example = Example.create(exampleEntity);
-				example.setPropertySelector(NOT_NULL_OR_EMPTY);
-				example.ignoreCase();
-				example.enableLike();
-				logger.debug("Search example object: "+example.toString());
-				criteria.add(example);
-				addAssociationCriteria(criteria, exampleEntity);
-				criteria.setMaxResults(getMaxResults());
-				criteria.setCacheable(getCacheable());
-                return (List<T>) criteria.list();
-            }
-        });
+        Session session = ((Session) currentEntityManager().getDelegate());
+        Criteria criteria = session.createCriteria(exampleEntity.getClass());
+		Example example = Example.create(exampleEntity);
+		example.setPropertySelector(NOT_NULL_OR_EMPTY);
+		example.ignoreCase();
+		example.enableLike();
+		logger.debug("Search example object: "+example.toString());
+		criteria.add(example);
+		addAssociationCriteria(criteria, exampleEntity);
+		criteria.setMaxResults(getMaxResults());
+		criteria.setCacheable(getCacheable());
+        return (List<T>) criteria.list();
 	}
 
 	protected abstract void addAssociationCriteria(Criteria criteria, T object);
 
 	/**
 	 * Si l'objet a des relations cette méthode doit être implémenté
+	 * 
 	 * @param object
 	 */
 	protected void initializeChildren(T object) {
 
+	}
+
+	/**
+	 * Effectue le commit de la transaction passé en paramètre.
+	 * 
+	 * @param tx La transaction à commité
+	 */
+	protected void commitTransaction() throws ServiceException {
+		try {
+			EntityTransaction transaction = currentEntityManager().getTransaction();
+			if (transaction.isActive()) {
+				transaction.commit();
+			}
+		} catch (Exception e) {
+			rollbackTransaction();
+			throw new DatabaseServiceException("Can't commit transaction", e);
+		}
+	}
+
+	protected void rollbackTransaction() throws ServiceException {
+		try {
+			EntityTransaction transaction = currentEntityManager().getTransaction();
+			if (transaction.isActive()) {
+				transaction.rollback();
+			}
+		} catch (PersistenceException e) {
+			throw new DatabaseServiceException("Can't rollback transaction", e);
+		}
 	}
 }
