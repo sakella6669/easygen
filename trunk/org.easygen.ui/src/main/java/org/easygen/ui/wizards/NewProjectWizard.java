@@ -321,6 +321,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 			logger.warn("Impossible d'écrire la configuration EasyGen", e);
 		}
 		progressMonitor.worked(totalWork++);
+		progressMonitor.setTaskName("Trying to invoke Maven");
 		MavenHandler mavenHandler = new MavenHandler();
 		mavenHandler.callMaven(projectConfig.getPath(), "eclipse:eclipse");
 		progressMonitor.worked(totalWork++);

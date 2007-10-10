@@ -28,13 +28,13 @@ public class GeneratorManager {
 		for (Generator generator : generators) {
 			generator.init(projectConfig);
 		}
-		String[] libraries = new String[0];
+//		String[] libraries = new String[0];
 		for (Generator generator : generators) {
 			generator.generate(projectConfig);
-			String[] moduleLibraries = generator.copyLibraries(projectConfig);
-			libraries = merge(libraries, moduleLibraries);
+//			String[] moduleLibraries = generator.copyLibraries(projectConfig);
+//			libraries = merge(libraries, moduleLibraries);
 		}
-		projectConfig.setLibraries(libraries);
+//		projectConfig.setLibraries(libraries);
 		for (Generator generator : generators) {
 			generator.postProcess(projectConfig);
 		}
