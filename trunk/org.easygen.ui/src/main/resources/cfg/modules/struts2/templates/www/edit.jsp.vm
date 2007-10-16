@@ -1,13 +1,24 @@
-
 #set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
 #set ($textFieldSize = "30")
 
-<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
+#if ($isTiles2Engine)
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 <tiles:insertDefinition name="mainLayout">
-  <tiles:putAttribute name="title"  value="Edition d'un objet ${object.className}" />
+  <tiles:putAttribute name="title" value="Edition d'un objet ${object.className}" />
   <tiles:putAttribute name="body">
+#end
+#if ($isSiteMeshEngine)
+<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Edition d'un objet ${object.className}</title>
+</head>
+<body>
+#end
 
 <fieldset title="Edit">
 <legend><b>Edition d'un objet ${objectVarName}</b></legend>
@@ -57,5 +68,11 @@
 <s:url id="listUrl" action="index" />
 <s:a href="%{listUrl}" cssClass="commandLink">Retour &agrave; la liste</s:a>
 
+#if ($isTiles2Engine)
   </tiles:putAttribute>
 </tiles:insertDefinition>
+#end
+#if ($isSiteMeshEngine)
+</body>
+</html>
+#end

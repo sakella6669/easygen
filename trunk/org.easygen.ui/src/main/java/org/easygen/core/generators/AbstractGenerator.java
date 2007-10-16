@@ -180,7 +180,11 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
         }
 	}
 
-	protected void generateFile(Template template, String outputFilePath) throws GenerationException
+	protected void generateFile(String templateFilename, String outputFilePath) throws GenerationException {
+		generateFile(getTemplate(templateFilename), outputFilePath);
+	}
+
+	private void generateFile(Template template, String outputFilePath) throws GenerationException
 	{
 		Validate.notNull(template, "Can't generate file : No given template");
 		try {

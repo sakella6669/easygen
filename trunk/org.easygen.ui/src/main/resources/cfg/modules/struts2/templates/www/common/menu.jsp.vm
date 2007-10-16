@@ -1,9 +1,0 @@
-<%@ taglib prefix="s" uri="/struts-tags" %>
-
-<div id="menu">
-#foreach ($className in $classList)
-#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
-	<s:url id="${lowerClassName}Url" action="index" namespace="/${lowerClassName}" />
-	<p class="menuItem"><s:a href="%{${lowerClassName}Url}">Gestion des ${lowerClassName}s</s:a></p>
-#end
-</div>

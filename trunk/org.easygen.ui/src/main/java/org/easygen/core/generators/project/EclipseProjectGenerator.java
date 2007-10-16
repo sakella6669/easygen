@@ -47,7 +47,7 @@ public class EclipseProjectGenerator extends AbstractGenerator
     	createPath(projectConfig.getSrcPath());
 
     	// Génération du fichier .project
-        generateFile(getTemplate("project.vm"), projectConfig.getPath() + ".project");
+        generateFile("project.vm", projectConfig.getPath() + ".project");
 
         if (projectConfig.getProjectNature().equals(EclipseProjectConfig.WTP_NATURE))
         {
@@ -56,21 +56,21 @@ public class EclipseProjectGenerator extends AbstractGenerator
 
         	// Génération du fichier org.eclipse.wst.common.component
             String filename = "org.eclipse.wst.common.component";
-            generateFile(getTemplate(filename+".vm"), settingsDir + filename);
+            generateFile(filename+".vm", settingsDir + filename);
 
             // Génération du fichier org.eclipse.wst.common.project.facet.core.xml
             filename = "org.eclipse.wst.common.project.facet.core.xml";
-            generateFile(getTemplate(filename+".vm"), settingsDir + filename);
+            generateFile(filename+".vm", settingsDir + filename);
 
             // Génération du fichier org.eclipse.wst.validation.prefs
             filename = "org.eclipse.wst.validation.prefs";
-            generateFile(getTemplate(filename+".vm"), settingsDir + filename);
+            generateFile(filename+".vm", settingsDir + filename);
 
         	createPath(projectConfig.getPath(), BUILDER_DIR);
         	String builderDir = projectConfig.getPath() + BUILDER_DIR + File.separatorChar;
             // Génération du fichier org.eclipse.wst.common.project.facet.core.builder.launch
             filename = "org.eclipse.wst.common.project.facet.core.builder.launch";
-            generateFile(getTemplate(filename+".vm"), builderDir + filename);
+            generateFile(filename+".vm", builderDir + filename);
         }
 	}
 	/**
@@ -82,6 +82,6 @@ public class EclipseProjectGenerator extends AbstractGenerator
     	// TODO Gérer les différences Eclipse 3.2 et 3.3 
         String filename = ".classpath";
 		context.put(LIBRARY_LIST, projectConfig.getLibraries());
-        generateFile(getTemplate("classpath.vm"), projectConfig.getPath() + filename);
+        generateFile("classpath.vm", projectConfig.getPath() + filename);
 	}
 }

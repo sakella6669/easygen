@@ -81,12 +81,12 @@ public class HibernateGenerator extends AbstractGenerator {
 		for (DataObject mapping : mappings) {
 			context.put(OBJECT, mapping);
 			String javaFilename = createJavaFilename(dataModuleConfig, mapping);
-			generateFile(getTemplate("class.java.vm"), projectConfig.getSrcPath() + javaFilename);
+			generateFile("class.java.vm", projectConfig.getSrcPath() + javaFilename);
 			if (dataModuleConfig.isUseAnnotations() == true) {
 				hbmList.add(packageName + '.' + mapping.getClassName());
 			} else {
 				String hbmFilename = createFilename(dataModuleConfig, mapping, MAPPING_FILE_EXTENSION);
-				generateFile(getTemplate("mapping.hbm.vm"), hbmDir + hbmFilename);
+				generateFile("mapping.hbm.vm", hbmDir + hbmFilename);
 				hbmList.add(FilenameUtils.separatorsToUnix(hbmFilename));
 			}
 			context.remove(OBJECT);
@@ -99,12 +99,12 @@ public class HibernateGenerator extends AbstractGenerator {
 		String hibernateDialect = getConfiguration().getString(databaseType + ".dialect");
 		context.put(HIBERNATE_DIALECT, hibernateDialect);
 		context.put(CLASS_LIST, hbmList);
-//		generateFile(getTemplate("hibernate.cfg.vm"), projectConfig.getCfgPath() + HIBERNATE_CFG_FILE);
+//		generateFile("hibernate.cfg.vm", projectConfig.getCfgPath() + HIBERNATE_CFG_FILE);
 		String metaInfPath = projectConfig.getCfgPath() + META_INF_DIR;
 		createPath(metaInfPath);
-		generateFile(getTemplate("persistence.xml.vm"), metaInfPath + JPA_CFG_FILE);
+		generateFile("persistence.xml.vm", metaInfPath + JPA_CFG_FILE);
 		context.put(CLASS_LIST, cachedClassList);
-		generateFile(getTemplate("ehcache.vm"), projectConfig.getCfgPath() + EHCACHE_CFG_FILE);
+		generateFile("ehcache.vm", projectConfig.getCfgPath() + EHCACHE_CFG_FILE);
 	}
 
 	/**

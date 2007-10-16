@@ -156,6 +156,9 @@ public class ProjectConfig
 	}
 	
 	public String[] getLibraries() {
+		if (libraries == null) {
+			return new String[0];
+		}
 		String[] clonedlibrairies = new String[libraries.length];
 		System.arraycopy(libraries, 0, clonedlibrairies, 0, libraries.length);
 		return clonedlibrairies;
