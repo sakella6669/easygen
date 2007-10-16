@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
+#if ($isTiles2Engine)
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+#end
+#if ($isSiteMeshEngine)
+<%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
+#end
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-<title><tiles:getAsString name="title"/></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>${project.name} - 
+#if ($isTiles2Engine)
+<tiles:getAsString name="title"/>
+#end
+#if ($isSiteMeshEngine)
+<decorator:title />
+#end
+</title>
 <s:head theme="css_xhtml"/>
 <link rel="stylesheet" type="text/css" href="<s:url value="/common/styles.css"/>" />
 </head>
@@ -16,13 +28,19 @@
 	<div id="header">
 		<br/>
 		<s:url id="homeUrl" value="/index.jsp" />
-		<s:a href="%{homeUrl}">Easygen</s:a>
+		<s:a href="%{homeUrl}">${project.name}</s:a>
 	</div>
 
 	<table width="90%" border="0">
 	<tr>
 		<td width="30%" valign="top">
-		    <tiles:insertAttribute name="menu"/>
+			<div id="menu">
+			#foreach ($className in $classList)
+			#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+				<s:url id="${lowerClassName}Url" action="index" namespace="/${lowerClassName}" />
+				<p class="menuItem"><s:a href="%{${lowerClassName}Url}">Gestion des ${lowerClassName}s</s:a></p>
+			#end
+			</div>
 		</td>
 		<td valign="top">
 
@@ -50,7 +68,12 @@
 			</div>
 			</s:if>
 
+#if ($isTiles2Engine)
 	        <tiles:insertAttribute name="body"/>
+#end
+#if ($isSiteMeshEngine)
+	        <decorator:body />
+#end
 
 		</td>
 	</tr>

@@ -60,10 +60,10 @@ public class ServiceJavaGenerator extends AbstractGenerator {
 			context.put(OBJECT, object);
 
 			String javaFilename = createJavaFilename(serviceModuleConfig, object.getClassName() + SERVICE_SUFFIX);
-			generateFile(getTemplate("class.java.vm"), projectConfig.getSrcPath() + javaFilename);
+			generateFile("class.java.vm", projectConfig.getSrcPath() + javaFilename);
 
 			javaFilename = createJavaFilename(serviceModuleConfig, object.getClassName() + SERVICE_TESTCASE_SUFFIX);
-			generateFile(getTemplate("testCase.java.vm"), projectConfig.getTestPath() + javaFilename);
+			generateFile("testCase.java.vm", projectConfig.getTestPath() + javaFilename);
 
 			classList.add(object.getClassName());
 			context.remove(OBJECT);
@@ -73,23 +73,23 @@ public class ServiceJavaGenerator extends AbstractGenerator {
 		// Génération de la classe ServiceLocator
 		context.put(CLASS_LIST, classList);
 		String javaFilename = createJavaFilename(serviceModuleConfig, "ServiceLocator");
-		generateFile(getTemplate("ServiceLocator.java.vm"), projectConfig.getSrcPath() + javaFilename);
+		generateFile("ServiceLocator.java.vm", projectConfig.getSrcPath() + javaFilename);
 		context.remove(CLASS_LIST);
 
 		javaFilename = createJavaFilename(serviceModuleConfig, "Service");
-		generateFile(getTemplate("Service.java.vm"), projectConfig.getSrcPath() + javaFilename);
+		generateFile("Service.java.vm", projectConfig.getSrcPath() + javaFilename);
 
 		// Génération de la classe GenericService
 		javaFilename = createJavaFilename(serviceModuleConfig, "GenericService");
-		generateFile(getTemplate("GenericService.java.vm"), projectConfig.getSrcPath() + javaFilename);
+		generateFile("GenericService.java.vm", projectConfig.getSrcPath() + javaFilename);
 
 		// Génération des exceptions
 		javaFilename = createJavaFilename(serviceModuleConfig, "ServiceException");
-		generateFile(getTemplate("ServiceException.java.vm"), projectConfig.getSrcPath() + javaFilename);
+		generateFile("ServiceException.java.vm", projectConfig.getSrcPath() + javaFilename);
 
 		// Génération du generic ServiceTestCase
 		javaFilename = createJavaFilename(serviceModuleConfig, "AbstractServiceTest");
-		generateFile(getTemplate("AbstractServiceTest.java.vm"), projectConfig.getTestPath() + javaFilename);
+		generateFile("AbstractServiceTest.java.vm", projectConfig.getTestPath() + javaFilename);
 
 		generateSubException(serviceModuleConfig, projectConfig.getSrcPath(), "Database");
 	}
@@ -103,7 +103,7 @@ public class ServiceJavaGenerator extends AbstractGenerator {
 		String javaFilename;
 		context.put("exceptionName", exceptionName);
 		javaFilename = createJavaFilename(serviceModuleConfig, exceptionName + "ServiceException");
-		generateFile(getTemplate("SubServiceException.java.vm"), path + javaFilename);
+		generateFile("SubServiceException.java.vm", path + javaFilename);
 	}
 
 	/**

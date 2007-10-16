@@ -12,7 +12,12 @@
 	<properties>
 #if ($isStruts2ViewModule)
 		<struts2.version>[2.0.9,)</struts2.version>
+#if ($project.viewModuleConfig.isTiles2Engine)
 		<tiles2.version>[2.0.4,)</tiles2.version>
+#end
+#if ($project.viewModuleConfig.isSiteMeshEngine)
+		<sitemesh.version>[2.3,)</sitemesh.version>
+#end
 #end
 #if ($isSpringServiceModule)
 		<spring.version>[2.0.7,)</spring.version>
@@ -71,6 +76,7 @@
 			<artifactId>struts2-spring-plugin</artifactId>
 			<version>${struts2.version}</version>
 		</dependency>
+#if ($project.viewModuleConfig.isTiles2Engine)
 		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-tiles-plugin</artifactId>
@@ -81,6 +87,14 @@
 			<artifactId>tiles-jsp</artifactId>
 			<version>${tiles2.version}</version>
 		</dependency>
+#end
+#if ($project.viewModuleConfig.isSiteMeshEngine)
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>sitemesh</artifactId>
+			<version>${sitemesh.version}</version>
+		</dependency>
+#end
 #end
 
 #if ($isSpringServiceModule)

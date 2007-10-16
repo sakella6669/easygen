@@ -42,10 +42,10 @@ public class CommonGenerator extends AbstractGenerator
     	context.put("isHibernateDataModule", HibernateModuleConfig.NATURE.equals(projectConfig.getDataModuleNature()));
 
     	// Génération du fichier pom.xml pour Maven
-        generateFile(getTemplate("pom.vm"), projectConfig.getPath() + "pom.xml");
+        generateFile("pom.vm", projectConfig.getPath() + "pom.xml");
 
         createPath(projectConfig.getCfgPath());
-		generateFile(getTemplate("log4j.xml.vm"), projectConfig.getCfgPath()+"log4j.xml");
+		generateFile("log4j.xml.vm", projectConfig.getCfgPath() + "log4j.xml");
 	}
 	/**
      * @see org.easygen.core.generators.AbstractGenerator#postProcess(ProjectConfig)
