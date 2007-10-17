@@ -54,6 +54,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	    super();
 	    // TODO Traduire en anglais ou gérer l'internationalisation
 	    // TODO Les champs sont déjà ordonnés => supprimer les multiples boucles dans les templates
+	    // TODO Ajouter la generation avec le framework Wicket
 	    loadConfiguration();
 	    templates = new Hashtable<String,Template>();
     }
