@@ -6,6 +6,7 @@ import org.easygen.ui.localization.Localization;
 import org.easygen.ui.util.EclipseUtils;
 import org.easygen.ui.util.WidgetUtils;
 import org.easygen.ui.wizards.validator.Validator;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Button;
@@ -162,5 +163,18 @@ public class NewProjectPage extends CommonPage
     	pProjectConfig.setBuildDirname(projectClassesDirField.getText());
     	pProjectConfig.setCfgDirname(projectCfgDirField.getText());
     	pProjectConfig.setWebContentDirname(projectWebDirField.getText());
+    }
+    
+    @Override
+    public boolean validatePage() {
+    	boolean validatePage = super.validatePage();
+    	if (validatePage == false) {
+    		return false;
+    	}
+		boolean existingProject = EclipseUtils.isExistingProject(projectNameField.getText());
+		if (existingProject) {
+			setMessage("Project already exists in workspace, some files could bea overwritten.", IMessageProvider.WARNING);
+		}
+		return true;
     }
 }

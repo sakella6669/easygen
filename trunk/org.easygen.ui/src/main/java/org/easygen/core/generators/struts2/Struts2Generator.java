@@ -63,7 +63,6 @@ public class Struts2Generator extends AbstractGenerator {
 				continue;
 			context.put(OBJECT, object);
 
-			// TODO Générer le mapping Service DTO <-> Web Form Bean avec un champ label
 			filename = createFilename(viewModuleConfig, object.getClassName()+"Action-add-validation", XML_FILE_EXTENSION);
 			generateFile("src/Action-add-validation.xml.vm", srcPath + filename);
 			filename = createFilename(viewModuleConfig, object.getClassName()+"Action-update-validation", XML_FILE_EXTENSION);
@@ -76,7 +75,9 @@ public class Struts2Generator extends AbstractGenerator {
 			createPath(jspPath);
 
 			generateFile("www/add.jsp.vm", jspPath + "/add.jsp");
-			// TODO Ajouter un page view.jsp plus complète que dans le show (i.e. avec les FK)
+			// TODO Finir d'ajouter la page view plus complète que dans le show
+			// (i.e. avec les FK)
+			generateFile("www/view.jsp.vm", jspPath + "/view.jsp");
 			generateFile("www/edit.jsp.vm", jspPath + "/edit.jsp");
 			generateFile("www/show.jsp.vm", jspPath + "/show.jsp");
 

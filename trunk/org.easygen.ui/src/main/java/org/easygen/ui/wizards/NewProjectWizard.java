@@ -169,11 +169,11 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 	 * @throws Exception
 	 */
 	protected void previousPageChanged(IWizardPage newPreviousPage) throws Exception {
-		if (newPreviousPage != null)
-		{
+		if (newPreviousPage != null) {
 			finishPage(newPreviousPage);
-		    if (newPreviousPage.getName().equals(InformationPage.NAME))
+		    if (newPreviousPage.getName().equals(InformationPage.NAME)) {
 				commonPageDone = true;
+		    }
 		}
 	}
 	/**
@@ -271,17 +271,21 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 		}
 		
 		IRunnableWithProgress op = new IRunnableWithProgress() {
-			public void run(IProgressMonitor monitor) throws InvocationTargetException {
+			public void run(IProgressMonitor progressMonitor) throws InvocationTargetException {
 				try {
-					doFinish(monitor);
+					doFinish(progressMonitor);
 				} catch (CoreException e) {
 					logger.error("IRunnableWithProgress Exception", e);
 					throw new InvocationTargetException(e);
 				} finally {
-					monitor.done();
+					progressMonitor.done();
 				}
 			}
 		};
+
+		return executeRunnable(op);
+	}
+	private boolean executeRunnable(IRunnableWithProgress op) {
 		try {
 			getContainer().run(true, false, op);
 		} catch (InterruptedException e) {
@@ -333,7 +337,24 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 	 */
 	@Override
 	public boolean performCancel() {
-		// TODO May be we should ask if the user wants to delete all generated files
+		if (commonPageDone) {
+			boolean deleteFiles = MessageDialog.openQuestion(getShell(), "Delete generated files ?", "Do you want to delete all generated files ?");
+			if (deleteFiles) {
+				IRunnableWithProgress op = new IRunnableWithProgress() {
+					public void run(IProgressMonitor progressMonitor) throws InvocationTargetException {
+						try {
+							EclipseUtils.deleteProject(progressMonitor, projectConfig.getName());
+						} catch (CoreException e) {
+							logger.error("Can't delete project", e);
+							throw new InvocationTargetException(e);
+						} finally {
+							progressMonitor.done();
+						}
+					}
+				};
+				executeRunnable(op);
+			}
+		}
 		return super.performCancel();
 	}
 }

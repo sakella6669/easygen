@@ -42,12 +42,13 @@ public class MavenHandler {
 	public boolean callMaven(String path, String goal) {
 		ProcessBuilder builder = new ProcessBuilder(MVN_CMD, goal);
 		builder.directory(new File(path));
+		builder.redirectErrorStream(true);
 		Process process = null;
 		try {
 			process = builder.start();
+			InputStream inputStream = process.getInputStream();
+			String processOutput = IOUtils.toString(inputStream);
 			if (logger.isDebugEnabled()) {
-				InputStream inputStream = process.getInputStream();
-				String processOutput = IOUtils.toString(inputStream);
 				logger.debug("Executing command: "+MVN_CMD+" " + goal + "\n" + processOutput);
 			}
 			if (process.waitFor() != 0) {
