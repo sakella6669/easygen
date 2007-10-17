@@ -125,6 +125,20 @@ public class EclipseUtils {
 		project.open(progressMonitor);
 		return project;
 	}
+
+	public static void deleteProject(IProgressMonitor progressMonitor, String name) throws CoreException {
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		IProject project = root.getProject(name);
+		if (project.exists()) {
+			project.delete(true, true, progressMonitor);
+		}
+	}
+
+	public static boolean isExistingProject(String name) {
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		IProject project = root.getProject(name);
+		return project.exists();
+	}
 	/**
 	 * @param javaProject
 	 * @param classpathEntries

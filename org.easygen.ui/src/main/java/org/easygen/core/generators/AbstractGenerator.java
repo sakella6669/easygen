@@ -53,6 +53,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
     {
 	    super();
 	    // TODO Traduire en anglais ou gérer l'internationalisation
+	    // TODO Les champs sont déjà ordonnés => supprimer les multiples boucles dans les templates
 	    loadConfiguration();
 	    templates = new Hashtable<String,Template>();
     }
@@ -62,7 +63,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	protected void loadConfiguration() {
 		addConfiguration("cfg/generators.properties");
 		String moduleConfigFile = getModuleDir()+getModuleName()+PROPERTY_FILE_EXTENSION;
-		logger.info("Trying to load module specific configuration file: "+moduleConfigFile);
+		logger.debug("Trying to load module specific configuration file: "+moduleConfigFile);
 		addConfiguration(moduleConfigFile);
 	}
 	/**
@@ -70,10 +71,9 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	 * @throws InitException
 	 */
 	protected void addConfiguration(String filename) throws InitException {
-		logger.info("Trying to load module specific configuration file: "+filename);
 		URL resource = Thread.currentThread().getContextClassLoader().getResource(filename);
 		if (resource != null) {
-			logger.info("Loading module specific configuration from: "+filename);
+			logger.debug("Loading module specific configuration from: "+filename);
 			try {
 				configuration.addConfiguration(new PropertiesConfiguration(resource));
 			} catch (ConfigurationException e) {
@@ -94,7 +94,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	{
 		try
         {
-			logger.info("Initialisation de Velocity");
+			logger.debug("Initialisation de Velocity");
 			initVelocity();
 			context.put("stringutils", new StringUtils());
 			if (projectConfig != null) {

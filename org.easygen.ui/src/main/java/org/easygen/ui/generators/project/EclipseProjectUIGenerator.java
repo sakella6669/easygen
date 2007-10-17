@@ -9,7 +9,6 @@ import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.AbstractGenerator;
 import org.easygen.core.generators.GenerationException;
 import org.easygen.ui.util.EclipseUtils;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -19,9 +18,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
-/**
- * 
- */
 public class EclipseProjectUIGenerator extends AbstractGenerator {
 
 	private static final Logger logger = Logger.getLogger(EclipseProjectUIGenerator.class);
@@ -40,7 +36,6 @@ public class EclipseProjectUIGenerator extends AbstractGenerator {
 		logger.info("Generating eclipse project structure");
 		try {
 			NullProgressMonitor progressMonitor = new NullProgressMonitor();
-			// TODO Si le projet existe le dire au user
 			IJavaProject javaProject = EclipseUtils.createJavaProject(progressMonitor, projectConfig.getName());
 			setupBuildPath(progressMonitor, projectConfig, javaProject);
 			logger.info("Refreshing project");
@@ -56,9 +51,9 @@ public class EclipseProjectUIGenerator extends AbstractGenerator {
 	public void postProcess(ProjectConfig projectConfig) throws GenerationException {
 		try {
 			NullProgressMonitor progressMonitor = new NullProgressMonitor();
-			IProject project = EclipseUtils.createProject(progressMonitor, projectConfig.getName());
-			addLibraries(progressMonitor, projectConfig, project);
-			EclipseUtils.refreshLocal(project, progressMonitor);
+			IJavaProject javaProject = EclipseUtils.createJavaProject(progressMonitor, projectConfig.getName());
+			addLibraries(progressMonitor, projectConfig, javaProject);
+			EclipseUtils.refreshLocal(javaProject.getProject(), progressMonitor);
 		} catch (JavaModelException e) {
 			throw new GenerationException("Can't finalize Eclipse project", e);
 		} catch (CoreException e) {
@@ -66,9 +61,8 @@ public class EclipseProjectUIGenerator extends AbstractGenerator {
 		}
 	}
 
-	protected void addLibraries(IProgressMonitor progressMonitor, ProjectConfig projectConfig, IProject project) throws JavaModelException {
+	protected void addLibraries(IProgressMonitor progressMonitor, ProjectConfig projectConfig, IJavaProject javaProject) throws JavaModelException {
 		logger.info("Configuring libraries");
-		IJavaProject javaProject = JavaCore.create(project);
 		IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
 		Collection<IClasspathEntry> classpathEntries = new LinkedList<IClasspathEntry>();
 		Collections.addAll(classpathEntries, rawClasspath);

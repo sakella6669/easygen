@@ -103,7 +103,7 @@
     #end
 #end
 #foreach ($aField in $object.fields)
-	#if ($aField.primaryKey == false && $aField.foreignKey == true)
+	#if ($aField.primaryKey == false && $aField.foreignKey == true && $aField.foreignList == false)
 	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" property="${aField.propertyName}" />
     #end
 #end
