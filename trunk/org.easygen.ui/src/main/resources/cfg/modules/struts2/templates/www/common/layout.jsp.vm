@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="display" uri="http://displaytag.sf.net"%>
 #if ($isTiles2Engine)
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 #end
 #if ($isSiteMeshEngine)
 <%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
 #end
-<%@ taglib prefix="s" uri="/struts-tags" %>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>${project.name} - 
-#if ($isTiles2Engine)
-<tiles:getAsString name="title"/>
-#end
-#if ($isSiteMeshEngine)
-<decorator:title />
-#end
+<title>${project.name} - #{if} ($isTiles2Engine)<tiles:getAsString name="title"/> #{elseif} ($isSiteMeshEngine)<decorator:title /> #end
 </title>
 <s:head theme="css_xhtml"/>
 <link rel="stylesheet" type="text/css" href="<s:url value="/common/styles.css"/>" />
@@ -44,8 +39,6 @@
 		</td>
 		<td valign="top">
 
-			<p class="spacer">&nbsp;</p>
-			
 			<s:if test="hasActionMessages()">
 			<div id="messages">
 			<s:actionmessage />

@@ -3,9 +3,6 @@ package org.easygen.core.generators.struts2;
 import org.easygen.core.config.ViewModuleConfig;
 import org.easygen.core.generators.Generator;
 
-/**
- * 
- */
 public class Struts2ModuleConfig extends ViewModuleConfig {
 
 	private static final String TILES2 = "Tiles2";
@@ -46,4 +43,11 @@ public class Struts2ModuleConfig extends ViewModuleConfig {
 		return new Struts2Generator();
 	}
 
+	@Override
+	public String toString() {
+    	StringBuffer buffer = new StringBuffer();
+    	buffer.append(super.toString());
+    	buffer.append("\tTemplateEngine: ").append(getTemplateEngine()).append("\n");
+    	return buffer.toString();
+	}
 }

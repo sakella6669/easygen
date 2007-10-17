@@ -93,7 +93,6 @@ public class NewProjectPage extends CommonPage
      */
     protected void createPropertiesGroup(Composite pMainComposite)
     {
-    	// TODO Option tu use Maven2 directory style
 		Group propertiesGroup = WidgetUtils.createGroup(pMainComposite, Localization.get("easygen.title.page.newproject.properties"), 2);
 
 		projectSrcDirField = WidgetUtils.createLabelTextPair(propertiesGroup, Localization.get("easygen.label.page.newproject.src.dir"), Localization.get("defaults.project.src.dir"));

@@ -2,6 +2,7 @@
 
 .wwFormTable {
 }
+
 .pageTitle {
 	font-weight: bold;
 	font-size: 1.2em;
@@ -45,6 +46,10 @@
 	color: #FFFFFF;
 }
 
+#menu {
+	font-size: 1.0em;
+}
+
 #menu a {
 	text-decoration: none;
 	font-weight: bold;
@@ -67,6 +72,34 @@
 }
 
 #footer p {
- 	font-size: 0.7em;
+	position: relative;
+	bottom: 0;
+	font-size: 0.7em;
  	text-align: center;
+}
+
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+}
+
+table.results {
+	width: 90%;
+	align: center;
+}
+table.results thead tr th {
+	background-color: #eee;
+}
+
+table.results tr.even {
+	background-color: #fff;
+}
+
+table.results {
+	border: 1px solid #ccc;
+	border-collapse: collapse;
+}
+
+table.results td,table.results th {
+	border: 1px solid #ccc;
 }

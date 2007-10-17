@@ -10,7 +10,6 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-// TODO Refactorer le nommage des clés pour les labels
 public class Localization
 {
 	private static Logger logger = Logger.getLogger(Localization.class);

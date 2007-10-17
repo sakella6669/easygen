@@ -1,6 +1,6 @@
 package org.easygen.core.generators.common;
 
-import org.easygen.core.InitException;
+import org.apache.log4j.Logger;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.AbstractGenerator;
 import org.easygen.core.generators.GenerationException;
@@ -14,16 +14,12 @@ import org.easygen.core.generators.struts2.Struts2ModuleConfig;
  * Created on 19 déc. 06
  *
  */
-public class CommonGenerator extends AbstractGenerator
-{
+public class CommonGenerator extends AbstractGenerator {
+	
+	private static final Logger logger = Logger.getLogger(CommonGenerator.class);
+
 	private static final String MODULE_NAME = "common";
 
-	/**
-     * @throws InitException
-     */
-    public CommonGenerator() {
-	    super();
-    }
     /**
      * @see org.easygen.core.generators.AbstractGenerator#getModuleName()
      */
@@ -36,13 +32,13 @@ public class CommonGenerator extends AbstractGenerator
 	 */
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
-
+		logger.info("Generating common files");
     	context.put("isStruts2ViewModule", Struts2ModuleConfig.NATURE.equals(projectConfig.getViewModuleNature()));
     	context.put("isSpringServiceModule", SpringServiceModuleConfig.NATURE.equals(projectConfig.getServiceModuleNature()));
     	context.put("isHibernateDataModule", HibernateModuleConfig.NATURE.equals(projectConfig.getDataModuleNature()));
-
+    	
     	// Génération du fichier pom.xml pour Maven
-        generateFile("pom.vm", projectConfig.getPath() + "pom.xml");
+        generateFile("pom.xml.vm", projectConfig.getPath() + "pom.xml");
 
         createPath(projectConfig.getCfgPath());
 		generateFile("log4j.xml.vm", projectConfig.getCfgPath() + "log4j.xml");

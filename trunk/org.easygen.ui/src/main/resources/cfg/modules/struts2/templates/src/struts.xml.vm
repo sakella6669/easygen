@@ -8,8 +8,23 @@
     <constant name="struts.action.extension" value="action" />
     <constant name="struts.devMode" value="true" />
     <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<constant name="struts.objectFactory" value="spring" />
+	<constant name="struts.custom.i18n.resources" value="messages" />
+	<constant name="struts.i18n.encoding" value="ISO8859-1" />
+	<constant name="struts.multipart.maxSize" value="12097152" />
+	<constant name="struts.serve.static" value="true" />
+	<constant name="struts.serve.static.browserCache" value="true" />
+	<constant name="struts.ui.theme" value="css_xhtml" />
 
-	<package name="easygen-default" extends="tiles-default">
+	<package name="easygen-default" extends="#{if} ($isTiles2Engine)tiles-default#{else}struts-default#{end}">
+		<global-results>
+			<result name="error">/error.jsp</result>
+		</global-results>
+
+		<global-exception-mappings>
+			<exception-mapping result="error" exception="java.lang.Throwable" />
+		</global-exception-mappings>
 	</package>
 
 #foreach ($className in $classList)

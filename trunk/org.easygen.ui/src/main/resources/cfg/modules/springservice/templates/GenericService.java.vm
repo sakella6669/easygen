@@ -1,4 +1,4 @@
-package test.service;
+package ${project.serviceModuleConfig.packageName};
 
 import java.io.Serializable;
 import java.util.List;

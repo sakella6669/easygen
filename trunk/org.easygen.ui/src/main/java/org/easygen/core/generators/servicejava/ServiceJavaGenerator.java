@@ -3,7 +3,7 @@ package org.easygen.core.generators.servicejava;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.easygen.core.InitException;
+import org.apache.log4j.Logger;
 import org.easygen.core.config.DataObject;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.config.ServiceModuleConfig;
@@ -18,17 +18,12 @@ import org.easygen.core.generators.hibernate.HibernateModuleConfig;
  */
 public class ServiceJavaGenerator extends AbstractGenerator {
 
+	private static final Logger logger = Logger.getLogger(ServiceJavaGenerator.class);
+
 	protected static final String MODULE_NAME = "servicejava";
 	protected static final String SERVICE_SUFFIX = "Service";
 	protected static final String SERVICE_TESTCASE_SUFFIX = "ServiceTest";
 	protected static final String STACK = "stack";
-
-	/**
-	 * @throws InitException
-	 */
-	public ServiceJavaGenerator() {
-		super();
-	}
 
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#getModuleName()
@@ -43,10 +38,10 @@ public class ServiceJavaGenerator extends AbstractGenerator {
 	 */
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
+		logger.info("Generating service layer files");
 		if (projectConfig.getDataModuleNature().equals(HibernateModuleConfig.NATURE) == false) {
 			throw new GenerationException("Service Java Module should be used with Hibernate as Data Module");
 		}
-		logger.info("Génération de la couche service");
 		ServiceModuleConfig serviceModuleConfig = projectConfig.getServiceModuleConfig();
 		createPackagePath(projectConfig.getSrcPath(), serviceModuleConfig.getPackageName());
 		createPackagePath(projectConfig.getTestPath(), serviceModuleConfig.getPackageName());

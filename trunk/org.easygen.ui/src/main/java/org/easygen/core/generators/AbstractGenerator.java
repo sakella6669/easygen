@@ -42,19 +42,17 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	protected static final String LIBRARY_EXTENSION = ".jar";
 	protected static final String LIBRARY_INDEX_FILE = "dir.list";
 	
-	protected final Logger logger = Logger.getLogger(getClass());
+	private static final Logger logger = Logger.getLogger(AbstractGenerator.class);
+
 	protected VelocityContext context = null;
 	protected Map<String,Template> templates;
 	
 	private CompositeConfiguration configuration = new CompositeConfiguration();
 
-	/**
-	 * @throws InitException
-     *
-     */
     public AbstractGenerator()
     {
 	    super();
+	    // TODO Traduire en anglais ou gérer l'internationalisation
 	    loadConfiguration();
 	    templates = new Hashtable<String,Template>();
     }
@@ -118,7 +116,12 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 			throw new GenerationException("Velocity initialization failed");
 		properties.load(inStream);
 		Velocity.init(properties);
-        context = new VelocityContext();
+//		if (logger.isDebugEnabled()) {
+//			context = new DebuggableVelocityContext();
+//		}
+//		else {
+			context = new VelocityContext();
+//		}
 	}
 	
 	/**
