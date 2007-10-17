@@ -18,8 +18,10 @@
 	#end
 #end
 
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-
+<%@ taglib prefix="display" uri="http://displaytag.sf.net"%>
 #if ($isTiles2Engine)
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 
@@ -28,7 +30,6 @@
   <tiles:putAttribute name="body">
 #end
 #if ($isSiteMeshEngine)
-<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -49,70 +50,6 @@
 
 <s:url id="prepareaddUrl" action="prepareadd" />
 <p><s:a href="%{prepareaddUrl}" cssClass="commandLink">Ajouter un objet ${objectVarName}</s:a></p>
-
-<p class="pageTitle">Liste des ${objectVarName}s</p>
-
-<table width="90%">
-  <tr>
-#foreach ($aField in $object.fields)
-	#if ($aField.primaryKey == true)
-    	<th>$stringutils.capitalizeFirstLetter($aField.propertyName)</th>
-    #end
-#end
-#foreach ($aField in $object.fields)
-	#if ($aField.primaryKey == false && $aField.foreignKey == false)
-    	<th>$stringutils.capitalizeFirstLetter($aField.propertyName)</th>
-    #end
-#end
-#foreach ($aField in $object.fields)
-	#if ($aField.foreignKey == true && $aField.foreignList == false)
-    	<th>$stringutils.capitalizeFirstLetter($aField.propertyName)</th>
-		#showForeignObjectHeader( $aField.foreignObject )
-    #end
-#end
-    <th>&nbsp;</th>
-
-  </tr>
-
-<s:iterator value="%{#request.${objectVarName}s}">
-  <tr>
-#foreach ($aField in $object.fields)
-	#if ($aField.primaryKey == true)
-    <td>
-    <s:url id="editUrl" action="edit" >
-		<s:param name="${aField.propertyName}" value="%{${aField.propertyName}}" />
-	</s:url>
-    <s:a href="%{editUrl}" cssClass="commandLink"><s:property value="${aField.propertyName}"/></s:a>
-    </td>
-    #end
-#end
-#foreach ($aField in $object.fields)
-	#if ($aField.primaryKey == false && $aField.foreignKey == false)
-    <td><s:property value="${aField.propertyName}"/></td>
-    #end
-#end
-#foreach ($aField in $object.fields)
-	#if ($aField.foreignKey == true && $aField.foreignList == false)
-    <td><s:property value="${aField.propertyName}"/></td>
-    #showForeignObject( $aField.foreignObject )
-    #end
-#end
-#foreach ($aField in $object.fields)
-	#if ($aField.primaryKey == true)
-    <td>
-    <s:url id="deleteUrl" action="delete" >
-		<s:param name="${aField.propertyName}" value="%{${aField.propertyName}}" />
-	</s:url>
-    <s:a href="%{deleteUrl}" cssClass="commandLink" onclick="return confirmDelete(%{${aField.propertyName}});">Supprimer</s:a>
-    </td>
-	#end
-#end
-  </tr>
-</s:iterator>
-
-</table>
-
-<p class="spacer">&nbsp;</p>
 
 <fieldset title="Recherche">
 <legend><b>Recherche d'un objet ${objectVarName}</b></legend>
@@ -147,6 +84,42 @@
   <s:submit value="Rechercher"/>
 </s:form>
 </fieldset>
+
+<p class="pageTitle">Liste des ${objectVarName}s</p>
+<display:table name="${objectVarName}s" class="results" uid="${objectVarName}">
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == true)
+	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" style="text-align:center;">
+		<s:url id="editUrl" action="edit">
+			<s:param name="${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
+		</s:url>
+		<s:a href="%{editUrl}" cssClass="commandLink">${${objectVarName}.${aField.propertyName}}</s:a>
+	</display:column>
+    #end
+#end
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == false && $aField.foreignKey == false)
+	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" property="${aField.propertyName}" />
+    #end
+#end
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == false && $aField.foreignKey == true)
+	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" property="${aField.propertyName}" />
+    #end
+#end
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == true)
+	<display:column style="text-align:center;">
+		<s:url id="deleteUrl" action="delete">
+			<s:param name="${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
+		</s:url>
+		<s:a href="%{deleteUrl}" cssClass="commandLink"
+			onclick="return confirmDelete(${${objectVarName}.${aField.propertyName}});">Supprimer</s:a>
+	</display:column>
+    #end
+#end
+</display:table>
+<p align="center">Found <s:property value="%{#request.resultCount}" /> matiere(s)</p>
 
 #if ($isTiles2Engine)
   </tiles:putAttribute>

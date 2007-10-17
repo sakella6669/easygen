@@ -3,6 +3,7 @@ package org.easygen.core.generators.struts2;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.easygen.core.config.DataObject;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.AbstractGenerator;
@@ -14,6 +15,8 @@ import org.easygen.core.generators.springservice.SpringServiceModuleConfig;
  */
 public class Struts2Generator extends AbstractGenerator {
 
+	private static final Logger logger = Logger.getLogger(Struts2Generator.class);
+	
 	protected static final String MODULE_NAME = "struts2";
 	private static final String ACTION_SUFFIX = "Action";
 	private static final String IS_SPRING_SERVICE_MODULE = "isSpringServiceModule";
@@ -27,12 +30,13 @@ public class Struts2Generator extends AbstractGenerator {
 	protected String getModuleName() {
 		return MODULE_NAME;
 	}
+
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#generate(org.easygen.core.config.ProjectConfig)
 	 */
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
-		logger.info("Génération de la couche view");
+		logger.info("Generating view layer files");
 		Struts2ModuleConfig viewModuleConfig = (Struts2ModuleConfig) projectConfig.getViewModuleConfig();
 		String srcPath = projectConfig.getSrcPath();
         String webPath = projectConfig.getWebContentPath();
@@ -72,6 +76,7 @@ public class Struts2Generator extends AbstractGenerator {
 			createPath(jspPath);
 
 			generateFile("www/add.jsp.vm", jspPath + "/add.jsp");
+			// TODO Ajouter un page view.jsp plus complète que dans le show (i.e. avec les FK)
 			generateFile("www/edit.jsp.vm", jspPath + "/edit.jsp");
 			generateFile("www/show.jsp.vm", jspPath + "/show.jsp");
 

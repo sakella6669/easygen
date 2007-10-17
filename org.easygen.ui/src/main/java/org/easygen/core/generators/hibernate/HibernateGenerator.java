@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.easygen.core.InitException;
+import org.apache.log4j.Logger;
 import org.easygen.core.config.DataField;
 import org.easygen.core.config.DataObject;
 import org.easygen.core.config.ProjectConfig;
@@ -22,11 +22,12 @@ import org.easygen.core.generators.GenerationException;
  */
 public class HibernateGenerator extends AbstractGenerator {
 
+	private static final Logger logger = Logger.getLogger(HibernateGenerator.class);
+	
 	private static final String META_INF_DIR = "META-INF/";
 
 	private static final String MODULE_NAME = "hibernate";
 
-//	private static final String HIBERNATE_CFG_FILE = "hibernate.cfg.xml";
 	private static final String JPA_CFG_FILE = "persistence.xml";
 
 	private static final String EHCACHE_CFG_FILE = "ehcache.xml";
@@ -35,14 +36,6 @@ public class HibernateGenerator extends AbstractGenerator {
 
 	private static final String USE_ANNOTATIONS = "useAnnotations";
 	private static final String HIBERNATE_DIALECT = "hibernateSqlDialect";
-
-	/**
-	 * @throws InitException
-	 * @throws InitException
-	 */
-	public HibernateGenerator() {
-		super();
-	}
 
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#getModuleDir()
@@ -57,7 +50,7 @@ public class HibernateGenerator extends AbstractGenerator {
 	 */
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
-		logger.info("Génération de la couche data");
+		logger.info("Generating data layer files");
 		HibernateModuleConfig dataModuleConfig = (HibernateModuleConfig) projectConfig.getDataModuleConfig();
 		String packageName = dataModuleConfig.getPackageName();
 		createPackagePath(projectConfig.getSrcPath(), packageName);
@@ -94,7 +87,6 @@ public class HibernateGenerator extends AbstractGenerator {
 				cachedClassList.add(packageName + '.' + mapping.getClassName());
 		}
 
-		// TODO Tester si le dialect est necessaire
 		String databaseType = projectConfig.getDatabaseConfig().getDatabaseType().toLowerCase();
 		String hibernateDialect = getConfiguration().getString(databaseType + ".dialect");
 		context.put(HIBERNATE_DIALECT, hibernateDialect);

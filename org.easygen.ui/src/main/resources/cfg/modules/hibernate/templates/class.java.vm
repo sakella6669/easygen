@@ -28,6 +28,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * 
@@ -139,14 +141,12 @@ public class $object.className implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
-//		buffer.append("$object.className");
-//		buffer.append('\n');
+		ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE);
 #foreach ($field in $object.fields)
 #if ($field.primaryKey == false && $field.foreignKey == false)
-		buffer.append("${field.propertyName}=").append(${field.propertyName}).append(',');
+		builder.append("${field.propertyName}", ${field.propertyName});
 #end
 #end
-		return buffer.toString();
+		return builder.toString();
 	}
 }		

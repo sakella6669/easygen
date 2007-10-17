@@ -3,7 +3,7 @@ package org.easygen.core.generators.springservice;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.easygen.core.InitException;
+import org.apache.log4j.Logger;
 import org.easygen.core.config.DataObject;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.config.ServiceModuleConfig;
@@ -18,16 +18,11 @@ import org.easygen.core.generators.hibernate.HibernateModuleConfig;
  */
 public class SpringServiceGenerator extends AbstractGenerator {
 
+	private static final Logger logger = Logger.getLogger(SpringServiceGenerator.class);
+	
 	protected static final String MODULE_NAME = "springservice";
 	protected static final String SERVICE_SUFFIX = "Service";
 	protected static final String SERVICE_TESTCASE_SUFFIX = "ServiceTest";
-
-	/**
-	 * @throws InitException
-	 */
-	public SpringServiceGenerator() {
-		super();
-	}
 
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#getModuleName()
@@ -42,10 +37,10 @@ public class SpringServiceGenerator extends AbstractGenerator {
 	 */
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
+		logger.info("Generating service layer files");
 		if (projectConfig.getDataModuleNature().equals(HibernateModuleConfig.NATURE) == false) {
 			throw new GenerationException("Spring Service Module should be used with Hibernate as Data Module");
 		}
-		logger.info("Génération de la couche service");
 		ServiceModuleConfig serviceModuleConfig = projectConfig.getServiceModuleConfig();
 		String srcPath = projectConfig.getSrcPath();
 		createPackagePath(srcPath, serviceModuleConfig.getPackageName());
@@ -75,7 +70,6 @@ public class SpringServiceGenerator extends AbstractGenerator {
 
 		// Génération de la classe ServiceLocator
 		context.put(CLASS_LIST, classList);
-		// TODO Générer correctement la datasource et le dialect Hibernate 
 		generateFile("applicationContext-service.xml.vm", cfgPath + "applicationContext-service.xml");
 		String javaFilename = createJavaFilename(serviceModuleConfig, "ServiceLocator");
 		generateFile("ServiceLocator.java.vm", srcPath + javaFilename);
@@ -99,11 +93,6 @@ public class SpringServiceGenerator extends AbstractGenerator {
 		generateSubException(serviceModuleConfig, srcPath, "Database");
 	}
 
-	/**
-	 * @param serviceModuleConfig
-	 * @param exceptionName
-	 * @throws GenerationException
-	 */
 	protected void generateSubException(ServiceModuleConfig serviceModuleConfig, String path, String exceptionName) throws GenerationException {
 		String javaFilename;
 		context.put("exceptionName", exceptionName);

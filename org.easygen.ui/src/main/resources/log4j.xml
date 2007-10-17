@@ -5,7 +5,7 @@
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<layout class="org.apache.log4j.PatternLayout">
-  		     <param name="ConversionPattern" value="%d %-5p [%C{1}:%L] - %m%n"/> <!-- %C{2} (%F:%L)  -->
+  		     <param name="ConversionPattern" value="%-5p [%C{1}] - %m%n"/> <!-- %C{2} (%F:%L)  -->
 		</layout>
 	</appender>
 
@@ -18,7 +18,7 @@
 	</appender>
 	
 	<category name="org.easygen.ui">
-		<priority value="INFO"/>
+		<priority value="WARN"/>
 	</category>
 
 	<category name="org.easygen.core.generators">

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.AbstractGenerator;
 import org.easygen.core.generators.GenerationException;
@@ -23,6 +24,8 @@ import org.eclipse.jdt.core.JavaModelException;
  */
 public class EclipseProjectUIGenerator extends AbstractGenerator {
 
+	private static final Logger logger = Logger.getLogger(EclipseProjectUIGenerator.class);
+
 	private static final String MODULE_NAME = "eclipse.uiproject";
 
 	@Override
@@ -34,8 +37,10 @@ public class EclipseProjectUIGenerator extends AbstractGenerator {
 	 */
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
+		logger.info("Generating eclipse project structure");
 		try {
 			NullProgressMonitor progressMonitor = new NullProgressMonitor();
+			// TODO Si le projet existe le dire au user
 			IJavaProject javaProject = EclipseUtils.createJavaProject(progressMonitor, projectConfig.getName());
 			setupBuildPath(progressMonitor, projectConfig, javaProject);
 			logger.info("Refreshing project");
