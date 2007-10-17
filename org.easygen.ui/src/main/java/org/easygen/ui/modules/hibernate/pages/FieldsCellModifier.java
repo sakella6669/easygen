@@ -28,7 +28,7 @@ public class FieldsCellModifier extends CheckboxCellModifier implements ITableLa
 
 	@Override
 	protected boolean isBooleanColumn(int columnIndex) {
-		if (columnIndex == 0)
+		if (columnIndex == 0 || columnIndex == 5 || columnIndex == 6)
 			return true;
 		return false;
 	}
@@ -59,6 +59,12 @@ public class FieldsCellModifier extends CheckboxCellModifier implements ITableLa
 			break;
 		case 4:
 			value = field.getPropertyType();
+			break;
+		case 5:
+			value = field.isPrimaryKey();
+			break;
+		case 6:
+			value = field.isForeignKey();
 			break;
 
 		default:

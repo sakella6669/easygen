@@ -35,9 +35,10 @@ public class FieldConfigurationPage extends ModulePage {
 			Localization.get("hibernate.label.fieldSelector.columnName"),
 			Localization.get("hibernate.label.fieldSelector.columnType"),
 			Localization.get("hibernate.label.fieldSelector.fieldName"),
-			Localization.get("hibernate.label.fieldSelector.fieldType")
-			// TODO Afficher les primary keys
-			// TODO Afficher les foreign keys avec possibilité de les supprimer (d'un seul coté ou des deux)
+			Localization.get("hibernate.label.fieldSelector.fieldType"),
+			Localization.get("hibernate.label.fieldSelector.primaryKey"),
+			Localization.get("hibernate.label.fieldSelector.foreignKey")
+			// TODO Donner la possibilité de supprimer les foreignKey (d'un seul coté ou des deux)
 		};
 
 	private static final String[] javaTypes = { "java.lang.String", "java.lang.Character", "java.lang.Short",
@@ -52,10 +53,6 @@ public class FieldConfigurationPage extends ModulePage {
 
 	private Combo tableChooser;
 
-	/**
-	 * @param pName
-	 * @param pTitle
-	 */
 	public FieldConfigurationPage() {
 		super(NAME, Localization.get("hibernate.title.fieldSelector"));
 	}
@@ -106,6 +103,8 @@ public class FieldConfigurationPage extends ModulePage {
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 100);
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
+		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
+		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
 
 		tableViewer = WidgetUtils.createTableViewer(fieldConfigurationTable, columnNames);
 
@@ -122,6 +121,10 @@ public class FieldConfigurationPage extends ModulePage {
 		editors[index++] = new TextCellEditor(fieldConfigurationTable);
 		// Column : Field Type (Text)
 		editors[index++] = new ComboBoxCellEditor(fieldConfigurationTable, javaTypes);
+		// Column : Primary Key (Text)
+		editors[index++] = new CheckboxCellEditor(fieldConfigurationTable);
+		// Column : Foreign Key (Text)
+		editors[index++] = new CheckboxCellEditor(fieldConfigurationTable);
 		// Assign the cell editors to the viewer
 		tableViewer.setCellEditors(editors);
 

@@ -50,6 +50,8 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 
 	protected ModuleManager moduleManager;
 
+	private boolean generationStarted;
+
 	/**
 	 * Constructor for HibernateMappingNewWizard.
 	 */
@@ -282,7 +284,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 				}
 			}
 		};
-
+		generationStarted = true;
 		return executeRunnable(op);
 	}
 	private boolean executeRunnable(IRunnableWithProgress op) {
@@ -337,7 +339,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 	 */
 	@Override
 	public boolean performCancel() {
-		if (commonPageDone) {
+		if (generationStarted) {
 			boolean deleteFiles = MessageDialog.openQuestion(getShell(), "Delete generated files ?", "Do you want to delete all generated files ?");
 			if (deleteFiles) {
 				IRunnableWithProgress op = new IRunnableWithProgress() {
