@@ -9,11 +9,13 @@
 <%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
 #end
 
+<s:i18n name="lang.common">
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>${project.name} - #{if} ($isTiles2Engine)<tiles:getAsString name="title"/> #{elseif} ($isSiteMeshEngine)<decorator:title /> #end
+<title><s:text name="project.name" /> - #{if} ($isTiles2Engine)<tiles:getAsString name="title"/> #{elseif} ($isSiteMeshEngine)<decorator:title /> #end
 </title>
 <s:head theme="css_xhtml"/>
 <link rel="stylesheet" type="text/css" href="<s:url value="/common/styles.css"/>" />
@@ -23,7 +25,7 @@
 	<div id="header">
 		<br/>
 		<s:url id="homeUrl" value="/index.jsp" />
-		<s:a href="%{homeUrl}">${project.name}</s:a>
+		<s:a href="%{homeUrl}"><s:text name="project.name" /></s:a>
 	</div>
 
 	<table width="90%" border="0">
@@ -33,7 +35,7 @@
 			#foreach ($className in $classList)
 			#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
 				<s:url id="${lowerClassName}Url" action="index" namespace="/${lowerClassName}" />
-				<p class="menuItem"><s:a href="%{${lowerClassName}Url}">Gestion des ${lowerClassName}s</s:a></p>
+				<p class="menuItem"><s:a href="%{${lowerClassName}Url}"><s:text name="menu.${lowerClassName}" /></s:a></p>
 			#end
 			</div>
 		</td>
@@ -41,21 +43,22 @@
 
 			<s:if test="hasActionMessages()">
 			<div id="messages">
-			<s:actionmessage />
+			  <s:actionmessage />
 			<p>&nbsp;</p>
 			</div>
 			</s:if>
 			
 			<s:if test="hasActionErrors()">
 			<div id="messages">
-			<s:actionerror />
+			  <p class="errorMessage"><s:text name="validation.actionErrors" /></p>
+			  <s:actionerror />
 			<p>&nbsp;</p>
 			</div>
 			</s:if>
 			
 			<s:if test="hasFieldErrors()">
 			<div id="messages">
-			  <p class="errorMessage">Validation Errors :</p>
+			  <p class="errorMessage"><s:text name="validation.fieldErrors" /></p>
 			  <s:fielderror />
 			<p>&nbsp;</p>
 			</div>
@@ -72,9 +75,9 @@
 	</tr>
 	</table>
 
-	<div id="footer">
-	<p>Generated using EasyGen</p>
-	</div>
+	<div id="footer"><p><s:text name="footer" /></p></div>
 
 </body>
 </html>
+
+</s:i18n>

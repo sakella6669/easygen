@@ -28,8 +28,7 @@
 <tiles:insertDefinition name="mainLayout">
   <tiles:putAttribute name="title" value="Liste des ${objectVarName}s" />
   <tiles:putAttribute name="body">
-#end
-#if ($isSiteMeshEngine)
+#elseif ($isSiteMeshEngine)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -41,9 +40,9 @@
 
 <script type="text/javascript">
 <!--
-	function confirmDelete(id)
+	function confirmDelete()
 	{
-		return confirm("Voulez-vous vraiment supprimer l'objet ayant pour id: "+id);
+		return confirm("Voulez-vous vraiment supprimer cet objet ?");
 	}
 //-->
 </script>
@@ -54,23 +53,28 @@
 <fieldset title="Recherche">
 <legend><b>Recherche d'un objet ${objectVarName}</b></legend>
 <s:form action="search" method="post" validate="false">
+<table>
 #foreach ($aField in $object.fields)
 #if ($aField.primaryKey == false)
 	#if ($aField.foreignKey == false)
+	<tr>
+		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td>
 		#if ($aField.propertyShortType == "Date")
-		<s:datetimepicker label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}" />
+		<s:datetimepicker name="${objectVarName}.${aField.propertyName}" />
 		#else
-  		<s:textfield label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}" />
+  		<s:textfield name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}" />
   		#end
+		</td>
+	</tr>
   	#end
-#end
-#end
-#foreach ($aField in $object.fields)
-#if ($aField.primaryKey == false)
   	#if ($aField.foreignKey == true && $aField.foreignList == false)
+	<tr>
+		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td>
   		#foreach ($foreignField in $aField.foreignObject.fields)
   			#if ($foreignField.primaryKey == true)
-			 	<s:select label="${aField.propertyName}"
+			 	<s:select
 					name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
 					list="%{#request.${aField.propertyName}s}"
 					listKey="${foreignField.propertyName}"
@@ -78,9 +82,12 @@
 				/>
 	  		#end
 		#end
+		</td>
+	</tr>
 	#end
 #end
-#end	
+#end
+</table>
   <s:submit value="Rechercher"/>
 </s:form>
 </fieldset>
@@ -90,42 +97,37 @@
 #foreach ($aField in $object.fields)
 	#if ($aField.primaryKey == true)
 	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" style="text-align:center;">
-		<s:url id="editUrl" action="edit">
+		<s:url id="viewUrl" action="view">
 			<s:param name="${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
 		</s:url>
-		<s:a href="%{editUrl}" cssClass="commandLink">${${objectVarName}.${aField.propertyName}}</s:a>
+		<s:a href="%{viewUrl}" cssClass="commandLink">${${objectVarName}.${aField.propertyName}}</s:a>
 	</display:column>
     #end
-#end
-#foreach ($aField in $object.fields)
 	#if ($aField.primaryKey == false && $aField.foreignKey == false)
 	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" property="${aField.propertyName}" />
     #end
-#end
-#foreach ($aField in $object.fields)
 	#if ($aField.primaryKey == false && $aField.foreignKey == true && $aField.foreignList == false)
 	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" property="${aField.propertyName}" />
     #end
 #end
-#foreach ($aField in $object.fields)
-	#if ($aField.primaryKey == true)
 	<display:column style="text-align:center;">
 		<s:url id="deleteUrl" action="delete">
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == true)
 			<s:param name="${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
 		</s:url>
-		<s:a href="%{deleteUrl}" cssClass="commandLink"
-			onclick="return confirmDelete(${${objectVarName}.${aField.propertyName}});">Supprimer</s:a>
-	</display:column>
     #end
 #end
+		<s:a href="%{deleteUrl}" cssClass="commandLink"
+			onclick="return confirmDelete();">Supprimer</s:a>
+	</display:column>
 </display:table>
 <p align="center">Found <s:property value="%{#request.resultCount}" /> matiere(s)</p>
 
 #if ($isTiles2Engine)
   </tiles:putAttribute>
 </tiles:insertDefinition>
-#end
-#if ($isSiteMeshEngine)
+#elseif ($isSiteMeshEngine)
 </body>
 </html>
 #end

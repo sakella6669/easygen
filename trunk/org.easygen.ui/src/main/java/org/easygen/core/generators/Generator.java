@@ -8,6 +8,10 @@ public interface Generator
 
 	public abstract void generate(ProjectConfig projectConfig) throws GenerationException;
 
+	/**
+	 * @deprecated Maven pom is generated instead
+	 */
+	@Deprecated
 	public abstract String[] copyLibraries(ProjectConfig projectConfig) throws GenerationException;
 
 	public abstract void postProcess(ProjectConfig projectConfig) throws GenerationException;

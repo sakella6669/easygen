@@ -136,7 +136,9 @@ public class HibernateGenerator extends AbstractGenerator {
 
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#copyLibraries(org.easygen.core.config.ProjectConfig)
+	 * @deprecated Maven pom is generated instead
 	 */
+	@Deprecated
 	@Override
 	public String[] copyLibraries(ProjectConfig projectConfig) throws GenerationException {
 		String[] libraries = super.copyLibraries(projectConfig);

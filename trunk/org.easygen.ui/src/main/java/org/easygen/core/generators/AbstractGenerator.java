@@ -95,7 +95,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	{
 		try
         {
-			logger.debug("Initialisation de Velocity");
+			logger.debug("Initializing Velocity");
 			initVelocity();
 			context.put("stringutils", new StringUtils());
 			if (projectConfig != null) {
@@ -169,10 +169,10 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	{
 		String from = getTemplateDir()+inputFilePath;
 		try {
-			logger.debug("Copie du fichier "+from+" vers "+outputFilePath);
+			logger.debug("Copying from "+from+" to "+outputFilePath);
 			InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(from);
 			if (inputStream == null) {
-				throw new GenerationException("Le fichier source est introuvable: "+from);
+				throw new GenerationException("Source file not found: "+from);
 			}
 			FileOutputStream outputStream = new FileOutputStream(new File(outputFilePath));
 			IOUtils.copy(inputStream, outputStream);
@@ -180,7 +180,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 			outputStream.close();
 			//FileUtils.copyFile(new File(from), new File(outputFilePath));
         } catch (Exception e) {
-        	throw new GenerationException("Erreur lors de la copie du fichier: "+from, e);
+        	throw new GenerationException("Error while copying file: "+from, e);
         }
 	}
 
@@ -192,13 +192,13 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	{
 		Validate.notNull(template, "Can't generate file : No given template");
 		try {
-			logger.debug("Generation du fichier "+outputFilePath);
+			logger.debug("Generating file: "+outputFilePath);
 			Writer writer = null;
 	        writer = new FileWriter(outputFilePath);
 	        template.merge(context, writer);
 	        writer.close();
         } catch (Exception e) {
-        	throw new GenerationException("Erreur lors de la génération du template: "+template.getName(), e);
+        	throw new GenerationException("Error while generating file from template: "+template.getName(), e);
         }
 	}
 
@@ -215,20 +215,12 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	{
 		return packageName.replace('.', File.separatorChar) + File.separatorChar;
 	}
-	/**
-     * @param pSrcPath
-     * @param pPackagePath
-	 * @throws GenerationException
-     */
+
     protected void createPath(String pPath) throws GenerationException
     {
     	createPath(new File(pPath));
     }
-	/**
-     * @param pSrcPath
-     * @param pPackagePath
-	 * @throws GenerationException
-     */
+
     protected void createPackagePath(String pPath, String packageName) throws GenerationException
     {
     	Validate.notNull("packageName in createPackagePath", packageName);
@@ -236,18 +228,11 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
     	String packagePath = convertPackageNameToPath(packageName);
 		createPath(pPath, packagePath);
     }
-	/**
-	 * @param pPath
-	 * @param subPath
-	 * @throws GenerationException
-	 */
+
 	protected void createPath(String pPath, String subPath) throws GenerationException {
 		createPath(new File(pPath, subPath));
 	}
-	/**
-     * @param pFile
-	 * @throws IOException
-     */
+
     protected void createPath(File pFile) throws GenerationException
     {
     	if ( !pFile.exists() )
@@ -277,9 +262,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
         String filename = baseFilename + extension;
         return filename;
     }
-	/**
-	 * @param filePath
-	 */
+
 	protected void delete(String filePath) {
 		File file = new File(filePath);
 		if (file.exists()) {
@@ -298,34 +281,28 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	protected void removeStackFromVelocityContext() {
 		context.remove(STACK);
 	}
-	/**
-	 * @return
-	 */
+
 	protected String getConfigurationDir() {
 		String configDir = configuration.getString(CONFIG_DIR_KEY);
 		return configDir + SEPARATOR_CHAR;
 	}
-	/**
-     * @return
-     */
+
     protected String getModuleDir() {
     	return getConfigurationDir() + getModuleName() + SEPARATOR_CHAR;
     }
-	/**
-	 * @return
-	 */
+
 	protected String getTemplateDir() {
 		return getModuleDir() + TEMPLATE_DIR + SEPARATOR_CHAR;
 	}
-	/**
-	 * @return
-	 */
+
 	protected String getLibraryDir() {
 		return getModuleDir() + LIBRARY_DIR + SEPARATOR_CHAR;
 	}
 	/**
 	 * @see org.easygen.core.generators.Generator#copyLibraries(org.easygen.core.config.ProjectConfig)
+	 * @deprecated Maven pom is generated instead
 	 */
+	@Deprecated
 	public String[] copyLibraries(ProjectConfig projectConfig) throws GenerationException {
 		logger.info("Copying libraries");
 		createPath(projectConfig.getLibPath());

@@ -10,8 +10,7 @@
 <tiles:insertDefinition name="mainLayout">
   <tiles:putAttribute name="title" value="Edition d'un objet ${object.className}" />
   <tiles:putAttribute name="body">
-#end
-#if ($isSiteMeshEngine)
+#elseif ($isSiteMeshEngine)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -24,33 +23,37 @@
 <fieldset title="Edit">
 <legend><b>Edition d'un objet ${objectVarName}</b></legend>
 <s:form action="update" method="post" validate="true">
+<table>
 #foreach ($aField in $object.fields)
-	#if ($aField.primaryKey == true)
+#if ($aField.primaryKey == true)
 	  <s:hidden name="${objectVarName}.${aField.propertyName}" />
-	  <s:label label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}" />
-	#end
+	<tr>
+		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td><s:property value="${objectVarName}.${aField.propertyName}"/></td>
+	</tr>
 #end
-#foreach ($aField in $object.fields)
-#if ($aField.primaryKey == false)
-	#if ($aField.foreignKey == false)
+#if ($aField.primaryKey == false && $aField.foreignKey == false)
+	<tr>
+		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td>
 		#if ($aField.propertyShortType == "Date")
-		<s:datetimepicker label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}"
+		<s:datetimepicker name="${objectVarName}.${aField.propertyName}"
 		#else
-  		<s:textfield label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}"
+  		<s:textfield name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}"
   		#end
   		#if ($aField.nullable == false)
   			required="true"
   		#end
-  		/>
-  	#end
+  		/></td>
+  	</tr>
 #end
-#end
-#foreach ($aField in $object.fields)
-#if ($aField.primaryKey == false)
-  	#if ($aField.foreignKey == true && $aField.foreignList == false)
+#if ($aField.primaryKey == false && $aField.foreignKey == true && $aField.foreignList == false)
+	<tr>
+		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td>
   		#foreach ($foreignField in $aField.foreignObject.fields)
   			#if ($foreignField.primaryKey == true)
-			 	<s:select label="${aField.propertyName}"
+			 	<s:select
 					name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
 					list="%{#request.${aField.propertyName}s}"
 					listKey="${foreignField.propertyName}"
@@ -61,9 +64,11 @@
 				/>
 	  		#end
 		#end
-	#end
+		</td>
+	</tr>
 #end
 #end	
+</table>
   <s:submit value="Enregistrer"/>
 </s:form>
 </fieldset>
@@ -75,8 +80,7 @@
 #if ($isTiles2Engine)
   </tiles:putAttribute>
 </tiles:insertDefinition>
-#end
-#if ($isSiteMeshEngine)
+#elseif ($isSiteMeshEngine)
 </body>
 </html>
 #end

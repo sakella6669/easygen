@@ -24,24 +24,24 @@ import com.opensymphony.xwork2.ModelDriven;
 /**
  * 
  */
-public class ${object.className}Action extends GenericAction implements ModelDriven<${object.className}> {
+public class ${object.className}Action extends GenericAction {
 
 	private static final long serialVersionUID = 1L;
 
 	private Service<${object.className}> ${objectVarName}Service;
 
 	private ${object.className} ${objectVarName};
+	private List<${object.className}> ${objectVarName}s;
 
 	public ${object.className} get${object.className}() {
+		if (${objectVarName} == null) {
+			${objectVarName} = new ${object.className}();
+		}
 		return ${objectVarName};
 	}
 
-	/**
-	 * @see com.opensymphony.xwork2.ModelDriven#getModel()
-	 */
-	public ${object.className} getModel() {
-		${objectVarName} = new ${object.className}();
-		return ${objectVarName};
+	public List<${object.className}> get${object.className}s() {
+		return ${objectVarName}s;
 	}
 
 	/**
@@ -78,8 +78,7 @@ public class ${object.className}Action extends GenericAction implements ModelDri
 
 	public String list() throws Exception {
 		try {
-			List<${object.className}> ${objectVarName}s = ${objectVarName}Service.list();
-			request.setAttribute("${objectVarName}s", ${objectVarName}s);
+			${objectVarName}s = ${objectVarName}Service.list();
 			logger.debug("Found " + ${objectVarName}s.size() + " ${objectVarName}s");
 			return Action.SUCCESS;
 		} catch (Exception e) {
@@ -90,8 +89,7 @@ public class ${object.className}Action extends GenericAction implements ModelDri
 
 	public String search() throws Exception {
 		try {
-			List<${object.className}> ${objectVarName}s = ${objectVarName}Service.search(${objectVarName});
-			request.setAttribute("${objectVarName}s", ${objectVarName}s);
+			${objectVarName}s = ${objectVarName}Service.search(${objectVarName});
 			logger.debug("Found " + ${objectVarName}s.size() + " ${objectVarName}s");
 			return Action.SUCCESS;
 		} catch (Exception e) {
@@ -122,7 +120,15 @@ public class ${object.className}Action extends GenericAction implements ModelDri
 		}
 	}
 
+	public String view() throws Exception {
+		return get();
+	}
+
 	public String edit() throws Exception {
+		return get();
+	}
+
+	public String get() throws Exception {
 		try {
 			logger.info("Getting ${objectVarName} with id: " + ${objectVarName}.getId());
 			${objectVarName} = ${objectVarName}Service.get(${objectVarName}.getId());
