@@ -2,11 +2,15 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page isErrorPage="true" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-
 #if ($isTiles2Engine)
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+#end
+
+<s:i18n name="lang.common">
+
+#if ($isTiles2Engine)
 <tiles:insertDefinition name="mainLayout">
-  <tiles:putAttribute name="title" value="Erreur lors de l'ex&eacute;cution de la requ&ecirc;te" />
+  <tiles:putAttribute name="title"><s:text name="errorPage.title" /></tiles:putAttribute>
   <tiles:putAttribute name="body">
 #end
 #if ($isSiteMeshEngine)
@@ -14,14 +18,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Erreur lors de l'ex&eacute;cution de la requ&ecirc;te</title>
+<title><s:text name="errorPage.title" /></title>
 </head>
 <body>
 #end
 
-<font color="red">
-Erreur de l'application. L'administrateur a été prévenu et analyse le problème dans les plus brefs délais. Merci.
-<br/><br/>
+<p>&nbsp;</p>
+<p align="center"><font color="red">
+<s:text name="errorPage.message" />
+</font></p>
 
 #if ($isTiles2Engine)
   </tiles:putAttribute>
@@ -31,3 +36,5 @@ Erreur de l'application. L'administrateur a été prévenu et analyse le problème d
 </body>
 </html>
 #end
+
+</s:i18n>

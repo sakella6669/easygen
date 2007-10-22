@@ -1,31 +1,26 @@
-#<s:i18n name="some.package.bundle" >
-#     <s:text name="some.key" />
-#</s:i18n>
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
 
 # Fields Labels
-id=Id
-commentaire=Comment
-noteString=Score
-dateNote=Date
-competence=Skill
-eleve=Student
+#foreach ($aField in $object.fields)
+${aField.propertyName}=$stringutils.capitalizeFirstLetter(${aField.propertyName})
+#end
 
 backToListLink=Back to list
 
 # Page specific labels
-show.title=Score list
-show.searchTitle=Score search
+show.title=${object.className} list
+show.searchTitle=${object.className} search
 show.confirmDelete=Do you really want to delete it ?
-show.addLink=Add a score
+show.addLink=Add a ${objectVarName}
 show.deleteLink=Delete
 show.searchLink=Search
-show.resultCount=Found {0} thema(s)
+show.resultCount=Found {0} ${objectVarName}(s)
 
-add.title=Add a score
+add.title=Add a ${objectVarName}
 add.submitLink=Save
 
-edit.title=Editing a score
+edit.title=Editing a ${objectVarName}
 edit.submitLink=Save
 
-view.title=Score Object
+view.title=${object.className}a Object
 view.submitLink=Edit

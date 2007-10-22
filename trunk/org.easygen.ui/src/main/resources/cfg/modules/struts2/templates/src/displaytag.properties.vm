@@ -1,5 +1,5 @@
 # locale provider (Jstl provider by default)
-locale.provider=test.view.tags.DisplayTagI18nWebwork2Adapter
+locale.provider=${project.viewModuleConfig.packageName}.tags.DisplayTagI18nWebwork2Adapter
  
 # locale.resolver (nothing by default, simply use locale from request)
-locale.resolver=test.view.tags.DisplayTagI18nWebwork2Adapter
+locale.resolver=${project.viewModuleConfig.packageName}.tags.DisplayTagI18nWebwork2Adapter

@@ -4,11 +4,15 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-
 #if ($isTiles2Engine)
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+#end
+
+<s:i18n name="lang.${objectVarName}">
+
+#if ($isTiles2Engine)
 <tiles:insertDefinition name="mainLayout">
-  <tiles:putAttribute name="title" value="Ajout d'un objet ${object.className}" />
+  <tiles:putAttribute name="title"><s:text name="add.title" />" /></tiles:putAttribute>
   <tiles:putAttribute name="body">
 #end
 #if ($isSiteMeshEngine)
@@ -16,20 +20,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Ajout d'un objet ${object.className}</title>
+<title><s:text name="add.title" /></title>
 </head>
 <body>
 #end
 
-<fieldset title="Ajout">
-<legend><b>Ajout d'un objet ${objectVarName}</b></legend>
+<fieldset title="<s:text name="add.submitLink" />">
+<legend><b><s:text name="add.title" /></b></legend>
 <s:form action="add" method="post" validate="true">
 <table>
 #foreach ($aField in $object.fields)
 #if ($aField.primaryKey == false)
 	#if ($aField.foreignKey == false)
 	<tr>
-		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
 		<td>
 		#if ($aField.propertyShortType == "Date")
 			<s:datetimepicker name="${objectVarName}.${aField.propertyName}"
@@ -44,7 +48,7 @@
   	#end
   	#if ($aField.foreignKey == true && $aField.foreignList == false)
 	<tr>
-		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
 		<td>
   		#foreach ($foreignField in $aField.foreignObject.fields)
   			#if ($foreignField.primaryKey == true)
@@ -65,13 +69,13 @@
 #end
 #end
 </table>
-  <s:submit value="Enregistrer"/>
+  <s:submit key="add.submitLink"/>
 </s:form>
 </fieldset>
 
 <p class="spacer">&nbsp;</p>
 <s:url id="listUrl" action="index" />
-<s:a href="%{listUrl}" cssClass="commandLink">Retour &agrave; la liste</s:a>
+<s:a href="%{listUrl}" cssClass="commandLink"><s:text name="backToListLink" /></s:a>
 
 #if ($isTiles2Engine)
   </tiles:putAttribute>
@@ -80,3 +84,5 @@
 </body>
 </html>
 #end
+
+</s:i18n>

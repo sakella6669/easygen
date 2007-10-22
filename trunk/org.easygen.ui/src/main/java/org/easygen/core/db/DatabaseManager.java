@@ -15,7 +15,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -28,6 +27,7 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.easygen.core.InitException;
 import org.easygen.core.config.DataField;
+import org.easygen.core.config.DataFieldComparator;
 import org.easygen.core.config.DataObject;
 import org.easygen.core.config.DatabaseConfig;
 import org.easygen.core.config.ObjectRelation;
@@ -300,6 +300,7 @@ public class DatabaseManager {
 					);
 					ObjectRelation foreignKey = getForeignKey(fksMap, table.getTableName(), dbf.getColumnName());
 					if (foreignKey != null) {
+						// TODO Vérifier que la table cible est selectionnée
 						dbf.setForeignKey(true);
 						dbf.setForeignColumnName(foreignKey.getForeignColumnName());
 						dbf.setForeignTableName(foreignKey.getForeignTableName());
@@ -308,43 +309,7 @@ public class DatabaseManager {
 					table.addField(dbf);
 				}
 				results.close();
-				Collections.sort(table.getFields(), new Comparator<DataField>() {
-					/**
-					 * Order fields according to this order (primary keys, normal fields, foreign keys)
-					 * @param dataField1
-					 * @param dataField2
-					 * @return
-					 */
-					public int compare(DataField dataField1, DataField dataField2) {
-						if (dataField1.isPrimaryKey()) {
-							if (dataField2.isPrimaryKey()) {
-								return compareNames(dataField1, dataField2);
-							}
-							return -1;
-						}
-						if (dataField1.isForeignKey()) {
-							if (dataField2.isForeignKey()) {
-								return compareNames(dataField1, dataField2);
-							}
-						}
-						if (dataField2.isPrimaryKey()) {
-							return 1;
-						}
-						if (dataField2.isForeignKey()) {
-							return -1;
-						}
-						return compareNames(dataField1, dataField2);
-					}
-
-					/**
-					 * @param dataField1
-					 * @param dataField2
-					 * @return
-					 */
-					protected int compareNames(DataField dataField1, DataField dataField2) {
-						return dataField1.getColumnName().compareTo(dataField2.getColumnName());
-					}
-				});
+				Collections.sort(table.getFields(), new DataFieldComparator());
 				tables.add(table);
 			}
 			return tables;

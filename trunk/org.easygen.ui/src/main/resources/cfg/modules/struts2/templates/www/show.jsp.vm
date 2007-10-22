@@ -24,41 +24,44 @@
 <%@ taglib prefix="display" uri="http://displaytag.sf.net"%>
 #if ($isTiles2Engine)
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+#end
 
+<s:i18n name="lang.${objectVarName}">
+
+#if ($isTiles2Engine)
 <tiles:insertDefinition name="mainLayout">
-  <tiles:putAttribute name="title" value="Liste des ${objectVarName}s" />
+  <tiles:putAttribute name="title"><s:text name="show.title" /></tiles:putAttribute>
   <tiles:putAttribute name="body">
 #elseif ($isSiteMeshEngine)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Liste des ${objectVarName}s</title>
+<title><s:text name="show.title" /></title>
 </head>
 <body>
 #end
 
 <script type="text/javascript">
 <!--
-	function confirmDelete()
-	{
-		return confirm("Voulez-vous vraiment supprimer cet objet ?");
+	function confirmDelete() {
+		return confirm("<s:text name="show.confirmDelete" />");
 	}
 //-->
 </script>
 
 <s:url id="prepareaddUrl" action="prepareadd" />
-<p><s:a href="%{prepareaddUrl}" cssClass="commandLink">Ajouter un objet ${objectVarName}</s:a></p>
+<p><s:a href="%{prepareaddUrl}" cssClass="commandLink"><s:text name="show.addLink" /></s:a></p>
 
-<fieldset title="Recherche">
-<legend><b>Recherche d'un objet ${objectVarName}</b></legend>
+<fieldset title="<s:text name="show.searchLink" />">
+<legend><b><s:text name="show.searchTitle" /></b></legend>
 <s:form action="search" method="post" validate="false">
 <table>
 #foreach ($aField in $object.fields)
 #if ($aField.primaryKey == false)
 	#if ($aField.foreignKey == false)
 	<tr>
-		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
 		<td>
 		#if ($aField.propertyShortType == "Date")
 		<s:datetimepicker name="${objectVarName}.${aField.propertyName}" />
@@ -70,12 +73,11 @@
   	#end
   	#if ($aField.foreignKey == true && $aField.foreignList == false)
 	<tr>
-		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
 		<td>
   		#foreach ($foreignField in $aField.foreignObject.fields)
   			#if ($foreignField.primaryKey == true)
-			 	<s:select
-					name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
+			 	<s:select name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
 					list="%{#request.${aField.propertyName}s}"
 					listKey="${foreignField.propertyName}"
 					multiple="false" emptyOption="true"
@@ -88,7 +90,7 @@
 #end
 #end
 </table>
-  <s:submit value="Rechercher"/>
+  <s:submit key="show.searchLink" />
 </s:form>
 </fieldset>
 
@@ -96,18 +98,16 @@
 <display:table name="${objectVarName}s" class="results" uid="${objectVarName}">
 #foreach ($aField in $object.fields)
 	#if ($aField.primaryKey == true)
-	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" style="text-align:center;">
+	<display:column titleKey="${aField.propertyName}" style="text-align:center;">
 		<s:url id="viewUrl" action="view">
 			<s:param name="${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
 		</s:url>
 		<s:a href="%{viewUrl}" cssClass="commandLink">${${objectVarName}.${aField.propertyName}}</s:a>
 	</display:column>
-    #end
-	#if ($aField.primaryKey == false && $aField.foreignKey == false)
-	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" property="${aField.propertyName}" />
-    #end
-	#if ($aField.primaryKey == false && $aField.foreignKey == true && $aField.foreignList == false)
-	<display:column title="$stringutils.capitalizeFirstLetter($aField.propertyName)" property="${aField.propertyName}" />
+    #elseif ($aField.primaryKey == false && $aField.foreignKey == false)
+	<display:column titleKey="${aField.propertyName}" property="${aField.propertyName}" />
+    #elseif ($aField.primaryKey == false && $aField.foreignKey == true && $aField.foreignList == false)
+	<display:column titleKey="${aField.propertyName}" property="${aField.propertyName}" />
     #end
 #end
 	<display:column style="text-align:center;">
@@ -115,14 +115,19 @@
 #foreach ($aField in $object.fields)
 	#if ($aField.primaryKey == true)
 			<s:param name="${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
-		</s:url>
     #end
 #end
-		<s:a href="%{deleteUrl}" cssClass="commandLink"
-			onclick="return confirmDelete();">Supprimer</s:a>
+		</s:url>
+		<s:a href="%{deleteUrl}" cssClass="commandLink" onclick="return confirmDelete();">
+			<s:text name="show.deleteLink" /></s:a>
 	</display:column>
 </display:table>
-<p align="center">Found <s:property value="%{#request.resultCount}" /> matiere(s)</p>
+
+	<p align="center">
+		<s:text name="show.resultCount">
+			<s:param><s:property value="%{notes.size()}" /></s:param>
+		</s:text>
+	</p>
 
 #if ($isTiles2Engine)
   </tiles:putAttribute>
@@ -131,3 +136,5 @@
 </body>
 </html>
 #end
+
+</s:i18n>

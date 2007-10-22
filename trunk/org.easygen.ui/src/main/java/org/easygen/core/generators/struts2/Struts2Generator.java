@@ -39,10 +39,12 @@ public class Struts2Generator extends AbstractGenerator {
 		logger.info("Generating view layer files");
 		Struts2ModuleConfig viewModuleConfig = (Struts2ModuleConfig) projectConfig.getViewModuleConfig();
 		String srcPath = projectConfig.getSrcPath();
+		String cfgPath = projectConfig.getCfgPath();
         String webPath = projectConfig.getWebContentPath();
 		createPackagePath(srcPath, viewModuleConfig.getPackageName());
 		createPath(webPath, "WEB-INF");
 		createPath(webPath, "common");
+		createPath(cfgPath, "lang");
 
 		// Variable qui précise si la couche service utilise Spring ou non
 		boolean isSpringServiceModule = projectConfig.getServiceModuleNature().equals(SpringServiceModuleConfig.NATURE);
@@ -55,12 +57,15 @@ public class Struts2Generator extends AbstractGenerator {
 
         String filename = createJavaFilename(viewModuleConfig, "GenericAction");
         generateFile("src/GenericAction.java.vm", srcPath + filename);
+        filename = createJavaFilename(viewModuleConfig, "tags/DisplayTagI18nWebwork2Adapter");
+        generateFile("src/DisplayTagI18nWebwork2Adapter.java.vm", srcPath + filename);
 
 		List<String> classList = new LinkedList<String>();
 		List<DataObject> objectList = new LinkedList<DataObject>();
 		for (DataObject object : projectConfig.getObjects()) {
-			if (object.isSelected() == false)
+			if (object.isSelected() == false) {
 				continue;
+			}
 			context.put(OBJECT, object);
 
 			filename = createFilename(viewModuleConfig, object.getClassName()+"Action-add-validation", XML_FILE_EXTENSION);
@@ -71,7 +76,8 @@ public class Struts2Generator extends AbstractGenerator {
 			filename = createJavaFilename(viewModuleConfig, object.getClassName() + ACTION_SUFFIX);
 			generateFile("src/Action.java.vm", srcPath + filename);
 			
-			String jspPath = projectConfig.getWebContentPath() + object.getClassName().toLowerCase();
+			String objectClassnameLowerCase = object.getClassName().toLowerCase();
+			String jspPath = projectConfig.getWebContentPath() + objectClassnameLowerCase;
 			createPath(jspPath);
 
 			generateFile("www/add.jsp.vm", jspPath + "/add.jsp");
@@ -79,19 +85,27 @@ public class Struts2Generator extends AbstractGenerator {
 			generateFile("www/edit.jsp.vm", jspPath + "/edit.jsp");
 			generateFile("www/show.jsp.vm", jspPath + "/show.jsp");
 
+			generateFile("src/lang/class.properties.vm", cfgPath + "lang/" + objectClassnameLowerCase + ".properties");
+			generateFile("src/lang/class_fr.properties.vm", cfgPath + "lang/" + objectClassnameLowerCase + "_fr.properties");
+
 			context.remove(OBJECT);
 			classList.add(object.getClassName());
 			objectList.add(object);
 		}
 		
 		context.put(CLASS_LIST, classList);
-		generateFile("src/applicationContext-view.xml.vm", projectConfig.getCfgPath() + "applicationContext-view.xml");
+		generateFile("src/applicationContext-view.xml.vm", cfgPath + "applicationContext-view.xml");
 		// TODO Make the navigation (show->view-edit, add) customizable
 		// TODO Simplifier la stack d'interceptor Struts2
-		generateFile("src/struts.xml.vm", projectConfig.getCfgPath() + "struts.xml");
+		generateFile("src/struts.xml.vm", cfgPath + "struts.xml");
         generateFile("www/common/layout.jsp.vm", webPath + "common/layout.jsp");
 		context.remove(CLASS_LIST);
 
+		generateFile("src/displaytag.properties.vm", cfgPath + "displaytag.properties");
+
+		generateFile("src/lang/common.properties.vm", cfgPath + "lang/common.properties");
+		generateFile("src/lang/common_fr.properties.vm", cfgPath + "lang/common_fr.properties");
+		
 		generateFile("WEB-INF/web.xml.vm", webPath + "WEB-INF/web.xml");
         generateFile("www/index.jsp.vm", webPath + "index.jsp");
         generateFile("www/error.jsp.vm", webPath + "error.jsp");
