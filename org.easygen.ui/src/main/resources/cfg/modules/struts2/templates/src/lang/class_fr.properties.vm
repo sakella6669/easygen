@@ -1,31 +1,26 @@
-#<s:i18n name="some.package.bundle" >
-#     <s:text name="some.key" />
-#</s:i18n>
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
 
 # Fields Labels
-id=Id
-commentaire=Commentaire
-noteString=Note
-dateNote=Date
-competence=Comp\u00E9tence
-eleve=El\u00E8ve
+#foreach ($aField in $object.fields)
+${aField.propertyName}=$stringutils.capitalizeFirstLetter(${aField.propertyName})
+#end
 
-backToListLink=Retour \u00A8 &agrave; la liste
+backToListLink=Retour &agrave; la liste
 
 # Page specific labels
-show.title=Liste des notes
-show.searchTitle=Recherche d'un objet note
+show.title=Liste des ${objectVarName}s
+show.searchTitle=Recherche d''un objet ${objectVarName}
 show.confirmDelete=Voulez-vous vraiment supprimer cet objet ?
-show.addLink=Ajouter un objet note
+show.addLink=Ajouter un objet ${objectVarName}
 show.deleteLink=Supprimer
 show.searchLink=Rechercher
-show.resultCount=Trouv\u00E9 {0} matiere(s)
+show.resultCount=Trouv\u00E9 {0} ${objectVarName}(s)
 
-add.title=Ajout un objet note
+add.title=Ajout d''un objet ${objectVarName}
 add.submitLink=Enregistrer
 
-edit.title=Edition d'un objet note
+edit.title=Edition d''un objet ${objectVarName}
 edit.submitLink=Enregistrer
 
-view.title=Objet note
+view.title=Objet ${objectVarName}
 view.submitLink=Editer
