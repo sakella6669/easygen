@@ -75,8 +75,6 @@ public class Struts2Generator extends AbstractGenerator {
 			createPath(jspPath);
 
 			generateFile("www/add.jsp.vm", jspPath + "/add.jsp");
-			// TODO Finir d'ajouter la page view plus complète que dans le show
-			// (i.e. avec les FK)
 			generateFile("www/view.jsp.vm", jspPath + "/view.jsp");
 			generateFile("www/edit.jsp.vm", jspPath + "/edit.jsp");
 			generateFile("www/show.jsp.vm", jspPath + "/show.jsp");
@@ -88,6 +86,8 @@ public class Struts2Generator extends AbstractGenerator {
 		
 		context.put(CLASS_LIST, classList);
 		generateFile("src/applicationContext-view.xml.vm", projectConfig.getCfgPath() + "applicationContext-view.xml");
+		// TODO Make the navigation (show->view-edit, add) customizable
+		// TODO Simplifier la stack d'interceptor Struts2
 		generateFile("src/struts.xml.vm", projectConfig.getCfgPath() + "struts.xml");
         generateFile("www/common/layout.jsp.vm", webPath + "common/layout.jsp");
 		context.remove(CLASS_LIST);

@@ -24,27 +24,31 @@
 <fieldset title="Ajout">
 <legend><b>Ajout d'un objet ${objectVarName}</b></legend>
 <s:form action="add" method="post" validate="true">
+<table>
 #foreach ($aField in $object.fields)
 #if ($aField.primaryKey == false)
 	#if ($aField.foreignKey == false)
+	<tr>
+		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td>
 		#if ($aField.propertyShortType == "Date")
-		<s:datetimepicker label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}"
+			<s:datetimepicker name="${objectVarName}.${aField.propertyName}"
 		#else
-  		<s:textfield label="${aField.propertyName}" name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}"
+  			<s:textfield name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}"
   		#end
   		#if ($aField.nullable == false)
   			required="true"
   		#end
-  		/>
+  			/></td>
+	</tr>
   	#end
-#end
-#end
-#foreach ($aField in $object.fields)
-#if ($aField.primaryKey == false)
   	#if ($aField.foreignKey == true && $aField.foreignList == false)
+	<tr>
+		<td width="40%">$stringutils.capitalizeFirstLetter(${aField.propertyName})</td>
+		<td>
   		#foreach ($foreignField in $aField.foreignObject.fields)
   			#if ($foreignField.primaryKey == true)
-			 	<s:select label="${aField.propertyName}"
+			 	<s:select
 					name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
 					list="%{#request.${aField.propertyName}s}"
 					listKey="${foreignField.propertyName}"
@@ -55,9 +59,12 @@
 				/>
 	  		#end
 		#end
+		</td>
+	</tr>
 	#end
 #end
-#end	
+#end
+</table>
   <s:submit value="Enregistrer"/>
 </s:form>
 </fieldset>
@@ -69,8 +76,7 @@
 #if ($isTiles2Engine)
   </tiles:putAttribute>
 </tiles:insertDefinition>
-#end
-#if ($isSiteMeshEngine)
+#elseif ($isSiteMeshEngine)
 </body>
 </html>
 #end

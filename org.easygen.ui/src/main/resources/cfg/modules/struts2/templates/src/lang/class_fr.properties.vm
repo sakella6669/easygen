@@ -1,0 +1,31 @@
+#<s:i18n name="some.package.bundle" >
+#     <s:text name="some.key" />
+#</s:i18n>
+
+# Fields Labels
+id=Id
+commentaire=Commentaire
+noteString=Note
+dateNote=Date
+competence=Comp\u00E9tence
+eleve=El\u00E8ve
+
+backToListLink=Retour \u00A8 &agrave; la liste
+
+# Page specific labels
+show.title=Liste des notes
+show.searchTitle=Recherche d'un objet note
+show.confirmDelete=Voulez-vous vraiment supprimer cet objet ?
+show.addLink=Ajouter un objet note
+show.deleteLink=Supprimer
+show.searchLink=Rechercher
+show.resultCount=Trouv\u00E9 {0} matiere(s)
+
+add.title=Ajout un objet note
+add.submitLink=Enregistrer
+
+edit.title=Edition d'un objet note
+edit.submitLink=Enregistrer
+
+view.title=Objet note
+view.submitLink=Editer

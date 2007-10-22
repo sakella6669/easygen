@@ -1,0 +1,31 @@
+#<s:i18n name="some.package.bundle" >
+#     <s:text name="some.key" />
+#</s:i18n>
+
+# Fields Labels
+id=Id
+commentaire=Comment
+noteString=Score
+dateNote=Date
+competence=Skill
+eleve=Student
+
+backToListLink=Back to list
+
+# Page specific labels
+show.title=Score list
+show.searchTitle=Score search
+show.confirmDelete=Do you really want to delete it ?
+show.addLink=Add a score
+show.deleteLink=Delete
+show.searchLink=Search
+show.resultCount=Found {0} thema(s)
+
+add.title=Add a score
+add.submitLink=Save
+
+edit.title=Editing a score
+edit.submitLink=Save
+
+view.title=Score Object
+view.submitLink=Edit

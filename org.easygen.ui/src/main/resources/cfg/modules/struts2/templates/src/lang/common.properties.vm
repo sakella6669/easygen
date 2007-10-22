@@ -1,0 +1,13 @@
+project.name=Test
+
+menu.categorie=Manage categories
+menu.competence=Manage skills
+menu.eleve=Manage students
+menu.livret=Manage books
+menu.matiere=Manage themas
+menu.note=Manage scoring
+
+validation.actionErrors=Error while validating action\:
+validation.fieldErrors=Error while validating fields\:
+
+footer=Generated with <a href="http://easygen.googlecode.com">EasyGen</a>
