@@ -2,7 +2,9 @@
 
 .wwFormTable {
 }
-
+.formFields {
+	width: 300px;
+}
 .pageTitle {
 	font-weight: bold;
 	font-size: 1.2em;
@@ -82,10 +84,11 @@ body {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 0.8em;
 }
-
 table.results {
-	width: 90%;
+	width: 100%;
 	align: center;
+	border: 1px solid #ccc;
+	border-collapse: collapse;
 }
 table.results thead tr th {
 	background-color: #eee;
@@ -94,12 +97,6 @@ table.results thead tr th {
 table.results tr.even {
 	background-color: #fff;
 }
-
-table.results {
-	border: 1px solid #ccc;
-	border-collapse: collapse;
-}
-
-table.results td,table.results th {
+td.results {
 	border: 1px solid #ccc;
 }

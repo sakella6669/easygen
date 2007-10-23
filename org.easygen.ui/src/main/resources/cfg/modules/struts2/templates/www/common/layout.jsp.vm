@@ -28,9 +28,9 @@
 		<s:a href="%{homeUrl}"><s:text name="project.name" /></s:a>
 	</div>
 
-	<table width="90%" border="0">
+	<table width="95%" border="0">
 	<tr>
-		<td width="30%" valign="top">
+		<td width="25%" valign="top">
 			<div id="menu">
 			#foreach ($className in $classList)
 			#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )

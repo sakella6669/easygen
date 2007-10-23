@@ -57,6 +57,13 @@
 <legend><b><s:text name="show.searchTitle" /></b></legend>
 <s:form action="search" method="post" validate="false">
 <table>
+	<tr>
+		<td colspan="2" align="center" style="font-size: 0.8em">
+		<em><s:text name="show.searchAdvice" /></em></td>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
 #foreach ($aField in $object.fields)
 #if ($aField.primaryKey == false)
 	#if ($aField.foreignKey == false)
@@ -64,9 +71,9 @@
 		<td width="40%"><s:text name="${aField.propertyName}" /></td>
 		<td>
 		#if ($aField.propertyShortType == "Date")
-		<s:datetimepicker name="${objectVarName}.${aField.propertyName}" />
+		<s:datetimepicker name="${objectVarName}.${aField.propertyName}" cssClass="formFields" />
 		#else
-  		<s:textfield name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}" />
+  		<s:textfield name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}" cssClass="formFields" />
   		#end
 		</td>
 	</tr>
@@ -80,7 +87,7 @@
 			 	<s:select name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
 					list="%{#request.${aField.propertyName}s}"
 					listKey="${foreignField.propertyName}"
-					multiple="false" emptyOption="true"
+					multiple="false" emptyOption="true" cssClass="formFields"
 				/>
 	  		#end
 		#end
@@ -94,13 +101,13 @@
 </s:form>
 </fieldset>
 
-<p class="pageTitle">Liste des ${objectVarName}s</p>
+<p class="pageTitle"><s:text name="show.title" /></p>
 <display:table name="${objectVarName}s" class="results" uid="${objectVarName}">
 #foreach ($aField in $object.fields)
 	#if ($aField.primaryKey == true)
 	<display:column titleKey="${aField.propertyName}" style="text-align:center;">
 		<s:url id="viewUrl" action="view">
-			<s:param name="${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
+			<s:param name="${objectVarName}.${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
 		</s:url>
 		<s:a href="%{viewUrl}" cssClass="commandLink">${${objectVarName}.${aField.propertyName}}</s:a>
 	</display:column>
@@ -114,7 +121,7 @@
 		<s:url id="deleteUrl" action="delete">
 #foreach ($aField in $object.fields)
 	#if ($aField.primaryKey == true)
-			<s:param name="${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
+			<s:param name="${objectVarName}.${aField.propertyName}" value="${${objectVarName}.${aField.propertyName}}" />
     #end
 #end
 		</s:url>
@@ -125,7 +132,7 @@
 
 	<p align="center">
 		<s:text name="show.resultCount">
-			<s:param><s:property value="%{notes.size()}" /></s:param>
+			<s:param><s:property value="%{${objectVarName}s.size()}" /></s:param>
 		</s:text>
 	</p>
 

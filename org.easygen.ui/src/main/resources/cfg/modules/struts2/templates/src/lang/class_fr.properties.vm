@@ -10,6 +10,7 @@ backToListLink=Retour &agrave; la liste
 # Page specific labels
 show.title=Liste des ${objectVarName}s
 show.searchTitle=Recherche d''un objet ${objectVarName}
+show.searchAdvice=Vous pouvez utiliser % pour des recherches incompl\u00E8tes
 show.confirmDelete=Voulez-vous vraiment supprimer cet objet ?
 show.addLink=Ajouter un objet ${objectVarName}
 show.deleteLink=Supprimer

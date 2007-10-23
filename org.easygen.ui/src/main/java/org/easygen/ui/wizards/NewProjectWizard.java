@@ -131,6 +131,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
      * @see org.eclipse.jface.dialogs.IPageChangedListener#pageChanged(org.eclipse.jface.dialogs.PageChangedEvent)
      */
     public void pageChanged(PageChangedEvent pEvent) {
+    	// TODO Gèrer le retour-arrière dans les pages
 		IWizardPage currentPage = (IWizardPage) pEvent.getSelectedPage();
 		logger.debug("Page changed: "+currentPage.getName());
     	try {

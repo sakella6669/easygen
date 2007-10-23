@@ -8,7 +8,7 @@
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 #end
 
-<s:i18n name="lang.common">
+<s:i18n name="lang.${objectVarName}">
 
 #if ($isTiles2Engine)
 <tiles:insertDefinition name="mainLayout">
