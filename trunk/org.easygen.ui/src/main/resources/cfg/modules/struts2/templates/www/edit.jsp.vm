@@ -41,9 +41,9 @@
 		<td width="40%"><s:text name="${aField.propertyName}" /></td>
 		<td>
 		#if ($aField.propertyShortType == "Date")
-		<s:datetimepicker name="${objectVarName}.${aField.propertyName}"
+		<s:datetimepicker name="${objectVarName}.${aField.propertyName}" cssClass="formFields"
 		#else
-  		<s:textfield name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}"
+  		<s:textfield name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}" cssClass="formFields"
   		#end
   		#if ($aField.nullable == false)
   			required="true"
@@ -61,7 +61,7 @@
 					name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
 					list="%{#request.${aField.propertyName}s}"
 					listKey="${foreignField.propertyName}"
-					multiple="false"
+					multiple="false" cssClass="formFields"
 		  		#if ($aField.nullable == false)
 		  			required="true"
 		  		#end
@@ -71,9 +71,9 @@
 		</td>
 	</tr>
 #end
-#end	
+#end
 </table>
-  <s:submit kzy="edit.submitLink"/>
+  <s:submit key="edit.submitLink"/>
 </s:form>
 </fieldset>
 

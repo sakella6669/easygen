@@ -10,6 +10,7 @@ backToListLink=Back to list
 # Page specific labels
 show.title=${object.className} list
 show.searchTitle=${object.className} search
+show.searchAdvice=You can use % as wildcard
 show.confirmDelete=Do you really want to delete it ?
 show.addLink=Add a ${objectVarName}
 show.deleteLink=Delete

@@ -1,4 +1,4 @@
-package ${project.viewModuleConfig.packageName}.tags;
+package ${project.viewModuleConfig.packageName}.util;
 
 import java.util.Collections;
 import java.util.Iterator;

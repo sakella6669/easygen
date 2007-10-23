@@ -10,6 +10,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -28,28 +29,32 @@ public abstract class GenericService<T> implements Service<T> {
 
 	private static final class NotNullOrEmptyPropertySelector implements PropertySelector {
 
+		private static final Logger logger = Logger.getLogger(NotNullOrEmptyPropertySelector.class);
+		
 		private static final long serialVersionUID = 1L;
 
 		public boolean include(Object object, String propertyName, Type type) {
+			logger.debug("Invoking NotNullOrEmptyPropertySelector");
 			if (object == null) {
 				return false;
 			}
 			try {
-				Object property = PropertyUtils.getProperty(object, propertyName);
-				Logger.getLogger(getClass()).debug(object);
+//				logger.debug("Object: "+object);
+				logger.debug("PropertyName: "+propertyName);
+				Object property = object; //PropertyUtils.getProperty(object, propertyName);
+				logger.debug("Property: "+property);
 				if (property == null) {
 					return false;
 				}
-				if ((property instanceof String)
-						&& ((String) property).trim().length() == 0) {
+				if ((property instanceof String) && StringUtils.isEmpty((String) property)) {
 					return false;
 				}
-				if ((property instanceof Number)
-						&& ((Number) property).longValue() == 0) {
+				if ((property instanceof Number) && ((Number) property).longValue() == 0) {
 					return false;
 				}
 				return true;
 			} catch (Exception e) {
+				logger.debug("Can't introspect object", e);
 				return false;
 			}
 		}

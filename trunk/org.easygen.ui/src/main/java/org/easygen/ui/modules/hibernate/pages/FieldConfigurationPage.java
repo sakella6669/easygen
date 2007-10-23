@@ -38,12 +38,11 @@ public class FieldConfigurationPage extends ModulePage {
 			Localization.get("hibernate.label.fieldSelector.fieldType"),
 			Localization.get("hibernate.label.fieldSelector.primaryKey"),
 			Localization.get("hibernate.label.fieldSelector.foreignKey")
-			// TODO Donner la possibilité de supprimer les foreignKey (d'un seul coté ou des deux)
 		};
 
 	private static final String[] javaTypes = { "java.lang.String", "java.lang.Character", "java.lang.Short",
 			"java.lang.Integer", "java.lang.Long", "java.lang.Float", "java.lang.Double", "java.lang.BigDecimal",
-			"java.lang.BigInteger", "java.lang.Boolean", };
+			"java.lang.BigInteger", "java.lang.Boolean" };
 
 	private Table fieldConfigurationTable;
 
@@ -98,13 +97,16 @@ public class FieldConfigurationPage extends ModulePage {
 		fieldConfigurationTable = WidgetUtils.createTable(pParent, 150);
 
 		int index = 0;
+		// TODO Réduire la taille des colonnes
+		// TODO Centrer les checkbox primary et foreign keys
+		// TODO Donner la possibilité de supprimer les foreignKey (d'un seul coté ou des deux)
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 20);
+		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
+		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 75);
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 100);
-		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 100);
-		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
-		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
-		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
+		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 75);
+		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 75);
 
 		tableViewer = WidgetUtils.createTableViewer(fieldConfigurationTable, columnNames);
 

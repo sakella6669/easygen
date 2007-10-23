@@ -57,7 +57,9 @@ public class Struts2Generator extends AbstractGenerator {
 
         String filename = createJavaFilename(viewModuleConfig, "GenericAction");
         generateFile("src/GenericAction.java.vm", srcPath + filename);
-        filename = createJavaFilename(viewModuleConfig, "tags/DisplayTagI18nWebwork2Adapter");
+
+        createPackagePath(srcPath, viewModuleConfig.getPackageName()+".util");
+        filename = createJavaFilename(viewModuleConfig, "util/DisplayTagI18nWebwork2Adapter");
         generateFile("src/DisplayTagI18nWebwork2Adapter.java.vm", srcPath + filename);
 
 		List<String> classList = new LinkedList<String>();
