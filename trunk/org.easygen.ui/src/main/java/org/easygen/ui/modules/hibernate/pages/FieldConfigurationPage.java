@@ -97,7 +97,6 @@ public class FieldConfigurationPage extends ModulePage {
 		fieldConfigurationTable = WidgetUtils.createTable(pParent, 150);
 
 		int index = 0;
-		// TODO Réduire la taille des colonnes
 		// TODO Centrer les checkbox primary et foreign keys
 		// TODO Donner la possibilité de supprimer les foreignKey (d'un seul coté ou des deux)
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 20);
@@ -114,7 +113,7 @@ public class FieldConfigurationPage extends ModulePage {
 		// Create the cell editors
 		CellEditor[] editors = new CellEditor[fieldConfigurationTable.getColumnCount()];
 		// Column : Selected (CheckBox)
-		editors[index++] = new CheckboxCellEditor(fieldConfigurationTable);
+		editors[index++] = new CheckboxCellEditor(fieldConfigurationTable, SWT.CENTER);
 		// Column : Column Name (Text)
 		editors[index++] = new TextCellEditor(fieldConfigurationTable);
 		// Column : Column Type (Text)
@@ -124,9 +123,9 @@ public class FieldConfigurationPage extends ModulePage {
 		// Column : Field Type (Text)
 		editors[index++] = new ComboBoxCellEditor(fieldConfigurationTable, javaTypes);
 		// Column : Primary Key (Text)
-		editors[index++] = new CheckboxCellEditor(fieldConfigurationTable);
+		editors[index++] = new CheckboxCellEditor(fieldConfigurationTable, SWT.CENTER);
 		// Column : Foreign Key (Text)
-		editors[index++] = new CheckboxCellEditor(fieldConfigurationTable);
+		editors[index++] = new CheckboxCellEditor(fieldConfigurationTable, SWT.CENTER);
 		// Assign the cell editors to the viewer
 		tableViewer.setCellEditors(editors);
 

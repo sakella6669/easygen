@@ -1,9 +1,13 @@
 package org.easygen.ui.modules.hibernate.pages;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.WordUtils;
+import org.easygen.core.config.DataField;
 import org.easygen.core.config.DataObject;
 import org.easygen.core.config.ProjectConfig;
+import org.easygen.core.db.SQLDataConverter;
 import org.easygen.ui.localization.Localization;
 import org.easygen.ui.util.WidgetUtils;
 import org.easygen.ui.wizards.pages.ModulePage;
@@ -18,6 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 
 /**
  * @author Mektoub Created on 23 mars 07
@@ -83,6 +88,11 @@ public class TableSelectorPage extends ModulePage
 		tableSelectionTable = WidgetUtils.createTable(tableSelectionGroup, 200);
 		tableSelectionTable.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
+				TableItem item = (TableItem) e.item;
+				if (item != null && item.getData() != null) {
+					DataObject dataObject = (DataObject) item.getData();
+					handleDataObjectForeignKeys(dataObject);
+				}
 				setPageComplete(validatePage());
 			}
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -148,5 +158,61 @@ public class TableSelectorPage extends ModulePage
 				return true;
 		}
 		return false;		
+	}
+
+	/**
+	 * When a table is selected or unselected, this method update the foreign keys
+	 * @param dataObject which state (selected or not) changed
+	 */
+	private void handleDataObjectForeignKeys(DataObject dataObject) {
+		for (DataField field : dataObject.getFields()) {
+			if (field.isForeignKey()) {
+				DataObject foreignObject = field.getForeignObject();
+				if (dataObject.isSelected() == true && field.isForeignList() == false) {
+					// Current object is selected so we need to complete the foreign keys
+					// This is a direct foreign key (i.e. exists in database) so we need
+					// to create a "virtual" (i.e. field.setForeignList(true)) foreign field for the foreignObject
+					DataField newField = new DataField();
+					newField.setForeignKey(true);
+					newField.setForeignList(true);
+					newField.setColumnName(field.getColumnName());
+					newField.setPropertyName( WordUtils.uncapitalize(dataObject.getClassName()+'s') );
+					newField.setPropertyType( dataObject.getClassName() );
+					newField.setForeignObject(dataObject);
+					logger.debug("Added: "+newField+ " to "+foreignObject);
+					foreignObject.addField(newField);
+				} else {
+					Iterator<DataField> foreignFielditerator = foreignObject.getFields().iterator();
+					while (foreignFielditerator.hasNext()) {
+						DataField foreignField = foreignFielditerator.next();
+						// We're looking for a foreign field that has the same column name (i.e. the sql foreign key)
+						if (foreignField.isForeignKey() && foreignField.getColumnName().equals(field.getColumnName())) {
+							if (field.isForeignList() == false && dataObject.isSelected() == false) {
+								// Current object is NOT selected so we need to remove some foreign keys
+								// This is a direct foreign key (i.e. exists in database) so we need to
+								// remove the "virtual" (i.e. field.isForeignList() == true) foreign field for the foreignObject
+								logger.debug("Removed: "+foreignField+" from "+foreignObject);
+								foreignFielditerator.remove();
+							} else {
+								// This is a "virtual" foreign key (i.e. field.isForeignList() == true) so we need to update
+								// the direct foreign key on the foreign object, depending on the selection state of the current object
+								if (dataObject.isSelected()) {
+									foreignField.setForeignKey(true);
+									// Defines the java type and name depending on the foreignObject -> object type
+									foreignField.setPropertyName(SQLDataConverter.convertColumnNameToJavaField(dataObject.getTableName()));
+									foreignField.setPropertyType(SQLDataConverter.convertTableNameToJavaClass(dataObject.getTableName()));
+								} else {
+									foreignField.setForeignKey(false);
+									// Defines the java type and name depending on the SQL column -> basic column
+									foreignField.setPropertyName(SQLDataConverter.convertColumnNameToJavaField(foreignField.getColumnName()));
+									foreignField.setPropertyType(SQLDataConverter.getJavaTypeForSqlType(foreignField));
+								}
+								logger.debug("Updated: "+foreignField + " in "+ foreignObject);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

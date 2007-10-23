@@ -46,7 +46,7 @@ public abstract class CheckboxCellModifier extends LabelProvider implements ITab
 		);
 	}
 
-	protected Logger logger = Logger.getLogger(getClass());
+	protected static final Logger logger = Logger.getLogger(CheckboxCellModifier.class);
 	protected List<String> columnNames;
 	protected TableViewer tableViewer;
 

@@ -11,11 +11,11 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
+public class EasyGenActivator extends AbstractUIPlugin /* implements IStartup */{
 
-//	Pour que le plug-in soit chargé au lancement d'Eclipse,
-//  on ajoute une extension org.eclipse.ui.startup.
-//	Il faut pointer sur une classe qui implémente l'interface IStartup.
+	// Pour que le plug-in soit chargé au lancement d'Eclipse,
+	// on ajoute une extension org.eclipse.ui.startup.
+	// Il faut pointer sur une classe qui implémente l'interface IStartup.
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.easygen.ui";
@@ -54,15 +54,7 @@ public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
-	public void start(BundleContext context) throws Exception
-	{
-//		URL log4jConfigFile = Thread.currentThread().getContextClassLoader().getResource("log4j.xml");
-//		if (log4jConfigFile != null) {
-//			DOMConfigurator.configure(log4jConfigFile);
-//		} else {
-//			BasicConfigurator.configure();
-//		}
-//		logger = Logger.getLogger(getClass());
+	public void start(BundleContext context) throws Exception {
 		try {
 			super.start(context);
 			logInfo("Starting EasyGen Plugin");
@@ -81,8 +73,7 @@ public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
-	public void stop(BundleContext context) throws Exception
-	{
+	public void stop(BundleContext context) throws Exception {
 		try {
 			plugin = null;
 			super.stop(context);
@@ -94,7 +85,7 @@ public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
 
 	/**
 	 * Returns the shared instance
-	 *
+	 * 
 	 * @return the shared instance
 	 */
 	public static EasyGenActivator getDefault() {
@@ -102,9 +93,9 @@ public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
 	}
 
 	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path
-	 *
+	 * Returns an image descriptor for the image file at the given plug-in
+	 * relative path
+	 * 
 	 * @param path the path
 	 * @return the image descriptor
 	 */
@@ -112,19 +103,19 @@ public class EasyGenActivator extends AbstractUIPlugin /*implements IStartup*/ {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-	private void logInfo(String message) {
+	protected void logInfo(String message) {
 		logger.info(message);
 		Status status = new Status(Status.INFO, PLUGIN_ID, message);
 		getLog().log(status);
 	}
 
-//	private void logWarn(String message, Throwable t) {
-//		logger.warn(message);
-//	Status status = new Status(Status.WARNING, PLUGIN_ID, message, t);
-//	getLog().log(status);
-//	}
+	protected void logWarn(String message, Throwable t) {
+		logger.warn(message);
+		Status status = new Status(Status.WARNING, PLUGIN_ID, message, t);
+		getLog().log(status);
+	}
 
-	private void logError(String message, Throwable t) {
+	protected void logError(String message, Throwable t) {
 		logger.error(message);
 		Status status = new Status(Status.ERROR, PLUGIN_ID, message, t);
 		getLog().log(status);

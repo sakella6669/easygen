@@ -300,7 +300,6 @@ public class DatabaseManager {
 					);
 					ObjectRelation foreignKey = getForeignKey(fksMap, table.getTableName(), dbf.getColumnName());
 					if (foreignKey != null) {
-						// TODO Vérifier que la table cible est selectionnée
 						dbf.setForeignKey(true);
 						dbf.setForeignColumnName(foreignKey.getForeignColumnName());
 						dbf.setForeignTableName(foreignKey.getForeignTableName());
@@ -363,6 +362,7 @@ public class DatabaseManager {
 					DataField newField = new DataField();
 					newField.setForeignKey(true);
 					newField.setForeignList(true);
+					newField.setForeignObject(object);
 					newField.setColumnName(field.getColumnName());
 					newField.setPropertyName( WordUtils.uncapitalize(object.getClassName()+'s') );
 					newField.setPropertyType( object.getClassName() );

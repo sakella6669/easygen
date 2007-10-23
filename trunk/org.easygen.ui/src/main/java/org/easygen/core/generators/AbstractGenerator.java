@@ -52,8 +52,6 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
     public AbstractGenerator()
     {
 	    super();
-	    // TODO Traduire en anglais ou gérer l'internationalisation
-	    // TODO Les champs sont déjà ordonnés => supprimer les multiples boucles dans les templates
 	    // TODO Ajouter la generation avec le framework Wicket
 	    loadConfiguration();
 	    templates = new Hashtable<String,Template>();
@@ -300,9 +298,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	}
 	/**
 	 * @see org.easygen.core.generators.Generator#copyLibraries(org.easygen.core.config.ProjectConfig)
-	 * @deprecated Maven pom is generated instead
 	 */
-	@Deprecated
 	public String[] copyLibraries(ProjectConfig projectConfig) throws GenerationException {
 		logger.info("Copying libraries");
 		createPath(projectConfig.getLibPath());
