@@ -41,11 +41,11 @@ import org.eclipse.ui.IWorkbenchWizard;
 public class NewProjectWizard extends Wizard implements INewWizard, IPageChangedListener {
 
 	private static final String EASYGEN_XML = "easygen.xml";
-	
+
 	protected Logger logger = Logger.getLogger(getClass());
 	protected ProjectConfig projectConfig = null;
 
-	protected boolean commonPageDone = false;
+	//	protected boolean commonPageDone = false;
 	protected boolean modulePagesAdded = false;
 
 	protected ModuleManager moduleManager;
@@ -61,124 +61,122 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 		setHelpAvailable(false);
 		logger.info("EasyGenNewWizard loaded");
 	}
+
 	/**
 	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection pSelection) {
-        logger.info("Initialisation du wizard "+getClass().getName());
-        setWindowTitle(Localization.get("easygen.title.plugin"));
-        projectConfig = new ProjectConfig();
+		logger.info("Initialisation du wizard " + getClass().getName());
+		setWindowTitle(Localization.get("easygen.title.plugin"));
+		projectConfig = new ProjectConfig();
 
-        moduleManager = ModuleManagerFactory.newInstance();
+		moduleManager = ModuleManagerFactory.newInstance();
 	}
+
 	/**
 	 * Adding the pages to the wizard.
 	 */
 	@Override
-	public void addPages()
-	{
-        try
-        {
-	        addPage(new NewProjectPage());
-	        addPage(new ConfigureModulePage(
-        		moduleManager.getModuleNatures(ModuleManager.DATA_MODULE_KIND),
-        		moduleManager.getModuleNatures(ModuleManager.SERVICE_MODULE_KIND),
-        		moduleManager.getModuleNatures(ModuleManager.VIEW_MODULE_KIND)
-	        ));
-	        addPage(new InformationPage(
-	        		Localization.get("easygen.title.beforeModuleConfiguration"),
-	        		Localization.get("easygen.label.beforeModuleConfiguration")
-	        ));
-        }
-        catch (RuntimeException e)
-        {
-        	logger.error("Error while adding pages", e);
-        }
+	public void addPages() {
+		try {
+			addPage(new NewProjectPage());
+			addPage(new ConfigureModulePage(moduleManager.getModuleNatures(ModuleManager.DATA_MODULE_KIND),
+					moduleManager.getModuleNatures(ModuleManager.SERVICE_MODULE_KIND), moduleManager
+							.getModuleNatures(ModuleManager.VIEW_MODULE_KIND)));
+			addPage(new InformationPage(Localization.get("easygen.title.beforeModuleConfiguration"), Localization
+					.get("easygen.label.beforeModuleConfiguration")));
+		} catch (RuntimeException e) {
+			logger.error("Error while adding pages", e);
+		}
 	}
+
 	/**
-     * @see org.eclipse.jface.wizard.Wizard#setContainer(org.eclipse.jface.wizard.IWizardContainer)
-     */
-    @Override
-	public void setContainer(IWizardContainer pWizardContainer)
-    {
-	    super.setContainer(pWizardContainer);
-	    if (pWizardContainer != null && pWizardContainer instanceof WizardDialog) {
-	    	((WizardDialog) getContainer()).addPageChangedListener(this);
-	    }
-    }
+	 * @see org.eclipse.jface.wizard.Wizard#setContainer(org.eclipse.jface.wizard.IWizardContainer)
+	 */
+	@Override
+	public void setContainer(IWizardContainer pWizardContainer) {
+		super.setContainer(pWizardContainer);
+		if (pWizardContainer != null && pWizardContainer instanceof WizardDialog) {
+			((WizardDialog) getContainer()).addPageChangedListener(this);
+		}
+	}
+
 	/**
-     * @see org.eclipse.jface.wizard.Wizard#createPageControls(org.eclipse.swt.widgets.Composite)
-     */
-    @Override
+	 * @see org.eclipse.jface.wizard.Wizard#createPageControls(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
 	public void createPageControls(Composite pageContainer) {
-	    try {
-	        super.createPageControls(pageContainer);
-        } catch (RuntimeException e) {
-	        logger.error("createPageControls", e);
-        }
-    }
+		try {
+			super.createPageControls(pageContainer);
+		} catch (RuntimeException e) {
+			logger.error("createPageControls", e);
+		}
+	}
+
 	/**
 	 * @see org.eclipse.jface.wizard.Wizard#getStartingPage()
 	 */
 	@Override
 	public IWizardPage getStartingPage() {
 		CommonPage startingPage = (CommonPage) super.getStartingPage();
-		logger.debug("Initializing page: "+startingPage.getName());
-        startingPage.init(projectConfig);
+		logger.debug("Initializing page: " + startingPage.getName());
+		startingPage.init(projectConfig);
 		return startingPage;
 	}
+
 	/**
-     * @see org.eclipse.jface.dialogs.IPageChangedListener#pageChanged(org.eclipse.jface.dialogs.PageChangedEvent)
-     */
-    public void pageChanged(PageChangedEvent pEvent) {
-    	// TODO Gèrer le retour-arrière dans les pages
+	 * @see org.eclipse.jface.dialogs.IPageChangedListener#pageChanged(org.eclipse.jface.dialogs.PageChangedEvent)
+	 */
+	public void pageChanged(PageChangedEvent pEvent) {
 		IWizardPage currentPage = (IWizardPage) pEvent.getSelectedPage();
-		logger.debug("Page changed: "+currentPage.getName());
-    	try {
-    		previousPageChanged(super.getPreviousPage(currentPage));
-    		currentPageChanged(currentPage);
-        } catch (RuntimeException e) {
-        	logger.error("Error while finishing page", e);
-        } catch (Exception e) {
-        	logger.error("Error while finishing page", e);
+		logger.debug("Current Page: " + currentPage.getName());
+		try {
+			previousPageChanged(super.getPreviousPage(currentPage));
+			currentPageChanged(currentPage);
+		} catch (RuntimeException e) {
+			logger.error("Error while finishing page", e);
+		} catch (Exception e) {
+			logger.error("Error while finishing page", e);
 		}
-    }
+	}
+
 	/**
 	 * @param currentPage
 	 */
 	protected void currentPageChanged(IWizardPage currentPage) {
 		if (currentPage == null) {
-			return ;
+			return;
 		}
 		initPage(currentPage);
-		if (modulePagesAdded == false && currentPage.getName().equals(InformationPage.NAME))
-		{
+		if (modulePagesAdded == false && currentPage.getName().equals(InformationPage.NAME)) {
 			updatePages(ModuleManager.DATA_MODULE_KIND, projectConfig.getDataModuleNature());
 			updatePages(ModuleManager.SERVICE_MODULE_KIND, projectConfig.getServiceModuleNature());
 			updatePages(ModuleManager.VIEW_MODULE_KIND, projectConfig.getViewModuleNature());
-			getContainer().updateButtons();
 			modulePagesAdded = true;
+			getContainer().updateButtons();
 		}
 	}
+
 	/**
 	 * @param currentPage
 	 */
 	protected void initPage(IWizardPage currentPage) {
-		logger.debug("Initializing page: "+currentPage.getName());
-		((ICommonPage)currentPage).init(projectConfig);
+		logger.debug("Initializing page: " + currentPage.getName());
+		if (currentPage instanceof ICommonPage) {
+			((ICommonPage) currentPage).init(projectConfig);
+		}
 	}
+
 	/**
 	 * @param currentPage
 	 * @throws Exception
 	 */
 	protected void previousPageChanged(IWizardPage newPreviousPage) throws Exception {
-		if (newPreviousPage != null) {
+		if (newPreviousPage != null && newPreviousPage instanceof ICommonPage) {
 			finishPage(newPreviousPage);
-		    if (newPreviousPage.getName().equals(InformationPage.NAME)) {
-				commonPageDone = true;
-		    }
 		}
 	}
+
 	/**
 	 * @param newPreviousPage
 	 * @throws CoreException 
@@ -186,79 +184,77 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 	 */
 	protected void finishPage(IWizardPage newPreviousPage) throws CoreException {
 		try {
-			logger.debug("Finishing page: "+newPreviousPage.getName());
-			((ICommonPage)newPreviousPage).updateConfig(projectConfig);
+			logger.debug("Finishing page: " + newPreviousPage.getName());
+			((ICommonPage) newPreviousPage).updateConfig(projectConfig);
 		} catch (Exception e) {
 			logger.error("Can't finish page", e);
 			EclipseUtils.throwCoreException("Can't finish page", e);
 		}
 	}
+
 	/**
-     * @param pDataModuleManager
-     * @param pDataModuleNature
-     */
-    protected void updatePages(String moduleKind, String pModuleNature)
-    {
+	 * @param pDataModuleManager
+	 * @param pDataModuleNature
+	 */
+	protected void updatePages(String moduleKind, String pModuleNature) {
 		if (pModuleNature == null)
-			return ;
-		try
-        {
-	        Module module = moduleManager.getModule(moduleKind, pModuleNature);
-	        if (module == null) {
-	        	return ;
-	        }
-	        IWizardPage[] modulePages = module.getPages();
-	        logger.debug("Adding "+modulePages.length+" module pages");
-	        for (IWizardPage modulePage : modulePages) {
-	        	addPage(modulePage);
-	        }
-        }
-        catch (ModuleNotFoundException e)
-        {
-	        logger.error("Selected Module does not exists", e);
-        }
-        catch (InitException e) {
-	        logger.error("Can't initialize module", e);
+			return;
+		try {
+			Module module = moduleManager.getModule(moduleKind, pModuleNature);
+			if (module == null) {
+				return;
+			}
+			IWizardPage[] modulePages = module.getPages();
+			logger.debug("Adding " + modulePages.length + " module pages");
+			for (IWizardPage modulePage : modulePages) {
+				addPage(modulePage);
+			}
+		} catch (ModuleNotFoundException e) {
+			logger.error("Selected Module does not exists", e);
+		} catch (InitException e) {
+			logger.error("Can't initialize module", e);
 		}
-    }
+	}
+
 	/**
 	 * @see org.eclipse.jface.wizard.Wizard#getPreviousPage(org.eclipse.jface.wizard.IWizardPage)
 	 */
 	@Override
-	public IWizardPage getPreviousPage(IWizardPage page)
-	{
-		logger.debug("getPreviousPage()->commonPageDone: "+commonPageDone);
+	public IWizardPage getPreviousPage(IWizardPage page) {
+		logger.debug("getPreviousPage()->modulePagesAdded: " + modulePagesAdded);
 		IWizardPage previousPage = super.getPreviousPage(page);
-		if (commonPageDone)
+		if (modulePagesAdded) {
 			return null;
+		}
 		return previousPage;
 	}
-	/**
-     * @see org.eclipse.jface.wizard.Wizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
-     */
-    @Override
-	public IWizardPage getNextPage(IWizardPage page)
-    {
-    	IWizardPage nextWizardPage = super.getNextPage(page);
-    	if (nextWizardPage == null)
-    		logger.debug("No next page");
-    	else
-    		logger.debug("Next page: "+nextWizardPage.getName());
 
-	    return nextWizardPage;
-    }
+	/**
+	 * @see org.eclipse.jface.wizard.Wizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
+	 */
+	@Override
+	public IWizardPage getNextPage(IWizardPage page) {
+		IWizardPage nextWizardPage = super.getNextPage(page);
+		if (nextWizardPage == null)
+			logger.debug("No next page");
+		else
+			logger.debug("Next page: " + nextWizardPage.getName());
+
+		return nextWizardPage;
+	}
+
 	/**
 	 * @see org.eclipse.jface.wizard.Wizard#canFinish()
 	 */
 	@Override
-	public boolean canFinish()
-    {
+	public boolean canFinish() {
 		IWizardPage currentPage = getContainer().getCurrentPage();
-		IWizardPage lastPage = getPages()[getPageCount()-1];
+		IWizardPage lastPage = getPages()[getPageCount() - 1];
 		if (currentPage.equals(lastPage) && lastPage.isPageComplete())
 			return true;
 		return false;
-    }
+	}
+
 	/**
 	 * This method is called when 'Finish' button is pressed in
 	 * the wizard. We will create an operation and run it
@@ -272,7 +268,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 		} catch (CoreException e) {
 			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
-		
+
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor progressMonitor) throws InvocationTargetException {
 				try {
@@ -288,6 +284,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 		generationStarted = true;
 		return executeRunnable(op);
 	}
+
 	private boolean executeRunnable(IRunnableWithProgress op) {
 		try {
 			getContainer().run(true, false, op);
@@ -321,10 +318,11 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 		progressMonitor.worked(totalWork++);
 		progressMonitor.setTaskName("Writing EasyGen config file");
 		try {
-        	File outputFile = new File(projectConfig.getPath(), EASYGEN_XML);
-        	new ProjectConfigSerializer().serialize(projectConfig, outputFile);
+			File outputFile = new File(projectConfig.getPath(), EASYGEN_XML);
+			new ProjectConfigSerializer().serialize(projectConfig, outputFile);
 		} catch (IOException e) {
-			MessageDialog.openError(getShell(), "Generation Error", "Impossible d'écrire la configuration EasyGen: "+e.toString());
+			MessageDialog.openError(getShell(), "Generation Error", "Impossible d'écrire la configuration EasyGen: "
+					+ e.toString());
 			logger.warn("Impossible d'écrire la configuration EasyGen", e);
 		}
 		progressMonitor.worked(totalWork++);
@@ -336,13 +334,15 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 		EclipseUtils.refreshLocal(projectConfig.getName(), progressMonitor);
 		progressMonitor.worked(totalWork++);
 	}
+
 	/**
 	 * @see org.eclipse.jface.wizard.Wizard#performCancel()
 	 */
 	@Override
 	public boolean performCancel() {
 		if (generationStarted) {
-			boolean deleteFiles = MessageDialog.openQuestion(getShell(), "Delete generated files ?", "Do you want to delete all generated files ?");
+			boolean deleteFiles = MessageDialog.openQuestion(getShell(), "Delete generated files ?",
+					"Do you want to delete all generated files ?");
 			if (deleteFiles) {
 				IRunnableWithProgress op = new IRunnableWithProgress() {
 					public void run(IProgressMonitor progressMonitor) throws InvocationTargetException {

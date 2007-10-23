@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.easygen.core.config.ProjectConfig;
+import org.easygen.core.generators.common.MavenHandler;
 
 /**
  * 
@@ -28,13 +29,19 @@ public class GeneratorManager {
 		for (Generator generator : generators) {
 			generator.init(projectConfig);
 		}
-//		String[] libraries = new String[0];
+		boolean copyLibraries = true;
+		if (new MavenHandler().isMavenFound()) {
+			copyLibraries = false;
+		}
+		String[] libraries = new String[0];
 		for (Generator generator : generators) {
 			generator.generate(projectConfig);
-//			String[] moduleLibraries = generator.copyLibraries(projectConfig);
-//			libraries = merge(libraries, moduleLibraries);
+			if (copyLibraries) {
+				String[] moduleLibraries = generator.copyLibraries(projectConfig);
+				libraries = merge(libraries, moduleLibraries);
+			}
 		}
-//		projectConfig.setLibraries(libraries);
+		projectConfig.setLibraries(libraries);
 		for (Generator generator : generators) {
 			generator.postProcess(projectConfig);
 		}

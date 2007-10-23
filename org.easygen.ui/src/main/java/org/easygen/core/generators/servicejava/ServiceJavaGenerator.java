@@ -14,7 +14,7 @@ import org.easygen.core.generators.hibernate.HibernateModuleConfig;
 /**
  * @author eveno
  * Created on 19 déc. 06
- *
+ * TODO Faire un module POJO Service commun avec Spring
  */
 public class ServiceJavaGenerator extends AbstractGenerator {
 

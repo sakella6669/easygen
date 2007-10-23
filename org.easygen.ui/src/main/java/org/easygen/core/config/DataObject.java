@@ -99,7 +99,7 @@ public class DataObject
 	public String toString()
 	{
         StringBuffer buffer = new StringBuffer();
-        buffer.append("Object: ").append(className).append('[').append(tableName).append(']');
+        buffer.append("DataObject: ").append(className).append('[').append(tableName).append(']');
         if (!selected)
         	return buffer.toString();
         buffer.append('\n');

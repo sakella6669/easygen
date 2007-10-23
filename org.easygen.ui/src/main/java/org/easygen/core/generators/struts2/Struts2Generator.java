@@ -97,7 +97,7 @@ public class Struts2Generator extends AbstractGenerator {
 		
 		context.put(CLASS_LIST, classList);
 		generateFile("src/applicationContext-view.xml.vm", cfgPath + "applicationContext-view.xml");
-		// TODO Make the navigation (show->view-edit, add) customizable
+		// TODO Make the navigation (show->view->edit, add) customizable
 		// TODO Simplifier la stack d'interceptor Struts2
 		generateFile("src/struts.xml.vm", cfgPath + "struts.xml");
         generateFile("www/common/layout.jsp.vm", webPath + "common/layout.jsp");

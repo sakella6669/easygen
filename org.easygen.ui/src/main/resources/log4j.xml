@@ -16,17 +16,13 @@
   		     <param name="ConversionPattern" value="%d %-5p [%C{1}:%L] - %m%n"/> <!-- %C{2} (%F:%L)  -->
 		</layout>
 	</appender>
-	
+		
 	<category name="org.easygen.ui">
 		<priority value="WARN"/>
 	</category>
 
 	<category name="org.easygen.core.generators">
 		<priority value="INFO"/>
-	</category>
-
-	<category name="org.easygen.core.generators.common.MavenHandler">
-		<priority value="DEBUG"/>
 	</category>
 
 	<root>

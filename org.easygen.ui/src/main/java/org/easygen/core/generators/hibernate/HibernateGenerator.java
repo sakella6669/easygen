@@ -66,8 +66,7 @@ public class HibernateGenerator extends AbstractGenerator {
 		}
 		hbmDir += File.separatorChar;
 
-		Collection<DataObject> mappings = convertToHibernateMappings(dataModuleConfig, projectConfig.getObjects(),
-				packageName);
+		Collection<DataObject> mappings = convertToHibernateMappings(dataModuleConfig, projectConfig.getObjects());
 
 		List<String> hbmList = new LinkedList<String>();
 		List<String> cachedClassList = new LinkedList<String>();
@@ -104,19 +103,15 @@ public class HibernateGenerator extends AbstractGenerator {
 	 * @return
 	 */
 	protected List<DataObject> convertToHibernateMappings(HibernateModuleConfig dataModuleConfig,
-			List<DataObject> objects, String packageName) {
+			List<DataObject> objects) {
 		List<DataObject> mappings = new LinkedList<DataObject>();
 		for (DataObject dataObject : objects) {
 			if (dataObject.isSelected() == false)
 				continue;
-			HibernateMapping mapping = new HibernateMapping(dataModuleConfig, dataObject/*, packageName*/);
+			HibernateMapping mapping = new HibernateMapping(dataModuleConfig, dataObject);
 			List<DataField> selectedFields = new LinkedList<DataField>();
 			for (DataField field : mapping.getFields()) {
 				if (field.isSelected()) {
-//					if (field.isFk()) {
-//						DataObject refObject = findRefObject(mappings, field.getForeignTableName());
-//						field.setForeignObject(refObject);
-//					}
 					selectedFields.add(field);
 				}
 			}
