@@ -60,16 +60,21 @@
 			<result name="error">show.jsp</result>
 		</action>
 
+		<action name="view" class="matiereAction" method="view">
+			<result >view.jsp</result>
+			<result name="error">show.jsp</result>
+		</action>
+
 		<action name="edit" class="${actionName}" method="edit">
 			<result >edit.jsp</result>
+			<result name="input" type="chain">edit</result>
 			<result name="error">edit.jsp</result>
 		</action>
 
 		<action name="update" class="${actionName}" method="update">
 			<!--<result type="redirect-action">index</result>-->
 			<result >view.jsp</result>
-			<result name="input" type="chain">edit.jsp</result>
-			<result name="error" type="chain">edit.jsp</result>
+			<result name="error">edit.jsp</result>
 		</action>
 
 		<action name="delete" class="${actionName}" method="delete">

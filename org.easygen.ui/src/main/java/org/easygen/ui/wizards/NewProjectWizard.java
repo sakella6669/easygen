@@ -223,7 +223,9 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 	public IWizardPage getPreviousPage(IWizardPage page) {
 		logger.debug("getPreviousPage()->modulePagesAdded: " + modulePagesAdded);
 		IWizardPage previousPage = super.getPreviousPage(page);
-		if (modulePagesAdded) {
+		// If modules pages have been added, you can't remove them
+		// so we can't go back and change them ...
+		if (modulePagesAdded && page.getName().equals(InformationPage.NAME)) {
 			return null;
 		}
 		return previousPage;

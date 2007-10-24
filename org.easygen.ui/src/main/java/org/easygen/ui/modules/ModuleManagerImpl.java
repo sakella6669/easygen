@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.easygen.ui.modules.hibernate.HibernateDataModule;
-import org.easygen.ui.modules.servicejava.ServiceJavaModule;
 import org.easygen.ui.modules.springservice.SpringServiceModule;
 import org.easygen.ui.modules.struts2.Struts2ViewModule;
 
@@ -30,7 +29,6 @@ public class ModuleManagerImpl implements ModuleManager
 	 */
 	protected void initModules() {
 		addModule(DATA_MODULE_KIND, new HibernateDataModule());
-		addModule(SERVICE_MODULE_KIND, new ServiceJavaModule());
 		addModule(SERVICE_MODULE_KIND, new SpringServiceModule());
 		addModule(VIEW_MODULE_KIND, new Struts2ViewModule());
 	}

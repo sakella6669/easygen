@@ -40,7 +40,7 @@ public interface Service<T> {
 	 * @throws ServiceException
 	 * @return l'objet mis à jour
 	 */
-	public abstract void update(T object) throws ServiceException;
+	public abstract T update(T object) throws ServiceException;
 
 	/**
 	 * Met à jour en base l'objet passé en paramètre
@@ -49,7 +49,7 @@ public interface Service<T> {
 	 * @throws ServiceException
 	 * @return l'objet mis à jour
 	 */
-	public abstract void update(List<T> objects) throws ServiceException;
+	public abstract List<T> update(List<T> objects) throws ServiceException;
 
 	/**
 	 * Supprime en base la liste d'objets passés en paramètre.

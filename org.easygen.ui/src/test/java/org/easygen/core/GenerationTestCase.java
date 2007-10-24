@@ -10,14 +10,13 @@ import org.apache.log4j.PatternLayout;
 import org.easygen.core.config.CommonConfig;
 import org.easygen.core.config.DatabaseConfig;
 import org.easygen.core.config.ProjectConfig;
-import org.easygen.core.config.ServiceModuleConfig;
 import org.easygen.core.db.DatabaseException;
 import org.easygen.core.db.DatabaseManager;
 import org.easygen.core.generators.GenerationException;
 import org.easygen.core.generators.GeneratorManager;
 import org.easygen.core.generators.hibernate.HibernateModuleConfig;
 import org.easygen.core.generators.project.EclipseProjectConfig;
-import org.easygen.core.generators.servicejava.ServiceJavaModuleConfig;
+import org.easygen.core.generators.springservice.SpringServiceModuleConfig;
 
 /**
  * @author eveno
@@ -90,8 +89,8 @@ public class GenerationTestCase extends TestCase
 
 		projectConfig.setObjects(new DatabaseManager(dbConfig).extractData(true));
 
-		projectConfig.setServiceModuleNature(ServiceModuleConfig.SERVICE_JAVA_NATURE);
-		ServiceJavaModuleConfig serviceConfig = new ServiceJavaModuleConfig();
+		projectConfig.setServiceModuleNature(SpringServiceModuleConfig.SPRING_NATURE);
+		SpringServiceModuleConfig serviceConfig = new SpringServiceModuleConfig();
 		serviceConfig.setPackageName("test.services");
 		projectConfig.setServiceModuleConfig(serviceConfig);
 	}

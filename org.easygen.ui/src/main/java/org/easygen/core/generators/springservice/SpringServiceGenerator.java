@@ -23,6 +23,8 @@ public class SpringServiceGenerator extends AbstractGenerator {
 	protected static final String MODULE_NAME = "springservice";
 	protected static final String SERVICE_SUFFIX = "Service";
 	protected static final String SERVICE_TESTCASE_SUFFIX = "ServiceTest";
+	
+	protected static final String IS_SPRING_SERVICE = "isSpringService";
 
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#getModuleName()
@@ -41,7 +43,12 @@ public class SpringServiceGenerator extends AbstractGenerator {
 		if (projectConfig.getDataModuleNature().equals(HibernateModuleConfig.NATURE) == false) {
 			throw new GenerationException("Spring Service Module should be used with Hibernate as Data Module");
 		}
-		ServiceModuleConfig serviceModuleConfig = projectConfig.getServiceModuleConfig();
+		SpringServiceModuleConfig serviceModuleConfig = (SpringServiceModuleConfig) projectConfig.getServiceModuleConfig();
+		if (serviceModuleConfig.isUseSimpleServices()) {
+			context.put(IS_SPRING_SERVICE, false);
+		} else {
+			context.put(IS_SPRING_SERVICE, true);
+		}
 		String srcPath = projectConfig.getSrcPath();
 		createPackagePath(srcPath, serviceModuleConfig.getPackageName());
 		createPackagePath(projectConfig.getTestPath(), serviceModuleConfig.getPackageName());
@@ -70,7 +77,9 @@ public class SpringServiceGenerator extends AbstractGenerator {
 
 		// Génération de la classe ServiceLocator
 		context.put(CLASS_LIST, classList);
-		generateFile("applicationContext-service.xml.vm", cfgPath + "applicationContext-service.xml");
+		if (serviceModuleConfig.isUseSimpleServices() == false) {
+			generateFile("applicationContext-service.xml.vm", cfgPath + "applicationContext-service.xml");
+		}
 		String javaFilename = createJavaFilename(serviceModuleConfig, "ServiceLocator");
 		generateFile("ServiceLocator.java.vm", srcPath + javaFilename);
 		context.remove(CLASS_LIST);

@@ -14,6 +14,7 @@ import ${project.dataModuleConfig.packageName}.$serviceClassName;
  */
 public class ServiceLocator
 {
+#if ($isSpringService == false)
     private static ServiceLocator instance;
 
     /**
@@ -21,35 +22,76 @@ public class ServiceLocator
      */
     public static ServiceLocator getInstance()
     {
+    	if (instance == null)
+    	{
+            try
+            {
+                instance = new ServiceLocator();
+                GenericService.init();
+            }
+            catch (ServiceException se)
+            {
+                Logger.getLogger(ServiceLocator.class).error("Can't create ServiceLocator", se);
+            }
+    	}
         return instance;
     }
 
-#foreach ($serviceClassName in $classList)
-#set ($serviceVarName = "${serviceClassName.toLowerCase().charAt(0)}${serviceClassName.substring(1)}" )
-	private Service<${serviceClassName}> ${serviceVarName}Service;
+    /**
+     * Initialisation du singleton (c-a-d de l'instance de ServiceLocator)
+     */
+    public static void releaseInstance()
+    {
+	    instance = null;
+	    GenericService.destroy();
+	}
+
+	/**
+	 * La hashtable qui contient les différents services déjà instanciés
+	 */
+	private Map<String, Service<?>> cache;
+
+	private ServiceLocator() throws ServiceException {
+		cache = new Hashtable<String, Service<?>>();
+	}
+#else
+
+    public ServiceLocator() throws ServiceException {
+    }
 #end
 
-    /**
-     * Constructeur privé pour empêcher la création d'instance
-     * Implémentation du Singleton Pattern
-     * @throws ServiceLocatorException
-     */
-    public ServiceLocator() throws ServiceException
-    {
-	    instance = this;
-    }
-
 #foreach ($serviceClassName in $classList)
-#set ($serviceVarName = "${serviceClassName.toLowerCase().charAt(0)}${serviceClassName.substring(1)}" )
-    public void set${serviceClassName}Service(Service<${serviceClassName}> service) throws ServiceException
-    {
+	#if ($isSpringService)
+	#set ($serviceVarName = "${serviceClassName.toLowerCase().charAt(0)}${serviceClassName.substring(1)}" )
+	private Service<${serviceClassName}> ${serviceVarName}Service;
+
+    public void set${serviceClassName}Service(Service<${serviceClassName}> service) throws ServiceException {
     	${serviceVarName}Service = service;
     }
 
-    public Service<${serviceClassName}> get${serviceClassName}Service() throws ServiceException
-    {
+    public Service<${serviceClassName}> get${serviceClassName}Service() throws ServiceException {
     	return ${serviceVarName}Service;
     }
+	#else
+    public ${serviceClassName}Service get${serviceClassName}Service() throws ServiceException {
+    	return (${serviceClassName}Service) getService("${serviceClassName}Service", ${serviceClassName}Service.class);
+    }
 
+	#end
+#end
+
+#if ($isSpringService == false)
+	protected Service<?> getService(String serviceName, Class<? extends Service<?>> serviceClass) throws ServiceException {
+		Service<?> service = null;
+		if (cache.containsKey(serviceName))
+			return cache.get(serviceName);
+		try {
+			service = (Service<?>) serviceClass.newInstance();
+			cache.put(serviceName, service);
+			return service;
+		} catch (Exception e) {
+			throw new ServiceException("Service Lookup Error", e);
+		}
+	}
 #end
 }
