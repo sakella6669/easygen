@@ -111,7 +111,7 @@ public class ${object.className}Action extends GenericAction {
 	public String update() throws Exception {
 		try {
 			logger.info("Updating ${objectVarName} with id: " + ${objectVarName}.getId());
-			${objectVarName}Service.update(${objectVarName});
+			${objectVarName} = ${objectVarName}Service.update(${objectVarName});
 			addActionMessage("Updated ${objectVarName} with id: " + ${objectVarName}.getId());
 			return Action.SUCCESS;
 		} catch (Exception e) {

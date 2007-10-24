@@ -29,6 +29,17 @@ public class ${object.className}Service extends GenericService<${object.classNam
 	}
 
 	@Override
+	protected ${object.className} merge(${object.className} loadedObject, ${object.className} updatedObject) {
+#foreach ($field in $object.fields)
+	#if ($field.primaryKey == false && $field.foreignKey == false)
+	#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+		loadedObject.set${methodName}(updatedObject.get${methodName}());
+	#end
+#end
+		return loadedObject;
+	}
+
+	@Override
 	protected void initializeChildren(${object.className} object) {
 #foreach ($field in $object.fields)
 	#if ($field.foreignKey == true && $field.foreignList == true)

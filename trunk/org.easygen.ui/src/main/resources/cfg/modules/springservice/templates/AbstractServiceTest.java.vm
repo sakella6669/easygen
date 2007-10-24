@@ -2,7 +2,6 @@ package ${project.serviceModuleConfig.packageName};
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -11,8 +10,12 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
+#if ($isSpringService) 
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.UrlResource;
+
+import java.net.URL;
+#end
 
 /**
  *
@@ -25,7 +28,9 @@ public abstract class AbstractServiceTest<T> extends TestCase {
 	protected static int currentExecutedTestCount = 0;
 	protected static int totalTestCount = 0;
 
+#if ($isSpringService) 
 	protected static XmlBeanFactory factory;
+#end
 
 	protected ServiceLocator serviceLocator;
 	protected Service<T> service;
@@ -47,7 +52,11 @@ public abstract class AbstractServiceTest<T> extends TestCase {
 			long endTime = System.currentTimeMillis();
 			Logger.getLogger(GenericService.class).info("Initialisation des services en " + ((endTime - startTime) / 1000.0) + " s");
 		}
+#if ($isSpringService) 
 		serviceLocator = (ServiceLocator) factory.getBean("serviceLocator");
+#else
+		serviceLocator = ServiceLocator.getInstance();
+#end
 		service = getService();
 	}
 
@@ -56,9 +65,11 @@ public abstract class AbstractServiceTest<T> extends TestCase {
 	 */
 	protected void init() throws Exception {
 		logger.info("Initializing Services");
+#if ($isSpringService) 
 		ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 		URL configuration = contextClassLoader.getResource("applicationContext-service.xml");
 		factory = new XmlBeanFactory(new UrlResource(configuration));
+#end
 		currentExecutedTestCount = 0;
 		totalTestCount = findTestCount();
 		initialized = true;
@@ -101,8 +112,11 @@ public abstract class AbstractServiceTest<T> extends TestCase {
 	 */
 	protected void destroy() throws Exception {
 		logger.info("Destroying Services");
+#if ($isSpringService) 
 		factory.destroySingletons();
-//		ServiceLocator.releaseInstance();
+#else
+		ServiceLocator.releaseInstance();
+#end
 		initialized = false;
 	}
 

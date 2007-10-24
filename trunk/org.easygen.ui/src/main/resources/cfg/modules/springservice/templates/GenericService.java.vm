@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -66,9 +67,32 @@ public abstract class GenericService<T> implements Service<T> {
 
 	private EntityManagerFactory entityManagerFactory;
 
+#if ($isSpringService) 
 	public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
 		this.entityManagerFactory = entityManagerFactory;
 	}
+#else
+	public static void init() {
+		try {
+			long startTime = System.currentTimeMillis();
+			// Use persistence.xml configuration
+			entityManagerFactory = Persistence.createEntityManagerFactory("mainManager");
+			long endTime = System.currentTimeMillis();
+			Logger.getLogger(GenericService.class).info(
+					"Initialisation d'Hibernate en " + ((endTime - startTime) / 1000.0) + " s");
+		} catch (PersistenceException ex) {
+			Logger.getLogger(GenericService.class).fatal("Problème de configuration : " + ex.getMessage(), ex);
+			throw new RuntimeException("Problème de configuration : " + ex.getMessage(), ex);
+		}
+	}
+
+	public static void destroy() {
+		if (entityManagerFactory != null) {
+			Logger.getLogger(GenericService.class).info("Destruction de la sessionFactory Hibernate");
+			entityManagerFactory.close();
+		}
+	}
+#end
 
 	private final ThreadLocal<EntityManager> entityManagerCache = new ThreadLocal<EntityManager>();
 
@@ -89,9 +113,9 @@ public abstract class GenericService<T> implements Service<T> {
 		if (entityManager != null)
 			entityManager.close();
 	}
-	
+
 	protected final Logger logger = Logger.getLogger(getClass());
-	
+
 	/**
 	 * Renvoie true si les données de la requête peuvent être mises en cache
 	 * 
@@ -181,13 +205,16 @@ public abstract class GenericService<T> implements Service<T> {
 	 * @throws ServiceException
 	 * @return l'objet mis à jour
 	 */
-	public void update(T object) throws ServiceException {
+	public T update(T object) throws ServiceException {
 		try {
 			EntityManager entityManager = currentEntityManager();
 			entityManager.getTransaction().begin();
-			//((Session)entityManager.getDelegate()).update(object);
-			entityManager.merge(object);
+			T loadedObject = (T) entityManager.find(getObjectClass(), getObjectId(object));
+			initializeChildren(loadedObject);
+			object = merge(loadedObject, object);
+			object = entityManager.merge(object);
 			commitTransaction();
+			return object;
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
@@ -204,15 +231,20 @@ public abstract class GenericService<T> implements Service<T> {
 	 * @throws ServiceException
 	 * @return l'objet mis à jour
 	 */
-	public void update(List<T> objects) throws ServiceException {
+	public List<T> update(List<T> objects) throws ServiceException {
 		try {
 			EntityManager entityManager = currentEntityManager();
 			entityManager.getTransaction().begin();
+			List<T> updatedObjects = new ArrayList<T>();
 			for (T object : objects) {
-//				((Session)entityManager.getDelegate()).update(object);
-				entityManager.merge(object);
+				T loadedObject = (T) entityManager.find(getObjectClass(), getObjectId(object));
+				initializeChildren(loadedObject);
+				object = merge(loadedObject, object);
+				object = entityManager.merge(object);
+				updatedObjects.add(object);
 			}
 			commitTransaction();
+			return updatedObjects;
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
@@ -221,6 +253,15 @@ public abstract class GenericService<T> implements Service<T> {
 			closeEntityManager();
 		}
 	}
+
+	/**
+	 * Merge the values of the loaded object with the received object
+	 * to preserve the associated objects
+	 * @param loadedObject Object loaded from the database
+	 * @param object Object received from the user interface
+	 * @return the merged object
+	 */
+	protected abstract T merge(T loadedObject, T object);
 
 	/**
 	 * Supprime en base la liste d'objets passés en paramètre.
