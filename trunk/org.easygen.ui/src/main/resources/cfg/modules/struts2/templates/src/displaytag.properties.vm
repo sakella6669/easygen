@@ -3,3 +3,7 @@ locale.provider=${project.viewModuleConfig.packageName}.util.DisplayTagI18nWebwo
  
 # locale.resolver (nothing by default, simply use locale from request)
 locale.resolver=${project.viewModuleConfig.packageName}.util.DisplayTagI18nWebwork2Adapter
+
+# Disable displaytag messages as we use our proper messages
+basic.msg.empty_list=
+basic.msg.empty_list_row=
