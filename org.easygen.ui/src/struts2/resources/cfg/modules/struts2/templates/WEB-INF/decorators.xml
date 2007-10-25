@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<decorators defaultdir="/common">
+
+	<excludes>
+		<pattern>*ajax*</pattern>
+		<pattern>/error.jsp</pattern>
+		<pattern>*.js</pattern>
+		<pattern>*struts*</pattern>
+	</excludes>
+
+	<decorator name="main" page="layout.jsp">
+		<pattern>*.jsp</pattern>
+		<pattern>*.action</pattern>
+	</decorator>
+
+</decorators>

@@ -1,0 +1,92 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+#set ($textFieldSize = "30")
+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="s" uri="/struts-tags" %>
+#if ($isTiles2Engine)
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+#end
+
+<s:i18n name="lang.${objectVarName}">
+
+#if ($isTiles2Engine)
+<tiles:insertDefinition name="mainLayout">
+  <tiles:putAttribute name="title"><s:text name="edit.title" /></tiles:putAttribute>
+  <tiles:putAttribute name="body">
+#elseif ($isSiteMeshEngine)
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title><s:text name="add.title" /></title>
+</head>
+<body>
+#end
+
+<fieldset title="<s:text name="edit.submitLink" />">
+<legend><b><s:text name="edit.title" /></b></legend>
+<s:form action="update" method="post" validate="true">
+<table>
+#foreach ($aField in $object.fields)
+#if ($aField.primaryKey == true)
+	  <s:hidden name="${objectVarName}.${aField.propertyName}" />
+	<tr>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
+		<td><s:property value="${objectVarName}.${aField.propertyName}"/></td>
+	</tr>
+#end
+#if ($aField.primaryKey == false && $aField.foreignKey == false)
+	<tr>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
+		<td>
+		#if ($aField.propertyShortType == "Date")
+		<s:datetimepicker name="${objectVarName}.${aField.propertyName}" cssClass="formFields"
+		#else
+  		<s:textfield name="${objectVarName}.${aField.propertyName}" size="${textFieldSize}" cssClass="formFields"
+  		#end
+  		#if ($aField.nullable == false)
+  			required="true"
+  		#end
+  		/></td>
+  	</tr>
+#end
+#if ($aField.primaryKey == false && $aField.foreignKey == true && $aField.foreignList == false)
+	<tr>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
+		<td>
+  		#foreach ($foreignField in $aField.foreignObject.fields)
+  			#if ($foreignField.primaryKey == true)
+			 	<s:select
+					name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
+					list="%{#request.${aField.propertyName}s}"
+					listKey="${foreignField.propertyName}"
+					multiple="false" cssClass="formFields"
+		  		#if ($aField.nullable == false)
+		  			required="true"
+		  		#end
+				/>
+	  		#end
+		#end
+		</td>
+	</tr>
+#end
+#end
+</table>
+  <s:submit key="edit.submitLink"/>
+</s:form>
+</fieldset>
+
+<p class="spacer">&nbsp;</p>
+<s:url id="listUrl" action="index" />
+<s:a href="%{listUrl}" cssClass="commandLink"><s:text name="backToListLink" /></s:a>
+
+#if ($isTiles2Engine)
+  </tiles:putAttribute>
+</tiles:insertDefinition>
+#elseif ($isSiteMeshEngine)
+</body>
+</html>
+#end
+
+</s:i18n>

@@ -1,0 +1,65 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+#set ($textFieldSize = "30")
+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="s" uri="/struts-tags" %>
+#if ($isTiles2Engine)
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+#end
+
+<s:i18n name="lang.${objectVarName}">
+
+#if ($isTiles2Engine)
+<tiles:insertDefinition name="mainLayout">
+  <tiles:putAttribute name="title"><s:text name="view.title" /></tiles:putAttribute>
+  <tiles:putAttribute name="body">
+#elseif ($isSiteMeshEngine)
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title><s:text name="view.title" /></title>
+</head>
+<body>
+#end
+
+<fieldset title="<s:text name="view.submitLink" />">
+<legend><b><s:text name="view.title" /></b></legend>
+#if ($navigation.editPage)
+<s:form action="edit" method="post" validate="false">
+#end
+<table>
+#foreach ($aField in $object.fields)
+	<tr>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
+		<td>
+	#if ($aField.primaryKey == true)
+		#if ($navigation.editPage)
+	  <s:hidden name="${objectVarName}.${aField.propertyName}" />
+	  	#end
+	#end
+	  <s:property value="${objectVarName}.${aField.propertyName}" />
+	  </td>
+	</tr>
+#end
+</table>
+#if ($navigation.editPage)
+  <s:submit key="view.submitLink"/>
+</s:form>
+#end
+</fieldset>
+
+<p class="spacer">&nbsp;</p>
+<s:url id="listUrl" action="index" />
+<s:a href="%{listUrl}" cssClass="commandLink"><s:text name="backToListLink" /></s:a>
+
+#if ($isTiles2Engine)
+  </tiles:putAttribute>
+</tiles:insertDefinition>
+#elseif ($isSiteMeshEngine)
+</body>
+</html>
+#end
+
+</s:i18n>

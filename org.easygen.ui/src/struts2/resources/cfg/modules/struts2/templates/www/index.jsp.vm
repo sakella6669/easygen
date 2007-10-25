@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="s" uri="/struts-tags" %>
+#if ($isTiles2Engine)
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+#end
+
+<s:i18n name="lang.common">
+
+#if ($isTiles2Engine)
+<tiles:insertDefinition name="mainLayout">
+  <tiles:putAttribute name="title"><s:text name="home.title" /></tiles:putAttribute>
+  <tiles:putAttribute name="body">
+#end
+#if ($isSiteMeshEngine)
+<html>
+<head>
+<title><s:text name="home.title" /></title>
+</head>
+<body>
+#end
+
+	<h2 align="center"><s:text name="home.title" /></h2>
+
+#if ($isTiles2Engine)
+  </tiles:putAttribute>
+</tiles:insertDefinition>
+#end
+#if ($isSiteMeshEngine)
+</body>
+</html>
+#end
+
+</s:i18n>
