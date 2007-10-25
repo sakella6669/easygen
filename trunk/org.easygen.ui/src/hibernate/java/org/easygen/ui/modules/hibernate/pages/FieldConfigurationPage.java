@@ -97,8 +97,8 @@ public class FieldConfigurationPage extends ModulePage {
 		fieldConfigurationTable = WidgetUtils.createTable(pParent, 150);
 
 		int index = 0;
-		// TODO Centrer les checkbox primary et foreign keys
-		// TODO Donner la possibilité de supprimer les foreignKey (d'un seul coté ou des deux)
+		// TODO Center primary and foreign key checkboxes
+		// TODO Give the possibility to change or remove the foreign keys (for one or both side)
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 20);
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 150);
 		WidgetUtils.createTableColumn(fieldConfigurationTable, columnNames[index++], 75);

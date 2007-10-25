@@ -4,9 +4,6 @@ import org.apache.log4j.Logger;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.AbstractGenerator;
 import org.easygen.core.generators.GenerationException;
-import org.easygen.core.generators.hibernate.HibernateModuleConfig;
-import org.easygen.core.generators.springservice.SpringServiceModuleConfig;
-import org.easygen.core.generators.struts2.Struts2ModuleConfig;
 
 public class CommonGenerator extends AbstractGenerator {
 	
@@ -28,11 +25,7 @@ public class CommonGenerator extends AbstractGenerator {
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
 		logger.info("Generating common files");
 
-		// TODO See if it is possible to make this code independant from the modules (Struts2, Spring, Hibernate)
-    	context.put("isStruts2ViewModule", Struts2ModuleConfig.NATURE.equals(projectConfig.getViewModuleNature()));
-    	context.put("isSpringServiceModule", SpringServiceModuleConfig.NATURE.equals(projectConfig.getServiceModuleNature()));
-    	context.put("isHibernateDataModule", HibernateModuleConfig.NATURE.equals(projectConfig.getDataModuleNature()));
-    	
+		// TODO Add the maven dependencies of the modules
         generateFile("pom.xml.vm", projectConfig.getPath() + "pom.xml");
 
         createPath(projectConfig.getCfgPath());

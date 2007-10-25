@@ -33,15 +33,14 @@ public class GeneratorManager {
 		if (new MavenHandler().isMavenFound()) {
 			copyLibraries = false;
 		}
-		String[] libraries = new String[0];
 		for (Generator generator : generators) {
 			generator.generate(projectConfig);
 			if (copyLibraries) {
-				String[] moduleLibraries = generator.copyLibraries(projectConfig);
-				libraries = merge(libraries, moduleLibraries);
+				generator.copyLibraries(projectConfig);
+			} else {
+				generator.addMavenDependencies(projectConfig);
 			}
 		}
-		projectConfig.setLibraries(libraries);
 		for (Generator generator : generators) {
 			generator.postProcess(projectConfig);
 		}

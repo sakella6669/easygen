@@ -1,0 +1,57 @@
+<dependencies>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate</artifactId>
+			<version>3.2.5.ga</version>
+		</dependency>
+#if ($project.dataModuleConfig.useAnnotations)
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-annotations</artifactId>
+			<version>3.3.0.ga</version>
+		</dependency>
+#end
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.3.1.ga</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>[1.3.0,)</version>
+			<!--
+			<exclusions>
+				<exclusion>
+					<groupId>backport-util-concurrent</groupId>
+					<artifactId>backport-util-concurrent</artifactId>
+				</exclusion>
+			</exclusions>
+			-->
+		</dependency>
+
+#if ($project.databaseConfig.databaseType.toLowerCase() == "mysql")
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.0.3</version>
+		</dependency>
+#end
+
+#if ($project.databaseConfig.databaseType.toLowerCase() == "oracle")
+		<dependency>
+			<groupId>oracle</groupId>
+			<artifactId>oracle-thin</artifactId>
+			<version>10</version>
+		</dependency>
+#end
+
+#if ($project.databaseConfig.databaseType.toLowerCase() == "sqlserver")
+		<dependency>
+			<groupId>sqlserver</groupId>
+			<artifactId>sqlserver-jdbc</artifactId>
+			<version>7</version>
+		</dependency>
+#end
+
+</dependencies>

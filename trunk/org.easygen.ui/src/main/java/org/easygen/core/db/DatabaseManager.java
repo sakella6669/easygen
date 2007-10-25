@@ -348,7 +348,7 @@ public class DatabaseManager {
 	protected void analyseDataSet(List<DataObject> objects) {
 		for (DataObject object : objects) {
 			object.setClassName(SQLDataConverter.convertTableNameToJavaClass(object.getTableName()));
-			// TODO Si une table ne contient que des FK, c'est une table d'association
+			// TODO If a table contains only foreign keys, it is an association table so don't create an Java object for it
 			for (DataField field : object.getFields()) {
 				if (field.getPropertyName() != null) {
 					continue ;
