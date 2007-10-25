@@ -68,12 +68,8 @@ public class ${object.className}Action extends GenericAction {
 		List<${aField.foreignObject.className}> ${aField.propertyName}s = ${aField.propertyName}Service.list();
 		request.setAttribute("${aField.propertyName}s", ${aField.propertyName}s);
 	}
-
 	#end
 #end
-	public String prepareadd() throws Exception {
-		return Action.SUCCESS;
-	}
 
 	public String list() throws Exception {
 		try {
@@ -97,6 +93,12 @@ public class ${object.className}Action extends GenericAction {
 		}
 	}
 
+#if ($navigation.addPage)
+	public String prepareadd() throws Exception {
+		// Nothing to do, the prepare interceptor will do the job by invoking prepare()
+		return Action.SUCCESS;
+	}
+
 	public String add() throws Exception {
 		try {
 			logger.info("Adding new ${objectVarName}");
@@ -107,7 +109,9 @@ public class ${object.className}Action extends GenericAction {
 			return handleError("Can't add ${objectVarName}", e);
 		}
 	}
+#end
 
+#if ($navigation.editPage)
 	public String update() throws Exception {
 		try {
 			logger.info("Updating ${objectVarName} with id: " + ${objectVarName}.getId());
@@ -119,15 +123,19 @@ public class ${object.className}Action extends GenericAction {
 		}
 	}
 
-	public String view() throws Exception {
-		return get();
-	}
-
 	public String edit() throws Exception {
 		return get();
 	}
+#end
 
-	public String get() throws Exception {
+#if ($navigation.viewPage)
+	public String view() throws Exception {
+		return get();
+	}
+#end
+
+#if ($navigation.viewPage || $navigation.editPage)
+	protected String get() throws Exception {
 		try {
 			logger.info("Getting ${objectVarName} with id: " + ${objectVarName}.getId());
 			${objectVarName} = ${objectVarName}Service.get(${objectVarName}.getId());
@@ -136,7 +144,9 @@ public class ${object.className}Action extends GenericAction {
 			return handleError("Can't get ${objectVarName}", e);
 		}
 	}
+#end
 
+#if ($navigation.enableRemoveObject)
 	public String delete() throws Exception {
 		try {
 			logger.info("Deleting ${objectVarName} with id: " + ${objectVarName}.getId());
@@ -147,4 +157,5 @@ public class ${object.className}Action extends GenericAction {
 			return handleError("Can't delete ${objectVarName}", e);
 		}
 	}
+#end
 }

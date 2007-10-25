@@ -46,6 +46,7 @@
 			<result name="error">show.jsp</result>
 		</action>
 
+#if ($navigation.addPage)
 		<action name="prepareadd" class="${actionName}" method="prepareadd">
 			<result >add.jsp</result>
 			<result name="error">show.jsp</result>
@@ -56,12 +57,16 @@
 			<result name="input" type="chain">prepareadd</result>
 			<result name="error" type="chain">prepareadd</result>
 		</action>
+#end
 
+#if ($navigation.viewPage)
 		<action name="view" class="${actionName}" method="view">
 			<result >view.jsp</result>
 			<result name="error">show.jsp</result>
 		</action>
+#end
 
+#if ($navigation.editPage)
 		<action name="edit" class="${actionName}" method="edit">
 			<result >edit.jsp</result>
 			<result name="input" type="chain">edit</result>
@@ -70,14 +75,21 @@
 
 		<action name="update" class="${actionName}" method="update">
 			<!--<result type="redirect-action">index</result>-->
+	#if ($navigation.viewPage)
 			<result >view.jsp</result>
+	#else
+			<result >edit.jsp</result>
+	#end
 			<result name="error">edit.jsp</result>
 		</action>
+#end
 
+#if ($navigation.enableRemoveObject)
 		<action name="delete" class="${actionName}" method="delete">
 			<result type="redirect-action">index</result>
 			<result name="error">show.jsp</result>
 		</action>
+#end
 
 	</package>
 

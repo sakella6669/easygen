@@ -26,22 +26,28 @@
 
 <fieldset title="<s:text name="view.submitLink" />">
 <legend><b><s:text name="view.title" /></b></legend>
+#if ($navigation.editPage)
 <s:form action="edit" method="post" validate="false">
+#end
 <table>
 #foreach ($aField in $object.fields)
 	<tr>
 		<td width="40%"><s:text name="${aField.propertyName}" /></td>
 		<td>
 	#if ($aField.primaryKey == true)
+		#if ($navigation.editPage)
 	  <s:hidden name="${objectVarName}.${aField.propertyName}" />
+	  	#end
 	#end
 	  <s:property value="${objectVarName}.${aField.propertyName}" />
 	  </td>
 	</tr>
 #end
 </table>
+#if ($navigation.editPage)
   <s:submit key="view.submitLink"/>
 </s:form>
+#end
 </fieldset>
 
 <p class="spacer">&nbsp;</p>

@@ -23,6 +23,8 @@ public class Struts2Generator extends AbstractGenerator {
 	private static final String IS_SITE_MESH_ENGINE = "isSiteMeshEngine";
 	private static final String IS_TILES2_ENGINE = "isTiles2Engine";
 
+	private static final String NAVIGATION_CONFIG_KEY = "navigation";
+
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#getModuleName()
 	 */
@@ -38,6 +40,7 @@ public class Struts2Generator extends AbstractGenerator {
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
 		logger.info("Generating view layer files");
 		Struts2ModuleConfig viewModuleConfig = (Struts2ModuleConfig) projectConfig.getViewModuleConfig();
+		NavigationConfig navigationConfig = viewModuleConfig.getNavigationConfig();
 		String srcPath = projectConfig.getSrcPath();
 		String cfgPath = projectConfig.getCfgPath();
         String webPath = projectConfig.getWebContentPath();
@@ -52,6 +55,8 @@ public class Struts2Generator extends AbstractGenerator {
 
 		context.put(IS_SITE_MESH_ENGINE, viewModuleConfig.isSiteMeshEngine());
 		context.put(IS_TILES2_ENGINE, viewModuleConfig.isTiles2Engine());
+
+		context.put(NAVIGATION_CONFIG_KEY, navigationConfig);
 
 		copyStaticFiles(projectConfig);
 
@@ -82,10 +87,16 @@ public class Struts2Generator extends AbstractGenerator {
 			String jspPath = projectConfig.getWebContentPath() + objectClassnameLowerCase;
 			createPath(jspPath);
 
-			generateFile("www/add.jsp.vm", jspPath + "/add.jsp");
-			generateFile("www/view.jsp.vm", jspPath + "/view.jsp");
-			generateFile("www/edit.jsp.vm", jspPath + "/edit.jsp");
 			generateFile("www/show.jsp.vm", jspPath + "/show.jsp");
+			if (navigationConfig.isAddPage()) {
+				generateFile("www/add.jsp.vm", jspPath + "/add.jsp");
+			}
+			if (navigationConfig.isViewPage()) {
+				generateFile("www/view.jsp.vm", jspPath + "/view.jsp");
+			}
+			if (navigationConfig.isEditPage()) {
+				generateFile("www/edit.jsp.vm", jspPath + "/edit.jsp");
+			}
 
 			generateFile("src/lang/class.properties.vm", cfgPath + "lang/" + objectClassnameLowerCase + ".properties");
 			generateFile("src/lang/class_fr.properties.vm", cfgPath + "lang/" + objectClassnameLowerCase + "_fr.properties");
@@ -97,7 +108,6 @@ public class Struts2Generator extends AbstractGenerator {
 		
 		context.put(CLASS_LIST, classList);
 		generateFile("src/applicationContext-view.xml.vm", cfgPath + "applicationContext-view.xml");
-		// TODO Make the navigation (show->view->edit, add) customizable
 		// TODO Simplifier la stack d'interceptor Struts2
 		generateFile("src/struts.xml.vm", cfgPath + "struts.xml");
         generateFile("www/common/layout.jsp.vm", webPath + "common/layout.jsp");
