@@ -9,9 +9,15 @@ import org.eclipse.jface.wizard.IWizardPage;
  * Created on 9 mars 07
  *
  */
-public interface Module
-{
+public interface Module {
+	
 	public String getNature();
+	/**
+	 * See constants in {@link ModuleManager} for possible values
+	 * @return the module kind
+	 */
+	public String getKind();
 	public Class<? extends ModuleConfig> getConfigClass();
 	public IWizardPage[] getPages() throws InitException;
+
 }

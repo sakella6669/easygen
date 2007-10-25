@@ -1,21 +1,32 @@
 package org.easygen.ui.modules;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.easygen.ui.modules.hibernate.HibernateDataModule;
-import org.easygen.ui.modules.springservice.SpringServiceModule;
-import org.easygen.ui.modules.struts2.Struts2ViewModule;
 
 /**
  * @author eveno
  * Created on 9 mars 07
  *
  */
-public class ModuleManagerImpl implements ModuleManager
-{
+public class ModuleManagerImpl implements ModuleManager {
+	
+	private static final Logger logger = Logger.getLogger(ModuleManagerImpl.class);
+    private static final Pattern nonCommentPattern = Pattern.compile("^([^#]+)");
+
 	protected Map<String, Map<String, Module>> moduleKinds = new Hashtable<String, Map<String, Module>>();
 
 	/**
@@ -25,18 +36,12 @@ public class ModuleManagerImpl implements ModuleManager
 		initModules();
 	}
 	/**
-	 * Add the various modules from any kind 
-	 */
-	protected void initModules() {
-		addModule(DATA_MODULE_KIND, new HibernateDataModule());
-		addModule(SERVICE_MODULE_KIND, new SpringServiceModule());
-		addModule(VIEW_MODULE_KIND, new Struts2ViewModule());
-	}
-	/**
 	 * @throws ModuleException 
      *
      */
-    protected void addModule(String kind, Module module) {
+    protected void addModule(Module module) {
+    	String kind = module.getKind();
+		logger.info("Loading module: "+module.getClass().getName()+", kind: "+kind);
     	if (module == null)
     		return ;
     	if (moduleKinds.containsKey(kind) == false) {
@@ -86,4 +91,60 @@ public class ModuleManagerImpl implements ModuleManager
     	Map<String, Module> modules = moduleKinds.get(kind);
 		return modules;
 	}
+	/**
+	 * Add the various modules from any kind 
+	 */
+	protected void initModules() {
+		List<Module> modules = findAllModules();
+		for (Module module : modules) {
+			addModule(module);
+		}
+//		addModule(new HibernateDataModule());
+//		addModule(new SpringServiceModule());
+//		addModule(new Struts2ViewModule());
+	}
+
+    private List<Module> findAllModules() {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Enumeration<URL> resources;
+		try {
+			resources = loader.getResources("META-INF/services/"+Module.class.getName());
+		} catch (IOException e) {
+			logger.error("Can't look for modules", e);
+			return new LinkedList<Module>();
+		}
+        Set<String> moduleClassNames = new HashSet<String>();
+        while (resources.hasMoreElements()) {
+            URL url = resources.nextElement();
+            try {
+				moduleClassNames.addAll(moduleNamesFromReader(url));
+			} catch (IOException e) {
+				logger.warn("Can't load module list from: "+url, e);
+			}
+        }
+        List<Module> foundModules = new LinkedList<Module>();
+        for (String moduleClassName : moduleClassNames) {
+            try{
+                Module newModule = (Module)loader.loadClass(moduleClassName).newInstance();
+                foundModules.add(newModule);
+            } catch (Exception e){
+            	logger.debug("Can't load module class: "+moduleClassName, e);
+            }
+        }
+        return foundModules;
+    }
+
+    private Set<String> moduleNamesFromReader(URL url) throws IOException {
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+        Set<String> names = new HashSet<String>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            Matcher m = nonCommentPattern.matcher(line);
+            if (m.find()) {
+                names.add(m.group().trim());
+            }
+        }
+        return names;
+    }
 }

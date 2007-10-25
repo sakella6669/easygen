@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="D:/Work/workspace/org.easygen.ui/lib/org.easygen.ui_1.1.0.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/org.easygen.ui/createJar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="true"/>
+    <jar path="D:/Work/workspaces/personnal/org.easygen.ui/lib/org.easygen.ui_1.1.0.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/org.easygen.ui/createMainJar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="true"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
     <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
