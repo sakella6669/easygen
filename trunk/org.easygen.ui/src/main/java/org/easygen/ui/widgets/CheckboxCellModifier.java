@@ -3,7 +3,6 @@ package org.easygen.ui.widgets;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -46,7 +45,6 @@ public abstract class CheckboxCellModifier extends LabelProvider implements ITab
 		);
 	}
 
-	protected static final Logger logger = Logger.getLogger(CheckboxCellModifier.class);
 	protected List<String> columnNames;
 	protected TableViewer tableViewer;
 
@@ -81,7 +79,6 @@ public abstract class CheckboxCellModifier extends LabelProvider implements ITab
 		}
 		Object value = getValue(element, columnIndex);
 		Image image = getImage(value);
-		logger.debug("getColumnImage("+columnIndex+", "+value+")="+image);
 		return image;
 	}
 
@@ -102,7 +99,6 @@ public abstract class CheckboxCellModifier extends LabelProvider implements ITab
 	protected Image getImage(boolean isSelected)
 	{
 		String key = isSelected ? CHECKED_IMAGE : UNCHECKED_IMAGE;
-		logger.debug("key="+key);
 		return imageRegistry.get(key);
 	}
 
@@ -121,7 +117,6 @@ public abstract class CheckboxCellModifier extends LabelProvider implements ITab
 	{
 		int columnIndex = columnNames.indexOf(property);
 		Object value = getValue(element, columnIndex);
-		logger.debug("Getting "+property+"=["+value+']');
 		return value;
 	}
 
@@ -138,14 +133,12 @@ public abstract class CheckboxCellModifier extends LabelProvider implements ITab
 	{
 		int columnIndex = columnNames.indexOf(property);
 		boolean isEditableColumn = isEditableColumn(columnIndex);
-		logger.debug(property+".isEditable="+isEditableColumn);
 		return isEditableColumn;
 	}
 
 	public void modify(Object element, String property, Object value) {
 		TableItem item = (TableItem) element;
 		int columnIndex = getColumnIndex(property);
-		logger.debug("Setting "+property+"=["+value+']');
 		setValue(item.getData(), columnIndex, value);
 		tableViewer.update(item.getData(), new String[] { property });
 		tableViewer.refresh(item.getData());

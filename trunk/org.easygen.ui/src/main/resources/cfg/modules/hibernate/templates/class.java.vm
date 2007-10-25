@@ -6,6 +6,8 @@
 	#end
 #end
 
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
 package ${project.dataModuleConfig.packageName};
 
 import java.io.Serializable;
@@ -13,7 +15,6 @@ import java.util.Date;
 import java.util.Set;
 
 #if ($useAnnotations == true)
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,6 +25,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 #end
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -38,7 +42,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 @Entity
 @Table(name = "${object.tableName}")
 #end
-public class $object.className implements Serializable {
+public class ${object.className} implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -62,8 +66,11 @@ public class $object.className implements Serializable {
 	 * @returns the $field.propertyShortType List
 	 */
 	#if ($useAnnotations == true)
-	@OneToMany(cascade=CascadeType.REMOVE, fetch=FetchType.LAZY)
-    @JoinColumn(name="${field.columnName}")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "${objectVarName}")
+	@Cascade( { CascadeType.ALL,
+		CascadeType.SAVE_UPDATE#{if} ($field.foreignField.nullable == false),
+		CascadeType.DELETE_ORPHAN#{end}
+	})
     #end
 	public Set<$field.propertyShortType> get${methodName}() {
 		return this.$field.propertyName;
@@ -95,7 +102,7 @@ public class $object.className implements Serializable {
 	)
 		#end
 	#elseif ($field.foreignKey == true)
-	@ManyToOne( cascade = {CascadeType.REFRESH} )
+	@ManyToOne
     @JoinColumn(name="${field.columnName}")
 	#else
 	@Column(name = "${field.columnName}")

@@ -363,10 +363,12 @@ public class DatabaseManager {
 					newField.setForeignKey(true);
 					newField.setForeignList(true);
 					newField.setForeignObject(object);
+					newField.setForeignField(field);
 					newField.setColumnName(field.getColumnName());
 					newField.setPropertyName( WordUtils.uncapitalize(object.getClassName()+'s') );
 					newField.setPropertyType( object.getClassName() );
 					refObject.addField(newField);
+					field.setForeignField(newField);
 				} else {
 					field.setPropertyName(SQLDataConverter.convertColumnNameToJavaField(field.getColumnName()));
 					field.setPropertyType(SQLDataConverter.getJavaTypeForSqlType(field));

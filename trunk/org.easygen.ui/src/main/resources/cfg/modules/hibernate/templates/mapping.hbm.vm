@@ -26,7 +26,7 @@
 	#elseif ($field.foreignKey)
 		#if ($field.foreignList)
 
-		<set name="$field.propertyName" inverse="true" cascade="delete" lazy="true">
+		<set name="$field.propertyName" inverse="true" cascade="all,save-update#{if} ($field.foreignField.nullable == false),delete-orphan#{end}" lazy="true">
 			<key>
 				<column name="${field.columnName}"/>
 			</key>
