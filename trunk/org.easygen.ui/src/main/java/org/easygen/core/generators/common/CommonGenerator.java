@@ -8,12 +8,6 @@ import org.easygen.core.generators.hibernate.HibernateModuleConfig;
 import org.easygen.core.generators.springservice.SpringServiceModuleConfig;
 import org.easygen.core.generators.struts2.Struts2ModuleConfig;
 
-
-/**
- * @author eveno
- * Created on 19 déc. 06
- *
- */
 public class CommonGenerator extends AbstractGenerator {
 	
 	private static final Logger logger = Logger.getLogger(CommonGenerator.class);
@@ -33,11 +27,12 @@ public class CommonGenerator extends AbstractGenerator {
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
 		logger.info("Generating common files");
+
+		// TODO See if it is possible to make this code independant from the modules (Struts2, Spring, Hibernate)
     	context.put("isStruts2ViewModule", Struts2ModuleConfig.NATURE.equals(projectConfig.getViewModuleNature()));
     	context.put("isSpringServiceModule", SpringServiceModuleConfig.NATURE.equals(projectConfig.getServiceModuleNature()));
     	context.put("isHibernateDataModule", HibernateModuleConfig.NATURE.equals(projectConfig.getDataModuleNature()));
     	
-    	// Génération du fichier pom.xml pour Maven
         generateFile("pom.xml.vm", projectConfig.getPath() + "pom.xml");
 
         createPath(projectConfig.getCfgPath());

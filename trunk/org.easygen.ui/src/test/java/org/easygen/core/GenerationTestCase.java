@@ -23,8 +23,8 @@ import org.easygen.core.generators.springservice.SpringServiceModuleConfig;
  * Created on 16 nov. 06
  *
  */
-public class GenerationTestCase extends TestCase
-{
+public class GenerationTestCase extends TestCase {
+
 	static {
 		// Date Pattern : [%d]
 		ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%-5p [%C{1}.%M:%L] - %m%n"));
@@ -39,8 +39,7 @@ public class GenerationTestCase extends TestCase
 	 * @throws InitException
 	 *
 	 */
-	public GenerationTestCase() throws InitException
-	{
+	public GenerationTestCase() throws InitException {
 		super();
 	}
 
@@ -51,8 +50,7 @@ public class GenerationTestCase extends TestCase
 			initProjectConfig();
 	}
 
-	protected void initProjectConfig() throws InitException, DatabaseException
-	{
+	protected void initProjectConfig() throws InitException, DatabaseException {
 		projectConfig = new ProjectConfig();
 		projectConfig.setName("Test");
 		projectConfig.setPackageName("test");
@@ -63,20 +61,20 @@ public class GenerationTestCase extends TestCase
 		projectConfig.setTestDirname("test");
 
 		DatabaseConfig dbConfig = new DatabaseConfig();
-		dbConfig.setDatabaseDriver( DatabaseManager.getDriverList("mysql")[0] );
+		dbConfig.setDatabaseDriver(DatabaseManager.getDriverList("mysql")[0]);
 		dbConfig.setDatabaseType("mysql");
 		dbConfig.setDatabaseName("teachertools");
 		dbConfig.setHost("localhost");
 		dbConfig.setPort(3306);
 		dbConfig.setUsername("root");
 		dbConfig.setJarPath(DatabaseManager.getDriverJarUrl("mysql").toString());
-//		dbConfig.setJarPath("file:///D:/eclipse/libraries/mysql-connector-java-5.0.3-bin.jar");
+		//dbConfig.setJarPath("file:///D:/eclipse/libraries/mysql-connector-java-5.0.3-bin.jar");
 		projectConfig.setDatabaseConfig(dbConfig);
 
 		projectConfig.setProjectNature(EclipseProjectConfig.WTP_NATURE);
 		EclipseProjectConfig projectModuleConfig = new EclipseProjectConfig();
 		projectConfig.setProjectModuleConfig(projectModuleConfig);
-		
+
 		CommonConfig commonConfig = new CommonConfig();
 		commonConfig.setNature(CommonConfig.NATURE);
 		commonConfig.setPackageName("test.utils");
@@ -95,8 +93,7 @@ public class GenerationTestCase extends TestCase
 		projectConfig.setServiceModuleConfig(serviceConfig);
 	}
 
-	public void testGenerate() throws GenerationException
-	{
+	public void testGenerate() throws GenerationException {
 		new GeneratorManager().generate(projectConfig);
 	}
 }
