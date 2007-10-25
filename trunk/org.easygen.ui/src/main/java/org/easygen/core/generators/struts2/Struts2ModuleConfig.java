@@ -9,11 +9,12 @@ public class Struts2ModuleConfig extends ViewModuleConfig {
 	private static final String SITE_MESH = "SiteMesh";
 
 	public static final String NATURE = "Struts2";
-	
+
 	public static final String[] TEMPLATE_ENGINES = { SITE_MESH, TILES2 };
-	
+
 	private String templateEngine;
-	
+	private NavigationConfig navigationConfig;
+
 	public Struts2ModuleConfig() {
 		super();
 		setNature(NATURE);
@@ -34,7 +35,15 @@ public class Struts2ModuleConfig extends ViewModuleConfig {
 	public boolean isTiles2Engine() {
 		return TILES2.equals(templateEngine);
 	}
-	
+
+	public NavigationConfig getNavigationConfig() {
+		return this.navigationConfig;
+	}
+
+	public void setNavigationConfig(NavigationConfig navigationConfig) {
+		this.navigationConfig = navigationConfig;
+	}
+
 	/**
 	 * @see org.easygen.core.config.ModuleConfig#getGenerator()
 	 */
@@ -45,9 +54,9 @@ public class Struts2ModuleConfig extends ViewModuleConfig {
 
 	@Override
 	public String toString() {
-    	StringBuffer buffer = new StringBuffer();
-    	buffer.append(super.toString());
-    	buffer.append("\tTemplateEngine: ").append(getTemplateEngine()).append("\n");
-    	return buffer.toString();
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(super.toString());
+		buffer.append("\tTemplateEngine: ").append(getTemplateEngine()).append("\n");
+		return buffer.toString();
 	}
 }

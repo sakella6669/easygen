@@ -40,6 +40,7 @@ public class MavenHandler {
 	}
 
 	public boolean callMaven(String path, String goal) {
+		logger.info("Executing Maven: "+MVN_CMD+" "+goal);
 		ProcessBuilder builder = new ProcessBuilder(MVN_CMD, goal);
 		builder.directory(new File(path));
 		builder.redirectErrorStream(true);
