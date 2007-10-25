@@ -18,7 +18,32 @@
 	<constant name="struts.serve.static.browserCache" value="true" />
 	<constant name="struts.ui.theme" value="css_xhtml" />
 
-	<package name="easygen-default" extends="#{if} ($isTiles2Engine)tiles-default#{else}struts-default#{end}">
+	<package name="easygen-default" extends="struts-default" abstract="true">
+        <interceptors>
+	        <interceptor-stack name="customStack">
+	            <!-- Uncomment this if you uncomment the <global-*> tags -->
+	            <!-- <interceptor-ref name="exception"/> -->
+	            <interceptor-ref name="servletConfig"/>
+	            <interceptor-ref name="prepare"/>
+	            <interceptor-ref name="i18n"/>
+	            <interceptor-ref name="chain"/>
+	            <!-- See http://struts.apache.org/2.0.9/docs/debugging.html to use and activate -->
+	            <!-- <interceptor-ref name="debugging"/> -->
+	            <!-- See http://struts.apache.org/2.0.9/docs/profiling.html to use and activate -->
+	            <!-- <interceptor-ref name="profiling"/> -->
+	            <!-- Only for file upload -->
+	            <!-- <interceptor-ref name="fileUpload"/> -->
+	            <interceptor-ref name="checkbox"/>
+	            <interceptor-ref name="params">
+	              <param name="excludeParams">dojo\..*</param>
+	            </interceptor-ref>
+	            <interceptor-ref name="conversionError"/>
+	            <interceptor-ref name="validation">
+	                <param name="excludeMethods">input,back,cancel,browse</param>
+	            </interceptor-ref>
+	        </interceptor-stack>
+	    </interceptors>
+        <default-interceptor-ref name="customStack"/>
 		<!--
 		<global-results>
 			<result name="error">/error.jsp</result>

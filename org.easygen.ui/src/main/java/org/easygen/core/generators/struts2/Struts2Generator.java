@@ -108,7 +108,6 @@ public class Struts2Generator extends AbstractGenerator {
 		
 		context.put(CLASS_LIST, classList);
 		generateFile("src/applicationContext-view.xml.vm", cfgPath + "applicationContext-view.xml");
-		// TODO Simplifier la stack d'interceptor Struts2
 		generateFile("src/struts.xml.vm", cfgPath + "struts.xml");
         generateFile("www/common/layout.jsp.vm", webPath + "common/layout.jsp");
 		context.remove(CLASS_LIST);
@@ -130,9 +129,12 @@ public class Struts2Generator extends AbstractGenerator {
 		logger.info("Génération des pages statiques de la couche view");
 		Struts2ModuleConfig viewModuleConfig = (Struts2ModuleConfig) projectConfig.getViewModuleConfig();
 		String srcPath = projectConfig.getSrcPath();
+		String cfgPath = projectConfig.getCfgPath();
 
         String filename = createFilename(viewModuleConfig, "GenericAction", PROPERTY_FILE_EXTENSION);
         copyFile("src/GenericAction.properties", srcPath + filename);
+
+        copyFile("src/freemarker.properties", cfgPath + "freemarker.properties");
 
         String webPath = projectConfig.getWebContentPath();
         copyFile("www/common/styles.css", webPath + "common/styles.css");
