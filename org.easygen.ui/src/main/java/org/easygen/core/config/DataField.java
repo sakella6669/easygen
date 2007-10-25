@@ -17,6 +17,7 @@ public class DataField {
 	private String foreignTableName;
 	private String foreignColumnName;
 	private DataObject foreignObject;
+	private DataField foreignField;
 
 	/**
 	 * @return the selected
@@ -160,6 +161,14 @@ public class DataField {
 
 	public void setForeignObject(DataObject foreignObject) {
 		this.foreignObject = foreignObject;
+	}
+
+	public DataField getForeignField() {
+		return this.foreignField;
+	}
+
+	public void setForeignField(DataField foreignField) {
+		this.foreignField = foreignField;
 	}
 
 	@Override
