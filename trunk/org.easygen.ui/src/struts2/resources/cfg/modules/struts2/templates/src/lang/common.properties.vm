@@ -1,0 +1,18 @@
+project.name=Test
+
+home.title=Welcome \!
+
+errorPage.title=An error has occured
+errorPage.message=An unexpected error has occured. The webmaster has been notified and will handle this problem as soon as possible. Thank you.
+
+menu.categorie=Manage categories
+menu.competence=Manage skills
+menu.eleve=Manage students
+menu.livret=Manage books
+menu.matiere=Manage themas
+menu.note=Manage scoring
+
+validation.actionErrors=Error while validating action\:
+validation.fieldErrors=Error while validating fields\:
+
+footer=Generated with <a href="http://easygen.googlecode.com">EasyGen</a>

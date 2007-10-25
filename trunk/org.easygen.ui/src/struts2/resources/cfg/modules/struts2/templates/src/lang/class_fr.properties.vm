@@ -1,0 +1,27 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+# Fields Labels
+#foreach ($aField in $object.fields)
+${aField.propertyName}=$stringutils.capitalizeFirstLetter(${aField.propertyName})
+#end
+
+backToListLink=Retour &agrave; la liste
+
+# Page specific labels
+show.title=Liste des ${objectVarName}s
+show.searchTitle=Recherche d''un objet ${objectVarName}
+show.searchAdvice=Vous pouvez utiliser % pour des recherches incompl\u00E8tes
+show.confirmDelete=Voulez-vous vraiment supprimer cet objet ?
+show.addLink=Ajouter un objet ${objectVarName}
+show.deleteLink=Supprimer
+show.searchLink=Rechercher
+show.resultCount=Trouv\u00E9 {0} ${objectVarName}(s)
+
+add.title=Ajout d''un objet ${objectVarName}
+add.submitLink=Enregistrer
+
+edit.title=Edition d''un objet ${objectVarName}
+edit.submitLink=Enregistrer
+
+view.title=Objet ${objectVarName}
+view.submitLink=Editer

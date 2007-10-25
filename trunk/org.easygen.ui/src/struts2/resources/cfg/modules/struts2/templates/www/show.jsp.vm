@@ -1,0 +1,161 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+#macro( showForeignObjectHeader $aObject )
+	#foreach ($anotherField in $aObject.fields)
+		#if ($anotherField.foreignKey == true && $anotherField.foreignList == false)
+	    	<th>$stringutils.capitalizeFirstLetter($anotherField.propertyName)</th>
+			#showForeignObjectHeader( $anotherField.foreignObject )
+	    #end
+	#end
+#end
+
+#macro( showForeignObject $anotherObject )
+	#foreach ($anotherField in $anotherObject.fields)
+		#if ($anotherField.foreignKey == true && $anotherField.foreignList == false)
+    		<td><s:property value="${aField.propertyName}"/></td>
+			#showForeignObject( $anotherField.foreignObject )
+	    #end
+	#end
+#end
+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="display" uri="http://displaytag.sf.net"%>
+#if ($isTiles2Engine)
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+#end
+
+<s:i18n name="lang.${objectVarName}">
+
+#if ($isTiles2Engine)
+<tiles:insertDefinition name="mainLayout">
+  <tiles:putAttribute name="title"><s:text name="show.title" /></tiles:putAttribute>
+  <tiles:putAttribute name="body">
+#elseif ($isSiteMeshEngine)
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title><s:text name="show.title" /></title>
+</head>
+<body>
+#end
+
+#if ($navigation.enableRemoveObject)
+<script type="text/javascript">
+<!--
+	function confirmDelete() {
+		return confirm("<s:text name="show.confirmDelete" />");
+	}
+//-->
+</script>
+#end
+
+#if ($navigation.addPage)
+<s:url id="prepareaddUrl" action="prepareadd" />
+<p><s:a href="%{prepareaddUrl}" cssClass="commandLink"><s:text name="show.addLink" /></s:a></p>
+#end
+
+<fieldset title="<s:text name="show.searchLink" />">
+<legend><b><s:text name="show.searchTitle" /></b></legend>
+<s:form action="search" method="post" validate="false">
+<table>
+	<tr>
+		<td colspan="2" align="center" style="font-size: 0.8em">
+		<em><s:text name="show.searchAdvice" /></em></td>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+#foreach ($aField in $object.fields)
+#if ($aField.primaryKey == false)
+	#if ($aField.foreignKey == false)
+	<tr>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
+		<td>
+		#if ($aField.propertyShortType == "Date")
+		<s:datetimepicker name="${objectVarName}.${aField.propertyName}" cssClass="formFields" />
+		#else
+  		<s:textfield name="${objectVarName}.${aField.propertyName}" cssClass="formFields" />
+  		#end
+		</td>
+	</tr>
+  	#end
+  	#if ($aField.foreignKey == true && $aField.foreignList == false)
+	<tr>
+		<td width="40%"><s:text name="${aField.propertyName}" /></td>
+		<td>
+  		#foreach ($foreignField in $aField.foreignObject.fields)
+  			#if ($foreignField.primaryKey == true)
+			 	<s:select name="${objectVarName}.${aField.propertyName}.${foreignField.propertyName}"
+					list="%{#request.${aField.propertyName}s}"
+					listKey="${foreignField.propertyName}"
+					multiple="false" emptyOption="true" cssClass="formFields"
+				/>
+	  		#end
+		#end
+		</td>
+	</tr>
+	#end
+#end
+#end
+</table>
+  <s:submit key="show.searchLink" />
+</s:form>
+</fieldset>
+
+<p class="pageTitle"><s:text name="show.title" /></p>
+<display:table name="${objectVarName}s" class="results" uid="${objectVarName}">
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == true)
+	<display:column titleKey="${aField.propertyName}" class="results">
+		#if ($navigation.viewPage)
+		<s:url id="viewUrl" action="view">
+			<s:param name="${objectVarName}.${aField.propertyName}">${${objectVarName}.${aField.propertyName}}</s:param>
+		</s:url>
+		<s:a href="%{viewUrl}" cssClass="commandLink">${${objectVarName}.${aField.propertyName}}</s:a>
+		#elseif ($navigation.editPage)
+		<s:url id="editUrl" action="edit">
+			<s:param name="${objectVarName}.${aField.propertyName}">${${objectVarName}.${aField.propertyName}}</s:param>
+		</s:url>
+		<s:a href="%{editUrl}" cssClass="commandLink">${${objectVarName}.${aField.propertyName}}</s:a>
+		#else
+		${${objectVarName}.${aField.propertyName}}
+		#end
+	</display:column>
+    #elseif ($aField.primaryKey == false && $aField.foreignList == false)
+	<display:column titleKey="${aField.propertyName}" property="${aField.propertyName}" class="results" />
+    #end
+#end
+
+#if ($navigation.enableRemoveObject)
+	<display:column class="results">
+		<s:url id="deleteUrl" action="delete">
+	#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == true)
+			<s:param name="${objectVarName}.${aField.propertyName}">${${objectVarName}.${aField.propertyName}}</s:param>
+    #end
+	#end
+		</s:url>
+		<s:a href="%{deleteUrl}" cssClass="commandLink" onclick="return confirmDelete();">
+			<s:text name="show.deleteLink" /></s:a>
+	</display:column>
+#end
+</display:table>
+
+	<p align="center">
+		<s:text name="show.resultCount">
+			<s:param><s:property value="%{${objectVarName}s.size()}" /></s:param>
+		</s:text>
+	</p>
+
+#if ($isTiles2Engine)
+  </tiles:putAttribute>
+</tiles:insertDefinition>
+#elseif ($isSiteMeshEngine)
+</body>
+</html>
+#end
+
+</s:i18n>

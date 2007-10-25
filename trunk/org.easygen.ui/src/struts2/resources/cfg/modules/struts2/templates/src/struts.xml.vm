@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <constant name="struts.action.extension" value="action" />
+    <constant name="struts.devMode" value="true" />
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<constant name="struts.objectFactory" value="spring" />
+	<constant name="struts.custom.i18n.resources" value="messages" />
+	<!--constant name="struts.i18n.encoding" value="ISO8859-1" /-->
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.multipart.maxSize" value="12097152" />
+	<constant name="struts.serve.static" value="true" />
+	<constant name="struts.serve.static.browserCache" value="true" />
+	<constant name="struts.ui.theme" value="css_xhtml" />
+
+	<package name="easygen-default" extends="struts-default" abstract="true">
+        <interceptors>
+	        <interceptor-stack name="customStack">
+	            <!-- Uncomment this if you uncomment the <global-*> tags -->
+	            <!-- <interceptor-ref name="exception"/> -->
+	            <interceptor-ref name="servletConfig"/>
+	            <interceptor-ref name="prepare"/>
+	            <interceptor-ref name="i18n"/>
+	            <interceptor-ref name="chain"/>
+	            <!-- See http://struts.apache.org/2.0.9/docs/debugging.html to use and activate -->
+	            <!-- <interceptor-ref name="debugging"/> -->
+	            <!-- See http://struts.apache.org/2.0.9/docs/profiling.html to use and activate -->
+	            <!-- <interceptor-ref name="profiling"/> -->
+	            <!-- Only for file upload -->
+	            <!-- <interceptor-ref name="fileUpload"/> -->
+	            <interceptor-ref name="checkbox"/>
+	            <interceptor-ref name="params">
+	              <param name="excludeParams">dojo\..*</param>
+	            </interceptor-ref>
+	            <interceptor-ref name="conversionError"/>
+	            <interceptor-ref name="validation">
+	                <param name="excludeMethods">input,back,cancel,browse</param>
+	            </interceptor-ref>
+	        </interceptor-stack>
+	    </interceptors>
+        <default-interceptor-ref name="customStack"/>
+		<!--
+		<global-results>
+			<result name="error">/error.jsp</result>
+		</global-results>
+
+		<global-exception-mappings>
+			<exception-mapping result="error" exception="java.lang.Throwable" />
+		</global-exception-mappings>
+		-->
+	</package>
+
+#foreach ($className in $classList)
+#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+##set ($actionName = "${project.viewModuleConfig.packageName}.${className}Action")
+#set ($actionName = "${lowerClassName}Action")
+	<package name="${lowerClassName}" extends="easygen-default" namespace="/${lowerClassName}">
+	
+		<action name="index" class="${actionName}" method="list">
+			<result >show.jsp</result>
+			<result name="error">show.jsp</result>
+		</action>
+
+		<action name="search" class="${actionName}" method="search">
+			<result >show.jsp</result>
+			<result name="error">show.jsp</result>
+		</action>
+
+#if ($navigation.addPage)
+		<action name="prepareadd" class="${actionName}" method="prepareadd">
+			<result >add.jsp</result>
+			<result name="error">show.jsp</result>
+		</action>
+
+		<action name="add" class="${actionName}" method="add">
+			<result type="redirect-action">index</result>
+			<result name="input" type="chain">prepareadd</result>
+			<result name="error" type="chain">prepareadd</result>
+		</action>
+#end
+
+#if ($navigation.viewPage)
+		<action name="view" class="${actionName}" method="view">
+			<result >view.jsp</result>
+			<result name="error">show.jsp</result>
+		</action>
+#end
+
+#if ($navigation.editPage)
+		<action name="edit" class="${actionName}" method="edit">
+			<result >edit.jsp</result>
+			<result name="input" type="chain">edit</result>
+			<result name="error">edit.jsp</result>
+		</action>
+
+		<action name="update" class="${actionName}" method="update">
+			<!--<result type="redirect-action">index</result>-->
+	#if ($navigation.viewPage)
+			<result >view.jsp</result>
+	#else
+			<result >edit.jsp</result>
+	#end
+			<result name="error">edit.jsp</result>
+		</action>
+#end
+
+#if ($navigation.enableRemoveObject)
+		<action name="delete" class="${actionName}" method="delete">
+			<result type="redirect-action">index</result>
+			<result name="error">show.jsp</result>
+		</action>
+#end
+
+	</package>
+
+#end
+</struts>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-app_2_4.xsd" version="2.4">
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:applicationContext*.xml</param-value>
+	</context-param>
+
+#if ($isTiles2Engine)
+    <context-param>
+        <param-name>org.apache.tiles.CONTAINER_FACTORY</param-name>
+        <param-value>org.apache.struts2.tiles.StrutsTilesContainerFactory</param-value>
+    </context-param>
+#end
+	<filter id="filterdispatcher">
+		<filter-name>struts2</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
+	</filter>
+
+#if ($isSiteMeshEngine)
+	<filter id="siteMeshDecorator">
+		<filter-name>sitemesh</filter-name>
+		<filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
+	</filter>
+#end
+	<filter id="actionContextCleanUp">
+		<filter-name>actionContextCleanUp</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+	</filter>
+
+	<!-- FILTER MAPPINGS -->
+    <filter-mapping>
+		<filter-name>actionContextCleanUp</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+#if ($isSiteMeshEngine)
+	<filter-mapping>
+		<filter-name>sitemesh</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+#end
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+    
+    <listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+#if ($isTiles2Engine)
+	<listener>
+		<listener-class>org.apache.struts2.tiles.StrutsTilesListener</listener-class>
+	</listener>
+#end
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+   <error-page>
+      <error-code>500</error-code>
+      <location>/error.jsp</location>
+   </error-page>
+
+</web-app>
