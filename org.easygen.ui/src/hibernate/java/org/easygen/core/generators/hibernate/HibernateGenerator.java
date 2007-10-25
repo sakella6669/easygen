@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.easygen.core.config.DataField;
 import org.easygen.core.config.DataObject;
@@ -73,6 +72,7 @@ public class HibernateGenerator extends AbstractGenerator {
 		for (DataObject mapping : mappings) {
 			context.put(OBJECT, mapping);
 			String javaFilename = createJavaFilename(dataModuleConfig, mapping);
+			// TODO If a field is in the same time a foreign and a primary key, it is a one-to-one association
 			generateFile("class.java.vm", projectConfig.getSrcPath() + javaFilename);
 			if (dataModuleConfig.isUseAnnotations() == true) {
 				hbmList.add(packageName + '.' + mapping.getClassName());
@@ -131,17 +131,14 @@ public class HibernateGenerator extends AbstractGenerator {
 
 	/**
 	 * @see org.easygen.core.generators.AbstractGenerator#copyLibraries(org.easygen.core.config.ProjectConfig)
-	 * @deprecated Maven pom is generated instead
 	 */
-	@Deprecated
 	@Override
-	public String[] copyLibraries(ProjectConfig projectConfig) throws GenerationException {
-		String[] libraries = super.copyLibraries(projectConfig);
+	public void copyLibraries(ProjectConfig projectConfig) throws GenerationException {
+		super.copyLibraries(projectConfig);
 		URL jarUrl = DatabaseManager.getDriverJarUrl(projectConfig.getDatabaseConfig().getDatabaseType());
 		String jarFilename = FilenameUtils.getName(jarUrl.getPath());
 		copyLibrary(getLibraryDir(), projectConfig.getLibPath(), jarFilename, jarUrl);
-		libraries = (String[]) ArrayUtils.add(libraries, jarFilename);
-		return libraries;
+		projectConfig.addLibrary(jarFilename);
 	}
 
 	/**

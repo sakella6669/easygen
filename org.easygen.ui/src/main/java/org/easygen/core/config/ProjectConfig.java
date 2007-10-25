@@ -1,6 +1,7 @@
 package org.easygen.core.config;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -19,7 +20,8 @@ public class ProjectConfig {
 	private String buildDirname;
 	private String webContentDirname;
 	private String packageName;
-	private transient String[] libraries;
+	private transient List<String> libraries = new ArrayList<String>();
+	private transient List<Dependency> mavenDependencies = new ArrayList<Dependency>();
 
 	private DatabaseConfig databaseConfig = null;
 
@@ -155,20 +157,29 @@ public class ProjectConfig {
 	public String getLibPath() {
 		return getPath() + libDirname + File.separatorChar;
 	}
-
-	public String[] getLibraries() {
-		if (libraries == null) {
-			return new String[0];
-		}
-		String[] clonedlibrairies = new String[libraries.length];
-		System.arraycopy(libraries, 0, clonedlibrairies, 0, libraries.length);
-		return clonedlibrairies;
+	
+	public List<Dependency> getMavenDependencies() {
+		return mavenDependencies;
+	}
+	
+	public void addMavenDependency(Dependency dependency) {
+		this.mavenDependencies.add(dependency);
 	}
 
-	public void setLibraries(String[] newLibraries) {
-		String[] clonedlibrairies = new String[newLibraries.length];
-		System.arraycopy(newLibraries, 0, clonedlibrairies, 0, newLibraries.length);
-		this.libraries = clonedlibrairies;
+	public void addMavenDependencies(List<Dependency> dependencies) {
+		this.mavenDependencies.addAll(dependencies);
+	}
+
+	public List<String> getLibraries() {
+		return libraries;
+	}
+	
+	public void addLibrary(String library) {
+		libraries.add(library);
+	}
+
+	public void addLibraries(List<String> newLibraries) {
+		libraries.addAll(newLibraries);
 	}
 
 	/**

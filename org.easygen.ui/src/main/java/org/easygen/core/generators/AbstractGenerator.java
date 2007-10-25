@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Hashtable;
@@ -29,9 +30,13 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.util.StringUtils;
 import org.easygen.core.InitException;
 import org.easygen.core.config.DataObject;
+import org.easygen.core.config.Dependency;
 import org.easygen.core.config.ModuleConfig;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.velocity.VelocityStackUtils;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
  * @author eveno
@@ -52,7 +57,7 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
     public AbstractGenerator()
     {
 	    super();
-	    // TODO Ajouter la generation avec le framework Wicket
+	    // TODO Add generation of Wicket framework
 	    loadConfiguration();
 	    templates = new Hashtable<String,Template>();
     }
@@ -131,17 +136,21 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	 * @throws Exception
 	 */
 	protected Template loadTemplate(String filename) throws InitException {
-	    try {
-			String templateFilename = getTemplateDir() + filename;
+		String templateFilename = getTemplateDir() + filename;
+	    return internalLoadTemplate(templateFilename);
+	}
+
+	private Template internalLoadTemplate(String templateFilename) {
+		try {
 			logger.debug("Loading Template file: "+templateFilename);
 			Template template = Velocity.getTemplate(templateFilename);
 			return template;
 		} catch (ResourceNotFoundException e) {
-        	throw new InitException("Velocity file template not found: "+filename, e);
+        	throw new InitException("Velocity file template not found: "+templateFilename, e);
 		} catch (ParseErrorException e) {
-        	throw new InitException("Velocity template parse error: "+filename, e);
+        	throw new InitException("Velocity template parse error: "+templateFilename, e);
 		} catch (Exception e) {
-        	throw new InitException("Velocity template initialization failed: "+filename, e);
+        	throw new InitException("Velocity template initialization failed: "+templateFilename, e);
 		}
 	}
 	/**
@@ -189,14 +198,22 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	private void generateFile(Template template, String outputFilePath) throws GenerationException
 	{
 		Validate.notNull(template, "Can't generate file : No given template");
+		logger.debug("Generating file: "+outputFilePath);
 		try {
-			logger.debug("Generating file: "+outputFilePath);
-			Writer writer = null;
-	        writer = new FileWriter(outputFilePath);
+			generateToWriter(template, new FileWriter(outputFilePath));
+		} catch (IOException e) {
+			throw new GenerationException("Error creating file: "+outputFilePath, e);
+		}
+	}
+
+	private void generateToWriter(Template template, Writer writer)
+			throws GenerationException {
+		try {
 	        template.merge(context, writer);
-	        writer.close();
         } catch (Exception e) {
         	throw new GenerationException("Error while generating file from template: "+template.getName(), e);
+        } finally {
+        	IOUtils.closeQuietly(writer);
         }
 	}
 
@@ -296,21 +313,39 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	protected String getLibraryDir() {
 		return getModuleDir() + LIBRARY_DIR + SEPARATOR_CHAR;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void addMavenDependencies(ProjectConfig projectConfig) throws GenerationException {
+		String dependencyFile = getModuleDir() + "dependencies.xml";
+		Template template = internalLoadTemplate(dependencyFile);
+		
+		StringWriter writer = new StringWriter();
+		generateToWriter(template, writer);
+		
+		XStream xstream = new XStream(new DomDriver());
+		xstream.alias("dependencies", LinkedList.class);
+		xstream.alias("dependency", Dependency.class);
+		List<Dependency> dependencies = (List<Dependency>) xstream.fromXML(writer.toString());
+		for (Dependency dependency : dependencies) {
+			logger.debug(dependency);
+		}
+		projectConfig.addMavenDependencies(dependencies);
+	}
 	/**
 	 * @see org.easygen.core.generators.Generator#copyLibraries(org.easygen.core.config.ProjectConfig)
 	 */
-	public String[] copyLibraries(ProjectConfig projectConfig) throws GenerationException {
+	public void copyLibraries(ProjectConfig projectConfig) throws GenerationException {
 		logger.info("Copying libraries");
 		createPath(projectConfig.getLibPath());
 		String libraryPath = getLibraryDir();
 		logger.debug("Looking for library in "+libraryPath);
 		List<String> libraryList = readLibraryList(libraryPath);
 		if (libraryList.size() == 0)
-			return new String[0];
+			return ;
 		for (int i = 0; i < libraryList.size(); i++) {
 			copyLibrary(libraryPath, projectConfig.getLibPath(), libraryList.get(i));
 		}
-		return (String[]) libraryList.toArray(new String[libraryList.size()]);
+		projectConfig.addLibraries(libraryList);
 	}
 	/**
 	 * @param from

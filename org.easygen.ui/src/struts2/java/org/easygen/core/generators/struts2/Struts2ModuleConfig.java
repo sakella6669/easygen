@@ -5,8 +5,8 @@ import org.easygen.core.generators.Generator;
 
 public class Struts2ModuleConfig extends ViewModuleConfig {
 
-	private static final String TILES2 = "Tiles2";
-	private static final String SITE_MESH = "SiteMesh";
+	public static final String TILES2 = "Tiles2";
+	public static final String SITE_MESH = "SiteMesh";
 
 	public static final String NATURE = "Struts2";
 
