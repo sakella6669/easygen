@@ -1,5 +1,7 @@
 package org.easygen.core.config;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class Dependency {
 
 	private String groupId;
@@ -37,5 +39,13 @@ public class Dependency {
 
 	public void setScope(String scope) {
 		this.scope = scope;
+	}
+	
+	@Override
+	public String toString() {
+		ToStringBuilder builder = new ToStringBuilder(this);
+		builder.append("groupId", groupId).append("artifactId", artifactId);
+		builder.append("version", version).append("scope", scope);
+		return builder.toString();
 	}
 }

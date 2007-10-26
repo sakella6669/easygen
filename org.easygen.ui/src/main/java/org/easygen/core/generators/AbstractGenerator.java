@@ -317,7 +317,18 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 	@SuppressWarnings("unchecked")
 	public void addMavenDependencies(ProjectConfig projectConfig) throws GenerationException {
 		String dependencyFile = getModuleDir() + "dependencies.xml";
-		Template template = internalLoadTemplate(dependencyFile);
+
+		Template template = null;
+		try {
+			logger.debug("Loading Template file: "+dependencyFile);
+			template = Velocity.getTemplate(dependencyFile);
+		} catch (ResourceNotFoundException e) {
+			return ;
+		} catch (ParseErrorException e) {
+        	throw new InitException("Velocity template parse error: "+dependencyFile, e);
+		} catch (Exception e) {
+        	throw new InitException("Velocity template initialization failed: "+dependencyFile, e);
+		}
 		
 		StringWriter writer = new StringWriter();
 		generateToWriter(template, writer);
