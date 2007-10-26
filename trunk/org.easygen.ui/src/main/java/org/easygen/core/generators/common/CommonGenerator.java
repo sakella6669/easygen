@@ -1,6 +1,7 @@
 package org.easygen.core.generators.common;
 
 import org.apache.log4j.Logger;
+import org.easygen.core.config.Dependency;
 import org.easygen.core.config.ProjectConfig;
 import org.easygen.core.generators.AbstractGenerator;
 import org.easygen.core.generators.GenerationException;
@@ -24,10 +25,6 @@ public class CommonGenerator extends AbstractGenerator {
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
 		logger.info("Generating common files");
-
-		// TODO Add the maven dependencies of the modules
-        generateFile("pom.xml.vm", projectConfig.getPath() + "pom.xml");
-
         createPath(projectConfig.getCfgPath());
 		generateFile("log4j.xml.vm", projectConfig.getCfgPath() + "log4j.xml");
 	}
@@ -36,5 +33,10 @@ public class CommonGenerator extends AbstractGenerator {
      */
     @Override
 	public void postProcess(ProjectConfig projectConfig) throws GenerationException {
+		for (Dependency dependency : projectConfig.getMavenDependencies()) {
+			logger.warn(dependency);
+		}
+		// TODO Add the maven dependencies of the modules
+        generateFile("pom.xml.vm", projectConfig.getPath() + "pom.xml");
     }
 }

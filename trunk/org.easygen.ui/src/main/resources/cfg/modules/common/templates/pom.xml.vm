@@ -66,6 +66,17 @@
 		</dependency>
 #end
 
+#foreach ($dependency in $project.mavenDependencies)
+		<dependency>
+			<groupId>${dependency.groupId}</groupId>
+			<artifactId>${dependency.artifactId}</artifactId>
+			<version>${dependency.version}</version>
+	#if (${dependency.scope})
+			<scope>${dependency.scope}</scope>
+	#end
+		</dependency>
+#end
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
