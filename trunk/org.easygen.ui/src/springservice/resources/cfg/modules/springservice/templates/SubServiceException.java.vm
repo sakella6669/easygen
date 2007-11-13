@@ -21,10 +21,4 @@ public class ${exceptionName}ServiceException extends ServiceException {
 	public ${exceptionName}ServiceException(String message) {
 		super(DEFAULT_MESSAGE+message);
 	}
-	/**
-	 * @param cause
-	 */
-	public ${exceptionName}ServiceException(Throwable cause) {
-		super(DEFAULT_MESSAGE, cause);
-	}
 }

@@ -30,14 +30,14 @@
 
 #if ($isTiles2Engine)
 <tiles:insertDefinition name="mainLayout">
-  <tiles:putAttribute name="title"><s:text name="show.title" /></tiles:putAttribute>
+  <tiles:putAttribute name="title"><s:text name="list.title" /></tiles:putAttribute>
   <tiles:putAttribute name="body">
 #elseif ($isSiteMeshEngine)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title><s:text name="show.title" /></title>
+<title><s:text name="list.title" /></title>
 </head>
 <body>
 #end
@@ -46,7 +46,7 @@
 <script type="text/javascript">
 <!--
 	function confirmDelete() {
-		return confirm("<s:text name="show.confirmDelete" />");
+		return confirm("<s:text name="list.confirmDelete" />");
 	}
 //-->
 </script>
@@ -54,16 +54,16 @@
 
 #if ($navigation.addPage)
 <s:url id="prepareaddUrl" action="prepareadd" />
-<p><s:a href="%{prepareaddUrl}" cssClass="commandLink"><s:text name="show.addLink" /></s:a></p>
+<p><s:a href="%{prepareaddUrl}" cssClass="commandLink"><s:text name="list.addLink" /></s:a></p>
 #end
 
-<fieldset title="<s:text name="show.searchLink" />">
-<legend><b><s:text name="show.searchTitle" /></b></legend>
+<fieldset title="<s:text name="list.searchLink" />">
+<legend><b><s:text name="list.searchTitle" /></b></legend>
 <s:form action="search" method="post" validate="false">
 <table>
 	<tr>
 		<td colspan="2" align="center" style="font-size: 0.8em">
-		<em><s:text name="show.searchAdvice" /></em></td>
+		<em><s:text name="list.searchAdvice" /></em></td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
@@ -101,11 +101,11 @@
 #end
 #end
 </table>
-  <s:submit key="show.searchLink" />
+  <s:submit key="list.searchLink" />
 </s:form>
 </fieldset>
 
-<p class="pageTitle"><s:text name="show.title" /></p>
+<p class="pageTitle"><s:text name="list.title" /></p>
 <display:table name="${objectVarName}s" class="results" uid="${objectVarName}">
 #foreach ($aField in $object.fields)
 	#if ($aField.primaryKey == true)
@@ -139,13 +139,13 @@
 	#end
 		</s:url>
 		<s:a href="%{deleteUrl}" cssClass="commandLink" onclick="return confirmDelete();">
-			<s:text name="show.deleteLink" /></s:a>
+			<s:text name="list.deleteLink" /></s:a>
 	</display:column>
 #end
 </display:table>
 
 	<p align="center">
-		<s:text name="show.resultCount">
+		<s:text name="list.resultCount">
 			<s:param><s:property value="%{${objectVarName}s.size()}" /></s:param>
 		</s:text>
 	</p>

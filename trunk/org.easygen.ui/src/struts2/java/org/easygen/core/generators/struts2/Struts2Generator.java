@@ -87,7 +87,7 @@ public class Struts2Generator extends AbstractGenerator {
 			String jspPath = projectConfig.getWebContentPath() + objectClassnameLowerCase;
 			createPath(jspPath);
 
-			generateFile("www/show.jsp.vm", jspPath + "/show.jsp");
+			generateFile("www/list.jsp.vm", jspPath + "/list.jsp");
 			if (navigationConfig.isAddPage()) {
 				generateFile("www/add.jsp.vm", jspPath + "/add.jsp");
 			}
