@@ -63,18 +63,18 @@
 	
 		<action name="index" class="${actionName}" method="list">
 			<result >show.jsp</result>
-			<result name="error">show.jsp</result>
+			<result name="error">list.jsp</result>
 		</action>
 
 		<action name="search" class="${actionName}" method="search">
-			<result >show.jsp</result>
-			<result name="error">show.jsp</result>
+			<result >list.jsp</result>
+			<result name="error">list.jsp</result>
 		</action>
 
 #if ($navigation.addPage)
 		<action name="prepareadd" class="${actionName}" method="prepareadd">
 			<result >add.jsp</result>
-			<result name="error">show.jsp</result>
+			<result name="error">list.jsp</result>
 		</action>
 
 		<action name="add" class="${actionName}" method="add">
@@ -87,7 +87,7 @@
 #if ($navigation.viewPage)
 		<action name="view" class="${actionName}" method="view">
 			<result >view.jsp</result>
-			<result name="error">show.jsp</result>
+			<result name="error">list.jsp</result>
 		</action>
 #end
 
@@ -112,7 +112,7 @@
 #if ($navigation.enableRemoveObject)
 		<action name="delete" class="${actionName}" method="delete">
 			<result type="redirect-action">index</result>
-			<result name="error">show.jsp</result>
+			<result name="error">list.jsp</result>
 		</action>
 #end
 

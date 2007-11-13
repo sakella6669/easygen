@@ -168,7 +168,7 @@ public abstract class GenericService<T> implements Service<T> {
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't save object list", e);
 		} finally {
 			closeEntityManager();
 		}
@@ -189,11 +189,10 @@ public abstract class GenericService<T> implements Service<T> {
 			entityManager.persist(object);
 
 			commitTransaction();
-//			return id;
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't update object", e);
 		} finally {
 			closeEntityManager();
 		}
@@ -219,7 +218,7 @@ public abstract class GenericService<T> implements Service<T> {
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't update object", e);
 		} finally {
 			closeEntityManager();
 		}
@@ -249,7 +248,7 @@ public abstract class GenericService<T> implements Service<T> {
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't update object list", e);
 		} finally {
 			closeEntityManager();
 		}
@@ -285,7 +284,7 @@ public abstract class GenericService<T> implements Service<T> {
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't delete object list", e);
 		} finally {
 			closeEntityManager();
 		}
@@ -308,7 +307,7 @@ public abstract class GenericService<T> implements Service<T> {
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't delete object", e);
 		} finally {
 			closeEntityManager();
 		}
@@ -335,7 +334,7 @@ public abstract class GenericService<T> implements Service<T> {
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't delete object list", e);
 		} finally {
 			closeEntityManager();
 		}
@@ -360,7 +359,7 @@ public abstract class GenericService<T> implements Service<T> {
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
 			rollbackTransaction();
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't delete object", e);
 		} finally {
 			closeEntityManager();
 		}
@@ -405,11 +404,10 @@ public abstract class GenericService<T> implements Service<T> {
 			throw new ServiceException("Object Not Found (id=" + id + ')', e);
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't retreive object", e);
 		} finally {
 			closeEntityManager();
 		}
-
 	}
 
 	/**
@@ -448,7 +446,7 @@ public abstract class GenericService<T> implements Service<T> {
 			return returnedList;
 		} catch (PersistenceException e) {
 			logger.error(e.getCause(), e);
-			throw new DatabaseServiceException(e);
+			throw new DatabaseServiceException("Can't get object list", e);
 		} finally {
 			closeEntityManager();
 		}
