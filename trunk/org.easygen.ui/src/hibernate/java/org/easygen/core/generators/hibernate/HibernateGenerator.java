@@ -1,7 +1,6 @@
 package org.easygen.core.generators.hibernate;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.easygen.core.config.DataField;
 import org.easygen.core.config.DataObject;
 import org.easygen.core.config.ProjectConfig;
-import org.easygen.core.db.DatabaseManager;
 import org.easygen.core.generators.AbstractGenerator;
 import org.easygen.core.generators.GenerationException;
 
@@ -127,18 +125,6 @@ public class HibernateGenerator extends AbstractGenerator {
 				return object;
 		}
 		return null;
-	}
-
-	/**
-	 * @see org.easygen.core.generators.AbstractGenerator#copyLibraries(org.easygen.core.config.ProjectConfig)
-	 */
-	@Override
-	public void copyLibraries(ProjectConfig projectConfig) throws GenerationException {
-		super.copyLibraries(projectConfig);
-		URL jarUrl = DatabaseManager.getDriverJarUrl(projectConfig.getDatabaseConfig().getDatabaseType());
-		String jarFilename = FilenameUtils.getName(jarUrl.getPath());
-		copyLibrary(getLibraryDir(), projectConfig.getLibPath(), jarFilename, jarUrl);
-		projectConfig.addLibrary(jarFilename);
 	}
 
 	/**

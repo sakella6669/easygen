@@ -1,12 +1,10 @@
 package org.easygen.core.generators;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
@@ -341,81 +339,6 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 			logger.debug(dependency);
 		}
 		projectConfig.addMavenDependencies(dependencies);
-	}
-	/**
-	 * @see org.easygen.core.generators.Generator#copyLibraries(org.easygen.core.config.ProjectConfig)
-	 */
-	public void copyLibraries(ProjectConfig projectConfig) throws GenerationException {
-		logger.info("Copying libraries");
-		createPath(projectConfig.getLibPath());
-		String libraryPath = getLibraryDir();
-		logger.debug("Looking for library in "+libraryPath);
-		List<String> libraryList = readLibraryList(libraryPath);
-		if (libraryList.size() == 0)
-			return ;
-		for (int i = 0; i < libraryList.size(); i++) {
-			copyLibrary(libraryPath, projectConfig.getLibPath(), libraryList.get(i));
-		}
-		projectConfig.addLibraries(libraryList);
-	}
-	/**
-	 * @param from
-	 * @param to
-	 * @param libraryName
-	 */
-	protected void copyLibrary(String from, String to, String libraryName) {
-		URL libraryUrl = Thread.currentThread().getContextClassLoader().getResource(from+libraryName);
-		copyLibrary(from, to, libraryName, libraryUrl);
-	}
-	/**
-	 * @param libraryLocation
-	 * @param destinationLibPath
-	 * @param libraryName
-	 * @param libraryUrl
-	 */
-	protected void copyLibrary(String libraryLocation, String destinationLibPath, String libraryName, URL libraryUrl) {
-		logger.debug("Copying library: "+libraryName);
-		if (libraryUrl == null) {
-			logger.warn("Can't find library "+libraryName);
-			return ;
-		}
-		File destFile = new File(destinationLibPath, libraryName);
-		try {
-			IOUtils.copy(libraryUrl.openStream(), new FileOutputStream(destFile));
-		} catch (IOException e) {
-			logger.warn("Can't copy library "+libraryName, e);
-		}
-	}
-	/**
-	 * @param libraryPath
-	 * @return
-	 */
-	protected List<String> readLibraryList(String libraryPath) {
-		List<String> libraryList = new LinkedList<String>();
-		BufferedReader reader = null;
-		try {
-			logger.debug("Library list file: "+libraryPath+LIBRARY_INDEX_FILE);
-			URL libraryListUrl = Thread.currentThread().getContextClassLoader().getResource(libraryPath+LIBRARY_INDEX_FILE);
-			if (libraryListUrl == null) {
-				logger.info("No library file "+LIBRARY_INDEX_FILE);
-				return libraryList;
-			}
-			reader = new BufferedReader(new InputStreamReader(libraryListUrl.openStream()));
-			String line = null;
-			while ( (line = reader.readLine()) != null) {
-				libraryList.add(line);
-			}
-		} catch (IOException e) {
-			logger.warn("Can't read file "+LIBRARY_INDEX_FILE, e);
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-			}
-		}
-		return libraryList;
 	}
 	/**
      * @return

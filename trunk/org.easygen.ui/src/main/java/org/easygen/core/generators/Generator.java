@@ -8,8 +8,6 @@ public interface Generator
 
 	public abstract void generate(ProjectConfig projectConfig) throws GenerationException;
 
-	public abstract void copyLibraries(ProjectConfig projectConfig) throws GenerationException;
-
 	public abstract void addMavenDependencies(ProjectConfig projectConfig) throws GenerationException;
 
 	public abstract void postProcess(ProjectConfig projectConfig) throws GenerationException;
