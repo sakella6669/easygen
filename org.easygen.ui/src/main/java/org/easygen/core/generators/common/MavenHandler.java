@@ -25,21 +25,19 @@ public class MavenHandler {
 		}
 	}
 
-	private boolean mavenFound = false;
+	protected MavenHandler() {
+	}
 
-	public MavenHandler() {
+	public static boolean isMavenFound() {
 		if (callMaven(".", "--version")) {
-			mavenFound = true;
+			return true;
 		} else {
 			logger.warn("Maven not found in path");
+			return false;
 		}
 	}
 
-	public boolean isMavenFound() {
-		return mavenFound;
-	}
-
-	public boolean callMaven(String path, String goal) {
+	public static boolean callMaven(String path, String goal) {
 		logger.info("Executing Maven: "+MVN_CMD+" "+goal);
 		ProcessBuilder builder = new ProcessBuilder(MVN_CMD, goal);
 		builder.directory(new File(path));
@@ -75,8 +73,4 @@ public class MavenHandler {
 			}
 		}
 	}
-	// mvn --version
-	// Maven version: 2.0.7
-	// Java version: 1.6.0_01
-	// OS name: "windows xp" version: "5.1" arch: "x86"
 }

@@ -329,8 +329,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IPageChanged
 		}
 		progressMonitor.worked(totalWork++);
 		progressMonitor.setTaskName("Executing maven command (mvn eclipse:eclipse)");
-		MavenHandler mavenHandler = new MavenHandler();
-		mavenHandler.callMaven(projectConfig.getPath(), "eclipse:eclipse");
+		MavenHandler.callMaven(projectConfig.getPath(), "eclipse:eclipse");
 		progressMonitor.worked(totalWork++);
 		progressMonitor.setTaskName("Refreshing project ...");
 		EclipseUtils.refreshLocal(projectConfig.getName(), progressMonitor);

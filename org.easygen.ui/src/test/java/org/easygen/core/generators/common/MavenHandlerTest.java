@@ -7,7 +7,6 @@ public class MavenHandlerTest {
 
 	@Test
 	public void testIsMavenFound() {
-		MavenHandler handler = new MavenHandler();
-		assertTrue(handler.isMavenFound());
+		assertTrue(MavenHandler.isMavenFound());
 	}
 }
