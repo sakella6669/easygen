@@ -1,0 +1,49 @@
+package ${project.viewModuleConfig.packageName};
+
+import org.apache.wicket.Request;
+import org.apache.wicket.Response;
+import org.apache.wicket.Session;
+import org.apache.wicket.resource.loader.ClassStringResourceLoader;
+import org.apache.wicket.spring.SpringWebApplication;
+import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+
+#foreach ($className in $classList)
+#set ($objectPackageName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+import ${project.viewModuleConfig.packageName}.${objectPackageName}.${className}ListPage;
+#end
+
+public class ${project.name}Application extends SpringWebApplication {
+
+	public TestApplication() {
+		super();
+	}
+
+	@Override
+	protected void init() {
+		super.init();
+#foreach ($className in $classList)
+		getResourceSettings().addStringResourceLoader(new ClassStringResourceLoader(${className}ListPage.class));
+#end
+		// For production and W3C HTML compliance you can switch this option to true 
+		getMarkupSettings().setStripWicketTags(false);
+		// Remove (or not) the wicket xml namespace declaration
+		getMarkupSettings().setStripXmlDeclarationFromOutput(false);
+		// Enable Spring injection on page
+		addComponentInstantiationListener(new SpringComponentInjector(this));
+	}
+
+	@Override
+	public Session newSession(Request request, Response response) {
+		return new TestWebSession(request);
+	}
+
+	/**
+	 * @see wicket.Application#getHomePage()
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public Class getHomePage() {
+		return IndexPage.class;
+	}
+
+}

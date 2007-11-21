@@ -1,0 +1,37 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+package ${project.viewModuleConfig.packageName}.${objectVarName};
+
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.PageLink;
+
+import ${project.dataModuleConfig.packageName}.${object.className};
+import ${project.viewModuleConfig.packageName}.BasePage;
+import ${project.viewModuleConfig.packageName}.util.DirectPageLink;
+import ${project.viewModuleConfig.packageName}.util.LocalizerUtils;
+
+public class View${object.className}Page extends BasePage {
+
+	private static final long serialVersionUID = 1L;
+
+	public View${object.className}Page(${object.className} ${objectVarName}) {
+		super();
+		createComponents(${objectVarName});
+	}
+
+	@Override
+	protected String getTitle() {
+		return LocalizerUtils.getString(this, "${objectVarName}.view.title");
+	}
+
+	protected void createComponents(${object.className} ${objectVarName}) {
+#foreach ($aField in $object.fields)
+	#if ($aField.foreignList == false)
+	#set ( $methodName = $stringutils.capitalizeFirstLetter($aField.propertyName) )
+		add(new Label("${aField.propertyName}", String.valueOf(${objectVarName}.get${methodName}())));
+	#end
+#end
+		add(new DirectPageLink("editLink", new Edit${object.className}Page(${objectVarName})));
+		add(new PageLink("backToListLink", ${object.className}ListPage.class));
+	}
+}

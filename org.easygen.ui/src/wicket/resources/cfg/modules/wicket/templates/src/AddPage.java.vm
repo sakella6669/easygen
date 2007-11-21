@@ -1,0 +1,34 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+package ${project.viewModuleConfig.packageName}.${objectVarName};
+
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.PageLink;
+
+import ${project.viewModuleConfig.packageName}.BasePage;
+import ${project.viewModuleConfig.packageName}.util.LocalizerUtils;
+
+public class Add${object.className}Page extends BasePage {
+
+	private static final long serialVersionUID = 1L;
+
+	public Add${object.className}Page() {
+		this(null);
+	}
+
+	public Add${object.className}Page(Throwable t) {
+		super();
+		addErrorMessage(t);
+		createComponents();
+	}
+
+	@Override
+	protected String getTitle() {
+		return LocalizerUtils.getString(this, "${objectVarName}.add.title");
+	}
+
+	protected void createComponents() {
+		add(new ${object.className}Form("add${object.className}Form", ${object.className}Form.SAVE_ACTION));
+		add(new PageLink("backToListLink", ${object.className}ListPage.class));
+	}
+}

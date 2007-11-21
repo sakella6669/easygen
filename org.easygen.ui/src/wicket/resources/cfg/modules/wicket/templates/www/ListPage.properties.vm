@@ -1,0 +1,35 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+# Fields Labels
+#foreach ($aField in $object.fields)
+${objectVarName}.${aField.propertyName}.label=$stringutils.capitalizeFirstLetter(${aField.propertyName})
+#end
+
+#foreach ($aField in $object.fields)
+add${object.className}Form.${aField.propertyName}=${aField.propertyName}
+#end
+
+# Page specific labels
+${objectVarName}.list.title=${object.className} list
+${objectVarName}.list.formTitle=${object.className} list
+${objectVarName}.list.searchTitle=${object.className} search
+${objectVarName}.list.searchAdvice=You can use % as wildcard
+${objectVarName}.list.confirmDelete=Do you really want to delete it ?
+${objectVarName}.list.addLink=Add a ${objectVarName}
+${objectVarName}.list.deleteLink=Delete
+${objectVarName}.list.searchLink=Search
+${objectVarName}.list.resultCount=Found {0} ${objectVarName}(s)
+${objectVarName}.list.notFound=Can't find ${objectVarName} for id: {0}
+${objectVarName}.list.deleted=Deleted ${objectVarName} with id: {0}
+
+${objectVarName}.add.title=Add a ${objectVarName}
+${objectVarName}.add.formTitle=Add a ${objectVarName}
+${objectVarName}.add.submitLink=Save
+
+${objectVarName}.edit.title=Editing a ${objectVarName}
+${objectVarName}.edit.formTitle=Editing a ${objectVarName}
+${objectVarName}.edit.submitLink=Save
+
+${objectVarName}.view.title=Viewing a ${objectVarName}
+${objectVarName}.view.formTitle=Viewing a ${objectVarName}
+${objectVarName}.view.submitLink=Edit

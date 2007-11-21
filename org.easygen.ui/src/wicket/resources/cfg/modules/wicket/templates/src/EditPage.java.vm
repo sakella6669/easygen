@@ -1,0 +1,35 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+package ${project.viewModuleConfig.packageName}.${objectVarName};
+
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.PageLink;
+
+import ${project.dataModuleConfig.packageName}.${object.className};
+import ${project.viewModuleConfig.packageName}.BasePage;
+import ${project.viewModuleConfig.packageName}.util.LocalizerUtils;
+
+public class Edit${object.className}Page extends BasePage {
+
+	private static final long serialVersionUID = 1L;
+
+	public Edit${object.className}Page(${object.className} ${objectVarName}) {
+		this(${objectVarName}, null);
+	}
+
+	public Edit${object.className}Page(${object.className} ${objectVarName}, Throwable t) {
+		super();
+		addErrorMessage(t);
+		createComponents(${objectVarName});
+	}
+
+	@Override
+	protected String getTitle() {
+		return LocalizerUtils.getString(this, "${objectVarName}.edit.title");
+	}
+
+	private void createComponents(final ${object.className} ${objectVarName}) {
+		add(new ${object.className}Form("edit${object.className}Form", ${object.className}Form.UPDATE_ACTION, ${objectVarName}));
+		add(new PageLink("backToListLink", ${object.className}ListPage.class));
+	}
+}

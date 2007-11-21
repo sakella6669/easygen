@@ -1,0 +1,99 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<body>
+
+<wicket:extend>
+
+<span id="confirmDeleteMessage" style="visibility: hidden">
+	<wicket:message key="${objectVarName}.list.confirmDelete"></wicket:message>
+</span>
+
+<script type="text/javascript">
+<!--
+	function confirmDelete() {
+		var spanObj = document.getElementById('confirmDeleteMessage');
+		var message = spanObj.textContent;
+		return confirm(message);
+	}
+//-->
+</script>
+
+<p><a wicket:id="addLink"><wicket:message key="${objectVarName}.list.addLink">Ajouter</wicket:message></a></p>
+
+	<fieldset><legend>
+		<wicket:message key="${objectVarName}.list.formTitle">Recherche</wicket:message>
+	</legend>
+	<form wicket:id="search${object.className}Form">
+	<table>
+		<tr>
+			<td colspan="2" align="center" style="font-size: 0.8em"><em><wicket:message key="${objectVarName}.list.searchAdvice">Advice</wicket:message></em></td>
+		</tr>
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == false)
+		#if ($aField.foreignKey == false)
+		<tr>
+			<td width="40%"><wicket:message key="${objectVarName}.${aField.propertyName}.label">Field</wicket:message></td>
+			<td><input type="text" name="${aField.propertyName}" class="formFields" wicket:id="${aField.propertyName}" /></td>
+		</tr>
+	  	#elseif ($aField.foreignKey == true && $aField.foreignList == false)
+		<tr>
+			<td width="40%"><wicket:message key="${objectVarName}.${aField.propertyName}.label">Field</wicket:message></td>
+			<td><select name="${aField.propertyName}" wicket:id="${aField.propertyName}" class="formFields">
+			 	<option>Value 1</option>
+				<option>Value 2</option>
+			</select></td>
+		</tr>
+		#end
+	#end
+#end
+		<tr>
+			<td colspan="2">
+				<input type="submit" value="Search" wicket:id="submitButton"/>
+			</td>
+		</tr>
+	</table>
+	</form>
+	</fieldset>
+
+	<p class="pageTitle"><wicket:message key="${objectVarName}.list.title">Liste</wicket:message></p>
+	<table class="results">
+	<thead>
+		<tr>
+#foreach ($aField in $object.fields)
+	#if ($aField.foreignList == false)
+			<th><wicket:message key="${objectVarName}.${aField.propertyName}.label">Field</wicket:message></th>
+	#end
+#end
+			<th>&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+	<span wicket:id="${objectVarName}s">
+		<tr>
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == true)
+		<td class="results"><a wicket:id="viewLink"><span wicket:id="${aField.propertyName}">Id</span></a></td>
+	#elseif ($aField.foreignList == false)
+		<td class="results"><span wicket:id="${aField.propertyName}">Value</span></td>
+	#end
+#end
+		<td class="results"><a onclick="return confirmDelete();" wicket:id="deleteLink">Delete</a></td>
+		</tr>
+	</span>
+	</tbody>
+	</table>
+
+	<p align="center">
+		<span wicket:id="resultCount">Trouv&eacute; 1 r&eacute;sultat</span>
+	</p>
+	
+</wicket:extend>
+
+</body>
+</html>

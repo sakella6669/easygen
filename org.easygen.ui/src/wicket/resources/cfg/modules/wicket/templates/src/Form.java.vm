@@ -1,0 +1,202 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+package ${project.viewModuleConfig.packageName}.${objectVarName};
+
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.wicket.datetime.StyleDateConverter;
+import org.apache.wicket.datetime.markup.html.form.DateTextField;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == false && $aField.foreignKey == true && $aField.foreignList == false)
+import ${project.dataModuleConfig.packageName}.${aField.foreignObject.className};
+	#end
+#end
+import ${project.dataModuleConfig.packageName}.${object.className};
+import ${project.serviceModuleConfig.packageName}.Service;
+import ${project.viewModuleConfig.packageName}.BaseForm;
+import ${project.viewModuleConfig.packageName}.BasePage;
+import ${project.viewModuleConfig.packageName}.util.LocalizerUtils;
+
+public class ${object.className}Form extends BaseForm {
+
+	private static final long serialVersionUID = 1L;
+	
+	public static final short SAVE_ACTION = 0;
+	public static final short UPDATE_ACTION = 1;
+	public static final short SEARCH_ACTION = 2;
+
+	private short action;
+
+	@SpringBean(name="${objectVarName}Service")
+	private Service<${object.className}> ${objectVarName}Service;
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == false && $aField.foreignKey == true && $aField.foreignList == false)
+
+	@SpringBean(name="${aField.propertyName}Service")
+	private Service<${aField.foreignObject.className}> ${aField.propertyName}Service;
+	#end
+#end
+
+	private ${object.className} ${objectVarName};
+
+	public ${object.className}Form(String id, short action) {
+		this(id, action, null);
+	}
+
+	public ${object.className}Form(String id, short action, ${object.className} ${objectVarName}) {
+		super(id);
+		this.action = action;
+		if (${objectVarName} == null) {
+			this.${objectVarName} = new ${object.className}();
+		} else {
+			this.${objectVarName} = ${objectVarName};
+		}
+		createComponents();
+	}
+
+	protected void createComponents() {
+		if (action == UPDATE_ACTION) {
+#foreach ($aField in $object.fields)
+#if ($aField.primaryKey == true)
+#set ( $methodName = $stringutils.capitalizeFirstLetter($aField.propertyName) )
+			add(new Label("${aField.propertyName}Value", String.valueOf(${objectVarName}.get${methodName}())));
+#end
+#end
+		}
+		TextField textField;
+#foreach ($aField in $object.fields)
+#if ($aField.primaryKey == false)
+	#if ($aField.foreignKey == false)
+		#if ($aField.propertyShortType == "Date")
+		textField = new DateTextField("${aField.propertyName}",
+			new PropertyModel(this,"${aField.propertyName}"), new StyleDateConverter("S-", true));
+		#else
+		textField = new TextField("${aField.propertyName}", new PropertyModel(${objectVarName}, "${aField.propertyName}"));
+		#end
+		#if ($aField.nullable == false)
+  		textField.setRequired(true);
+		#end
+		add(textField);
+ 	#end
+ 	#if ($aField.foreignKey == true && $aField.foreignList == false)
+  		#foreach ($foreignField in $aField.foreignObject.fields)
+  			#if ($foreignField.primaryKey == true)
+				#set ( $foreignFieldMethodName = $stringutils.capitalizeFirstLetter($foreignField.propertyName) )
+		List<${aField.foreignObject.className}> ${aField.propertyName}s;
+		try {
+			${aField.propertyName}s = get${aField.foreignObject.className}s();
+		} catch (Exception e) {
+			((BasePage)getPage()).addErrorMessage(e);
+			${aField.propertyName}s = new LinkedList<${aField.foreignObject.className}>();
+		}
+		// Set the first value as the default value, not allowing blank or null value
+		if (action == SAVE_ACTION && ${aField.propertyName}s.size() != 0) {
+			${objectVarName}.set${aField.foreignObject.className}(${aField.propertyName}s.get(0));
+		}
+		add(new DropDownChoice("${aField.propertyName}", new PropertyModel(${objectVarName}, "${aField.propertyName}"), ${aField.propertyName}s,
+			new IChoiceRenderer() {
+				private static final long serialVersionUID = 1L;
+	
+				public String getIdValue(Object object, int index) {
+					return String.valueOf(((${aField.foreignObject.className}) object).get${foreignFieldMethodName}());
+				}
+				public Object getDisplayValue(Object object) {
+					return object.toString();
+					// Can be replaced by a unique value
+					//return ((${aField.foreignObject.className}) object).getXXXXX();
+				}
+			}
+		));
+	  		#end
+		#end
+	#end
+#end
+#end
+		add(new Button("submitButton", new Model(getButtonLabel())));
+	}
+
+	protected String getButtonLabel() {
+		switch (action) {
+			case SAVE_ACTION:
+				return LocalizerUtils.getString(this, "${objectVarName}.add.submitLink");
+			case UPDATE_ACTION:
+				return LocalizerUtils.getString(this, "${objectVarName}.edit.submitLink");
+			case SEARCH_ACTION:
+				return LocalizerUtils.getString(this, "${objectVarName}.list.searchLink");
+		}
+		return "Unknown";
+	}
+
+	/**
+	 * @see org.apache.wicket.markup.html.form.Form#onSubmit()
+	 */
+	@Override
+	public void onSubmit() {
+		switch (action) {
+			case SAVE_ACTION:
+				save${object.className}(${objectVarName});
+				break;
+			case UPDATE_ACTION:
+				update${object.className}(${objectVarName});
+				break;
+			case SEARCH_ACTION:
+				search${object.className}s(${objectVarName});
+				break;
+
+			default:
+				throw new IllegalArgumentException("Unknown action code: "+action);
+		}
+	}
+
+	protected void save${object.className}(${object.className} ${objectVarName}) {
+		try {
+			logger.debug("Adding ${objectVarName}: " + ${objectVarName});
+			${objectVarName}Service.save(${objectVarName});
+			setResponsePage(new ${object.className}ListPage("Added new ${objectVarName}: " + ${objectVarName}));
+		} catch (Exception e) {
+			setResponsePage(new Add${object.className}Page(e));
+		}
+	}
+
+	protected void update${object.className}(${object.className} ${objectVarName}) {
+		try {
+			logger.debug("Updating ${objectVarName}: " + ${objectVarName});
+			${objectVarName} = ${objectVarName}Service.update(${objectVarName});
+			setResponsePage(new ${object.className}ListPage("Updated ${objectVarName}: " + ${objectVarName}));
+		} catch (Exception e) {
+			setResponsePage(new Edit${object.className}Page(${objectVarName}, e));
+		}
+	}
+	
+	protected void search${object.className}s(${object.className} ${objectVarName}) {
+		try {
+			List<${object.className}> ${objectVarName}s = ${objectVarName}Service.search(${objectVarName});
+			logger.debug("Found " + ${objectVarName}s.size() + " ${objectVarName}s");
+			setResponsePage(new ${object.className}ListPage(${objectVarName}s));
+		} catch (Exception e) {
+			setResponsePage(new ${object.className}ListPage(e));
+		}
+	}
+
+#foreach ($aField in $object.fields)
+	#if ($aField.primaryKey == false && $aField.foreignKey == true && $aField.foreignList == false)
+
+	protected List<${aField.foreignObject.className}> get${aField.foreignObject.className}s() throws Exception {
+		List<${aField.foreignObject.className}> ${aField.propertyName}s = ${aField.propertyName}Service.list();
+		logger.debug("Found " + ${aField.propertyName}s.size() + " ${aField.propertyName}s");
+		return ${aField.propertyName}s;
+	}
+	#end
+#end
+}

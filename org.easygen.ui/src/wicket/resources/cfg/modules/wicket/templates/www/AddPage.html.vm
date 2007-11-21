@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<body>
+
+<wicket:extend>
+
+<p>&nbsp;</p>
+
+<fieldset>
+<legend><b><wicket:message key="${objectVarName}.add.formTitle">Ajout</wicket:message></b></legend>
+<form wicket:id="add${object.className}Form">
+<table>
+
+#foreach ($aField in $object.fields)
+#if ($aField.primaryKey == false)
+	#if ($aField.foreignKey == false)
+	<tr>
+		<td width="40%"><wicket:message key="${aField.propertyName}.label">Field</wicket:message></td>
+		<td><input type="text" name="${aField.propertyName}" class="formFields" wicket:id="${aField.propertyName}" /></td>
+	</tr>
+  	#elseif ($aField.foreignKey == true && $aField.foreignList == false)
+	<tr>
+		<td width="40%"><wicket:message key="${aField.propertyName}.label">Field</wicket:message></td>
+		<td><select name="${aField.propertyName}" wicket:id="${aField.propertyName}" class="formFields">
+		 	<option>Value 1</option>
+			<option>Value 2</option>
+		</select></td>
+	</tr>
+	#end
+#end
+#end
+	<tr>
+		<td colspan="2"><input type="submit" value="Add" wicket:id="submitButton" /></td>
+	</tr>
+</table>
+</form>
+</fieldset>
+
+<p class="spacer">&nbsp;</p>
+
+<a wicket:id="backToListLink" class="commandLink">Back to List</a>
+
+</wicket:extend>
+
+</body>
+</html>

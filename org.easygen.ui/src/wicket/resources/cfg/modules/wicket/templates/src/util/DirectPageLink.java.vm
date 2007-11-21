@@ -1,0 +1,21 @@
+package ${project.viewModuleConfig.packageName}.util;
+
+import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.link.Link;
+
+public class DirectPageLink extends Link {
+
+	private static final long serialVersionUID = 1L;
+
+	private Page page;
+	
+	public DirectPageLink(String id, Page page) {
+		super(id);
+		this.page = page;
+	}
+
+	@Override
+	public void onClick() {
+		setResponsePage(page);
+	}
+}
