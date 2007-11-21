@@ -1,0 +1,16 @@
+project.name=Test
+
+index.title=Home
+index.welcomeMessage=Welcome !!
+
+# Common Labels
+backToListLink=Back to list
+
+menu.home=Home
+#foreach ($className in $classList)
+#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+menu.${lowerClassName}=Manage ${lowerClassName}s
+#end
+
+Required=Field '${label}' is required
+Length=Field '${label}' must be between ${min} and ${max} characters

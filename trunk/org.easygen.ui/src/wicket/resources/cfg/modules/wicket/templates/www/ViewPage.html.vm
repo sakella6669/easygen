@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<body>
+
+<wicket:extend>
+
+<p>&nbsp;</p>
+
+<fieldset>
+<legend><b><wicket:message key="${objectVarName}.view.formTitle">View</wicket:message></b></legend>
+<table>
+#foreach ($aField in $object.fields)
+	#if ($aField.foreignList == false)
+	<tr>
+		<td width="40%"><wicket:message key="${objectVarName}.${aField.propertyName}.label">Field</wicket:message></td>
+		<td><span wicket:id="${aField.propertyName}">132</span></td>
+	</tr>
+	#end
+#end
+</table>
+  <a wicket:id="editLink" class="commandLink">Edit</a>
+</fieldset>
+
+<p class="spacer">&nbsp;</p>
+
+<a wicket:id="backToListLink" class="commandLink">Back to List</a>
+
+</wicket:extend>
+
+</body>
+</html>

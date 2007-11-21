@@ -1,0 +1,145 @@
+#set ($objectVarName = "${object.className.toLowerCase().charAt(0)}${object.className.substring(1)}" )
+
+package ${project.viewModuleConfig.packageName}.${objectVarName};
+
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.link.PageLink;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import ${project.dataModuleConfig.packageName}.${object.className};
+import ${project.serviceModuleConfig.packageName}.Service;
+import ${project.viewModuleConfig.packageName}.BasePage;
+import ${project.viewModuleConfig.packageName}.util.LocalizerUtils;
+
+public class ${object.className}ListPage extends BasePage {
+
+	private static final long serialVersionUID = 1L;
+
+	@SpringBean(name="${objectVarName}Service")
+	private Service<${object.className}> ${objectVarName}Service;
+	private List<${object.className}> ${objectVarName}s;
+
+	public ${object.className}ListPage() {
+		this((List<${object.className}>)null);
+	}
+
+	public ${object.className}ListPage(String message) {
+		this((List<${object.className}>)null);
+		addInfoMessage(message);
+	}
+
+	public ${object.className}ListPage(Throwable t) {
+		this((List<${object.className}>)null);
+		addErrorMessage(t);
+	}
+
+	public ${object.className}ListPage(List<${object.className}> ${objectVarName}s) {
+		super();
+		this.${objectVarName}s = ${objectVarName}s;
+		createComponents();
+	}
+	
+	@Override
+	protected String getTitle() {
+		//new StringResourceModel("list.title");
+		return LocalizerUtils.getString(this, "${objectVarName}.list.title");
+	}
+
+	protected void createComponents() {
+		PageLink pageLink = new PageLink("addLink", Add${object.className}Page.class);
+		add(pageLink);
+		add(new ${object.className}Form("search${object.className}Form", ${object.className}Form.SEARCH_ACTION));
+		if (${objectVarName}s == null) {
+			try {
+				${objectVarName}s = get${object.className}s();
+			} catch (Exception e) {
+				addErrorMessage(e);
+				${objectVarName}s = new LinkedList<${object.className}>();
+			}			
+		}
+		ListView categoriesListView = new ListView("${objectVarName}s", ${objectVarName}s) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void populateItem(final ListItem listItem) {
+				final ${object.className} ${objectVarName} = (${object.className}) listItem.getModelObject();
+#foreach ($aField in $object.fields)
+	#set ( $methodName = $stringutils.capitalizeFirstLetter($aField.propertyName) )
+	#if ($aField.primaryKey == true)
+				Link editLink = new Link("viewLink") {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void onClick() {
+						try {
+							${object.className} viewed${object.className} = get${object.className}(${objectVarName});
+							if (viewed${object.className} == null) {
+								setResponsePage(new ${object.className}ListPage(LocalizerUtils.getString(this, "${objectVarName}.list.notFound", ${objectVarName}.getId())));
+							}
+							setResponsePage(new View${object.className}Page(viewed${object.className}));
+						} catch (Exception e) {
+							setResponsePage(new ${object.className}ListPage(e));
+						}
+					}
+				};
+				editLink.add(new Label("${aField.propertyName}", String.valueOf(${objectVarName}.get${methodName}())));
+				listItem.add(editLink);
+				Link detailsLink = new Link("deleteLink") {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void onClick() {
+						try {
+							delete${object.className}(${objectVarName});
+							setResponsePage(new ${object.className}ListPage(LocalizerUtils.getString(this, "${objectVarName}.list.deleted", ${objectVarName}.get${methodName}())));
+						} catch (Exception e) {
+							setResponsePage(new ${object.className}ListPage(e));
+						}
+					}
+				};
+				listItem.add(detailsLink);
+	#elseif ($aField.foreignList == false)
+				listItem.add(new Label("${aField.propertyName}", ${objectVarName}.get${methodName}().toString()));
+	#end
+#end
+			}
+		};
+		add(categoriesListView);
+		add(new Label("resultCount", LocalizerUtils.getString(this, "${objectVarName}.list.resultCount", ${objectVarName}s.size())));
+	}
+
+	protected List<${object.className}> get${object.className}s() throws Exception {
+		List<${object.className}> ${objectVarName}s = ${objectVarName}Service.list();
+		logger.debug("Found " + ${objectVarName}s.size() + " ${objectVarName}s");
+		return ${objectVarName}s;
+	}
+
+	protected ${object.className} get${object.className}(${object.className} ${objectVarName}) throws Exception {
+		#foreach ($field in $object.fields)
+			#if ($field.primaryKey == true)			
+			#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+		Serializable $field.propertyName = ${objectVarName}.get${methodName}();
+		logger.debug("Getting ${objectVarName} with id: " + $field.propertyName);
+		return ${objectVarName}Service.get(${field.propertyName});
+			#end
+		#end
+	}
+
+	protected void delete${object.className}(${object.className} ${objectVarName}) throws Exception {
+		#foreach ($field in $object.fields)
+			#if ($field.primaryKey == true)			
+			#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+		Serializable $field.propertyName = ${objectVarName}.get${methodName}();
+		logger.debug("Deleting ${objectVarName} with id: " + $field.propertyName);
+		${objectVarName}Service.deleteById(${field.propertyName});
+			#end
+		#end
+	}
+}

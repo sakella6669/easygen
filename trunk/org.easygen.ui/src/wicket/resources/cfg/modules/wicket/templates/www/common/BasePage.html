@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title wicket:id="title">Title</title>
+<link rel="stylesheet" type="text/css" href="/test/common/styles.css" />
+</head>
+<body>
+
+	<div id="header">
+		<br/>
+		<a wicket:id="titleLink"><wicket:message key="project.name">Projet Name</wicket:message></a>
+	</div>
+
+	<table width="95%" border="0">
+	<tr>
+		<td width="25%" valign="top">
+			<div id="menu">
+			<span wicket:id="menuItems">
+				<p class="menuItem"><a wicket:id="menuItemLink"><span wicket:id="menuItemLabel"></span></a></p>
+			</span>
+		</div>
+		</td>
+		<td valign="top">
+
+		    <div id="messages">
+		        <span wicket:id="feedbackPanel"/>
+		    </div>
+
+	        <wicket:child />
+
+		</td>
+	</tr>
+	</table>
+
+	<div id="footer"><p>Created with <a href="http://easygen.googlecode.com" target="new">Easygen</a></p></div>
+
+</body>
+</html>

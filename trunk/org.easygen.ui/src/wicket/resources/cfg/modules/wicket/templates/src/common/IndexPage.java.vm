@@ -1,0 +1,25 @@
+package ${project.viewModuleConfig.packageName};
+
+import org.apache.wicket.markup.html.basic.Label;
+
+import ${project.viewModuleConfig.packageName}.util.LocalizerUtils;
+
+public class IndexPage extends BasePage {
+
+	private static final long serialVersionUID = 1L;
+
+	public IndexPage() {
+		super();
+		createComponents();
+	}
+
+	@Override
+	protected String getTitle() {
+		return LocalizerUtils.getString(this, "index.title");
+	}
+
+	protected void createComponents() {
+		add(new Label("welcomeMessage", LocalizerUtils.getString(this, "index.welcomeMessage")));
+	}
+
+}

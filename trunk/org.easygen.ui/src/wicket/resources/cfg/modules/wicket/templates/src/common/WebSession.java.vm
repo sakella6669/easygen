@@ -1,0 +1,14 @@
+package ${project.viewModuleConfig.packageName};
+
+import org.apache.wicket.Request;
+import org.apache.wicket.protocol.http.WebSession;
+
+public class TestWebSession extends WebSession {
+
+	private static final long serialVersionUID = 1L;
+
+	public TestWebSession(Request request) {
+		super(request);
+	}
+
+}

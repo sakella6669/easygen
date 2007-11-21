@@ -1,0 +1,124 @@
+package ${project.viewModuleConfig.packageName};
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.log4j.Logger;
+import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+
+#foreach ($className in $classList)
+#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+import ${project.viewModuleConfig.packageName}.${lowerClassName}.${className}ListPage;
+#end
+import ${project.viewModuleConfig.packageName}.util.LocalizerUtils;
+
+public abstract class BasePage extends WebPage {
+
+	private static final long serialVersionUID = 1L;
+	private FeedbackPanel feedbackPanel;
+
+	@SuppressWarnings("unchecked")
+	private final List<MenuItem> menuItemPages = Arrays.asList(
+		new MenuItem[] { new MenuItem(IndexPage.class, LocalizerUtils.getString(this, "menu.home")),
+#foreach ($className in $classList)
+#set ($lowerClassName = "${className.toLowerCase().charAt(0)}${className.substring(1)}" )
+		new MenuItem(${className}ListPage.class, LocalizerUtils.getString(this, "menu.${lowerClassName}")),
+#end
+	});
+
+	protected transient final Logger logger = Logger.getLogger(getClass());
+
+	public BasePage() {
+		super();
+		createTemplateComponents();
+	}
+
+	protected void createTemplateComponents() {
+		add(new Label("title", LocalizerUtils.getString(this, "project.name") + " - " + getTitle()));
+		add(new BookmarkablePageLink("titleLink", IndexPage.class));
+		feedbackPanel = new FeedbackPanel("feedbackPanel");
+		add(feedbackPanel);
+		ListView menuItemsListView = new ListView("menuItems", menuItemPages) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public void populateItem(final ListItem listItem) {
+				final MenuItem menuItem = (MenuItem) listItem.getModelObject();
+				Link menuItemLink = new BookmarkablePageLink("menuItemLink", menuItem.getPageClass());
+				menuItemLink.add(new Label("menuItemLabel", menuItem.getLabel()));
+				listItem.add(menuItemLink);
+			}
+		};
+		add(menuItemsListView);
+	}
+
+	protected abstract String getTitle();
+	
+	public void addInfoMessage(String message) {
+		feedbackPanel.info(message);
+	}
+
+	public void addErrorMessage(String message) {
+		feedbackPanel.error(message);
+	}
+
+	public void addErrorMessage(Throwable t) {
+		if (t == null) {
+			return ;
+		}
+		logger.error("Une erreur est survenu", t);
+		String errorMessage = StringUtils.isEmpty(t.getMessage()) ? t.toString() : t.getMessage();
+		feedbackPanel.error(errorMessage);
+	}
+
+	protected TestWebSession getWebSession() {
+		return (TestWebSession) getSession();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static class MenuItem implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		private Class pageClass;
+		private String label;
+
+		public MenuItem(Class pageClass, String label) {
+			super();
+			this.pageClass = pageClass;
+			this.label = label;
+		}
+
+		public Class getPageClass() {
+			return pageClass;
+		}
+
+		public void setPageClass(Class pageClass) {
+			this.pageClass = pageClass;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+
+		public void setLabel(String label) {
+			this.label = label;
+		}
+
+		@Override
+		public String toString() {
+			ToStringBuilder builder = new ToStringBuilder(this);
+			builder.append("pageClass", getPageClass()).append("label", getLabel());
+			return super.toString();
+		}
+	}
+}
