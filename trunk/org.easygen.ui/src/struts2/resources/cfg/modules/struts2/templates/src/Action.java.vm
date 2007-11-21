@@ -103,7 +103,7 @@ public class ${object.className}Action extends GenericAction {
 		try {
 			logger.info("Adding new ${objectVarName}");
 			${objectVarName}Service.save(${objectVarName});
-			addActionMessage("Added new ${objectVarName} with id: " + ${objectVarName}.getId());
+			addActionMessage("Added new ${objectVarName}: " + ${objectVarName});
 			return Action.SUCCESS;
 		} catch (Exception e) {
 			return handleError("Can't add ${objectVarName}", e);
@@ -114,9 +114,9 @@ public class ${object.className}Action extends GenericAction {
 #if ($navigation.editPage)
 	public String update() throws Exception {
 		try {
-			logger.info("Updating ${objectVarName} with id: " + ${objectVarName}.getId());
+			logger.info("Updating ${objectVarName}: " + ${objectVarName});
 			${objectVarName} = ${objectVarName}Service.update(${objectVarName});
-			addActionMessage("Updated ${objectVarName} with id: " + ${objectVarName}.getId());
+			addActionMessage("Updated ${objectVarName}: " + ${objectVarName});
 			return Action.SUCCESS;
 		} catch (Exception e) {
 			return handleError("Can't save ${objectVarName}", e);
@@ -137,8 +137,13 @@ public class ${object.className}Action extends GenericAction {
 #if ($navigation.viewPage || $navigation.editPage)
 	protected String get() throws Exception {
 		try {
-			logger.info("Getting ${objectVarName} with id: " + ${objectVarName}.getId());
-			${objectVarName} = ${objectVarName}Service.get(${objectVarName}.getId());
+			logger.info("Getting ${objectVarName}: " + ${objectVarName});
+		#foreach ($field in $object.fields)
+			#if ($field.primaryKey == true)			
+			#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+			${objectVarName} = ${objectVarName}Service.get(${objectVarName}.get${methodName}());
+			#end
+		#end
 			return Action.SUCCESS;
 		} catch (Exception e) {
 			return handleError("Can't get ${objectVarName}", e);
@@ -149,9 +154,14 @@ public class ${object.className}Action extends GenericAction {
 #if ($navigation.enableRemoveObject)
 	public String delete() throws Exception {
 		try {
-			logger.info("Deleting ${objectVarName} with id: " + ${objectVarName}.getId());
-			${objectVarName}Service.deleteById(${objectVarName}.getId());
-			addActionMessage("Deleted ${objectVarName} with id: " + ${objectVarName}.getId());
+			logger.info("Deleting ${objectVarName}: " + ${objectVarName});
+		#foreach ($field in $object.fields)
+			#if ($field.primaryKey == true)			
+			#set ( $methodName = $stringutils.capitalizeFirstLetter($field.propertyName) )
+			${objectVarName}Service.deleteById(${objectVarName}.get${methodName}());
+			#end
+		#end
+			addActionMessage("Deleted ${objectVarName}: " + ${objectVarName});
 			return Action.SUCCESS;
 		} catch (Exception e) {
 			return handleError("Can't delete ${objectVarName}", e);
