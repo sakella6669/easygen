@@ -55,7 +55,6 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
     public AbstractGenerator()
     {
 	    super();
-	    // TODO Add generation of Wicket framework
 	    loadConfiguration();
 	    templates = new Hashtable<String,Template>();
     }
@@ -183,7 +182,6 @@ public abstract class AbstractGenerator implements Generator, GeneratorConstants
 			IOUtils.copy(inputStream, outputStream);
 			inputStream.close();
 			outputStream.close();
-			//FileUtils.copyFile(new File(from), new File(outputFilePath));
         } catch (Exception e) {
         	throw new GenerationException("Error while copying file: "+from, e);
         }

@@ -8,6 +8,7 @@ package org.easygen.core.generators;
 public interface GeneratorConstants
 {
 	public static final String JAVA_FILE_EXTENSION = ".java";
+	public static final String HTML_FILE_EXTENSION = ".html";
 	public static final String XML_FILE_EXTENSION = ".xml";
 	public static final String JSP_FILE_EXTENSION = ".jsp";
 	public static final String PROPERTY_FILE_EXTENSION = ".properties";
