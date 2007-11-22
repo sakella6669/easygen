@@ -9,8 +9,8 @@
 	<classpathentry kind="src" output="target/springservice-classes" path="src/springservice/resources"/>
 	<classpathentry kind="src" output="target/struts2-classes" path="src/struts2/java"/>
 	<classpathentry kind="src" output="target/struts2-classes" path="src/struts2/resources"/>
-	<classpathentry kind="src" path="src/wicket/java"/>
-	<classpathentry kind="src" path="src/wicket/resources"/>
+	<classpathentry kind="src" output="target/wicket-classes" path="src/wicket/java"/>
+	<classpathentry kind="src" output="target/wicket-classes" path="src/wicket/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.3.jar"/>
