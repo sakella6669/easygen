@@ -33,6 +33,7 @@ public class ModuleManagerImpl implements ModuleManager {
 	 *
 	 */
 	public ModuleManagerImpl() {
+		// TODO Ajouter un module SpringMVC
 		initModules();
 	}
 	/**
@@ -99,12 +100,11 @@ public class ModuleManagerImpl implements ModuleManager {
 		for (Module module : modules) {
 			addModule(module);
 		}
-//		addModule(new HibernateDataModule());
-//		addModule(new SpringServiceModule());
-//		addModule(new Struts2ViewModule());
 	}
-
-    private List<Module> findAllModules() {
+	/**
+	 * Looks for all modules contained in classpath by looking for the file "META-INF/services/org.easygen.ui.modules.Module"
+	 */
+    protected List<Module> findAllModules() {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Enumeration<URL> resources;
 		try {
@@ -134,7 +134,7 @@ public class ModuleManagerImpl implements ModuleManager {
         return foundModules;
     }
 
-    private Set<String> moduleNamesFromReader(URL url) throws IOException {
+    protected Set<String> moduleNamesFromReader(URL url) throws IOException {
     	BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
         Set<String> names = new HashSet<String>();
         String line;

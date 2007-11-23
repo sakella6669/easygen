@@ -39,6 +39,7 @@ public class SpringServiceGenerator extends AbstractGenerator {
 	 */
 	@Override
 	public void generate(ProjectConfig projectConfig) throws GenerationException {
+		// TODO Passer les templates à Spring 2.5
 		logger.info("Generating service layer files");
 		if (projectConfig.getDataModuleNature().equals(HibernateModuleConfig.NATURE) == false) {
 			throw new GenerationException("Spring Service Module should be used with Hibernate as Data Module");
