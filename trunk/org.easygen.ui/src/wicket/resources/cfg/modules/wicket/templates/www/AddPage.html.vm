@@ -16,12 +16,12 @@
 #if ($aField.primaryKey == false)
 	#if ($aField.foreignKey == false)
 	<tr>
-		<td width="40%"><wicket:message key="${aField.propertyName}.label">Field</wicket:message></td>
+		<td width="40%"><wicket:message key="${objectVarName}.${aField.propertyName}.label">Field</wicket:message></td>
 		<td><input type="text" name="${aField.propertyName}" class="formFields" wicket:id="${aField.propertyName}" /></td>
 	</tr>
   	#elseif ($aField.foreignKey == true && $aField.foreignList == false)
 	<tr>
-		<td width="40%"><wicket:message key="${aField.propertyName}.label">Field</wicket:message></td>
+		<td width="40%"><wicket:message key="${objectVarName}.${aField.propertyName}.label">Field</wicket:message></td>
 		<td><select name="${aField.propertyName}" wicket:id="${aField.propertyName}" class="formFields">
 		 	<option>Value 1</option>
 			<option>Value 2</option>

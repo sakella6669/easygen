@@ -21,7 +21,7 @@ public class SQLDataConverter {
 	static {
 		try {
 			URL propertiesURL = Thread.currentThread().getContextClassLoader().getResource(
-					"database/" + "database.properties");
+					"database/database.properties");
 			properties.load(propertiesURL.openStream());
 		} catch (IOException e) {
 			logger.error("Erreur lors du chargement de propriétés", e);

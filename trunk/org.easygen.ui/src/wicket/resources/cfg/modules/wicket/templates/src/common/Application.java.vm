@@ -12,9 +12,11 @@ import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import ${project.viewModuleConfig.packageName}.${objectPackageName}.${className}ListPage;
 #end
 
-public class ${project.name}Application extends SpringWebApplication {
+#set ($appName = $stringutils.capitalizeFirstLetter(${project.name}) )
 
-	public TestApplication() {
+public class ${appName}Application extends SpringWebApplication {
+
+	public ${appName}Application() {
 		super();
 	}
 
@@ -34,7 +36,7 @@ public class ${project.name}Application extends SpringWebApplication {
 
 	@Override
 	public Session newSession(Request request, Response response) {
-		return new TestWebSession(request);
+		return new ${appName}WebSession(request);
 	}
 
 	/**

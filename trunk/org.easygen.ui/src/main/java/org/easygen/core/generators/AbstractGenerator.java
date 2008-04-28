@@ -39,6 +39,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 /**
  * @author eveno
  * Created on 2 nov. 06
+ * TODO Removed useless javadocs comments in all templates (mainly hibernate POJOs)
  */
 public abstract class AbstractGenerator implements Generator, GeneratorConstants {
 
