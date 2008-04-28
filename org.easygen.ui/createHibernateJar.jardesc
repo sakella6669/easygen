@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="D:/Work/workspaces/personnal/org.easygen.ui/lib/org.easygen.ui.hibernate_1.1.0.jar"/>
+    <jar path="C:/Eveno/Work/workspaces/personnal/org.easygen.ui/lib/org.easygen.ui.hibernate_1.1.0.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/org.easygen.ui/createHibernateJar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="true"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>

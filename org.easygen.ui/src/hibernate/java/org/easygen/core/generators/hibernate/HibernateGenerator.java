@@ -71,6 +71,7 @@ public class HibernateGenerator extends AbstractGenerator {
 			context.put(OBJECT, mapping);
 			String javaFilename = createJavaFilename(dataModuleConfig, mapping);
 			// TODO If a field is in the same time a foreign and a primary key, it is a one-to-one association
+			// TODO Add the @Column Annotation for the primary key @Id
 			generateFile("class.java.vm", projectConfig.getSrcPath() + javaFilename);
 			if (dataModuleConfig.isUseAnnotations() == true) {
 				hbmList.add(packageName + '.' + mapping.getClassName());

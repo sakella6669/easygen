@@ -80,7 +80,7 @@ public class ${object.className}Form extends BaseForm {
 	#if ($aField.foreignKey == false)
 		#if ($aField.propertyShortType == "Date")
 		textField = new DateTextField("${aField.propertyName}",
-			new PropertyModel(this,"${aField.propertyName}"), new StyleDateConverter("S-", true));
+			new PropertyModel(${objectVarName}, "${aField.propertyName}"), new StyleDateConverter("S-", true));
 		#else
 		textField = new TextField("${aField.propertyName}", new PropertyModel(${objectVarName}, "${aField.propertyName}"));
 		#end

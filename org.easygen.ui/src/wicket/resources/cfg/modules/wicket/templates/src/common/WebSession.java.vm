@@ -3,11 +3,13 @@ package ${project.viewModuleConfig.packageName};
 import org.apache.wicket.Request;
 import org.apache.wicket.protocol.http.WebSession;
 
-public class TestWebSession extends WebSession {
+#set ($appName = $stringutils.capitalizeFirstLetter(${project.name}) )
+
+public class ${appName}WebSession extends WebSession {
 
 	private static final long serialVersionUID = 1L;
 
-	public TestWebSession(Request request) {
+	public ${appName}WebSession(Request request) {
 		super(request);
 	}
 

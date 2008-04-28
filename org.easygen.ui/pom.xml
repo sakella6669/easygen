@@ -5,31 +5,41 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>common</groupId>
-		<artifactId>parentpom</artifactId>
-		<version>1.0</version>
-	</parent>
-
 	<name>Easygen classes</name>
 	<groupId>org.easygen</groupId>
 	<artifactId>easygen</artifactId>
 	<version>1.2</version>
 	<packaging>jar</packaging>
 
+	<scm>
+		<connection>
+			scm:svn:https://mektoubtools.googlecode.com/svn/trunk
+		</connection>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
 	<dependencies>
 
+		<!--
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.0.5</version>
 		</dependency>
-
-		<!--dependency>
+			
+		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1.8.0.7</version>
-			</dependency-->
+		</dependency>
+		-->
 
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -89,15 +99,67 @@
 	</dependencies>
 
 	<build>
-	<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-surefire-plugin</artifactId>
-			<configuration>
-				<skip>true</skip>
-			</configuration>
-		</plugin>
-	</plugins>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-source</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<configLocation>
+						checkstyle-configuration.xml
+					</configLocation>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>codehaus-plugins</id>
+			<url>http://dist.codehaus.org/</url>
+			<layout>legacy</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>
